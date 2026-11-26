@@ -14,7 +14,7 @@ import (
 	"testing"
 	"time"
 
-	"gitlab.com/radutoader/projects/apple/rSSH/rsshd/internal/config"
+	"github.com/radut/rsshterm/rsshd/internal/config"
 )
 
 // Short socket paths: unix socket paths are limited to ~104 bytes and t.TempDir() can be long.

@@ -12,7 +12,7 @@ import (
 	"sync"
 	"time"
 
-	"gitlab.com/radutoader/projects/apple/rSSH/rsshd/internal/backend"
+	"github.com/radut/rsshterm/rsshd/internal/backend"
 )
 
 // installedTTL is how long a Version probe is trusted; installing screen is picked up within it.

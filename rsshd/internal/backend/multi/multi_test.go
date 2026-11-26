@@ -7,8 +7,8 @@ import (
 	"testing"
 	"time"
 
-	"gitlab.com/radutoader/projects/apple/rSSH/rsshd/internal/backend"
-	"gitlab.com/radutoader/projects/apple/rSSH/rsshd/internal/backend/fake"
+	"github.com/radut/rsshterm/rsshd/internal/backend"
+	"github.com/radut/rsshterm/rsshd/internal/backend/fake"
 )
 
 func pair(t *testing.T, def string) (*Multi, *fake.Backend, *fake.Backend) {

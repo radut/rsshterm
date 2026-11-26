@@ -11,12 +11,12 @@ import (
 	"testing"
 	"time"
 
-	"gitlab.com/radutoader/projects/apple/rSSH/rsshd/internal/backend"
-	"gitlab.com/radutoader/projects/apple/rSSH/rsshd/internal/backend/fake"
-	"gitlab.com/radutoader/projects/apple/rSSH/rsshd/internal/backend/multi"
-	"gitlab.com/radutoader/projects/apple/rSSH/rsshd/internal/probe"
-	"gitlab.com/radutoader/projects/apple/rSSH/rsshd/internal/timeout"
-	"gitlab.com/radutoader/projects/apple/rSSH/rsshd/internal/watch"
+	"github.com/radut/rsshterm/rsshd/internal/backend"
+	"github.com/radut/rsshterm/rsshd/internal/backend/fake"
+	"github.com/radut/rsshterm/rsshd/internal/backend/multi"
+	"github.com/radut/rsshterm/rsshd/internal/probe"
+	"github.com/radut/rsshterm/rsshd/internal/timeout"
+	"github.com/radut/rsshterm/rsshd/internal/watch"
 )
 
 var pol = timeout.Policy{Idle: time.Hour, Hard: 24 * time.Hour, WarnLead: 5 * time.Minute, FinishWork: true}

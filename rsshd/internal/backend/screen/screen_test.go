@@ -10,7 +10,7 @@ import (
 	"testing"
 	"time"
 
-	"gitlab.com/radutoader/projects/apple/rSSH/rsshd/internal/backend"
+	"github.com/radut/rsshterm/rsshd/internal/backend"
 )
 
 // RequireScreen skips without screen, or fails when RSSHD_REQUIRE_SCREEN=1 (CI and make rsshd-test).

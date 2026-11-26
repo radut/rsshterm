@@ -4,8 +4,8 @@ import (
 	"sort"
 	"time"
 
-	"gitlab.com/radutoader/projects/apple/rSSH/rsshd/internal/probe"
-	"gitlab.com/radutoader/projects/apple/rSSH/rsshd/internal/watch"
+	"github.com/radut/rsshterm/rsshd/internal/probe"
+	"github.com/radut/rsshterm/rsshd/internal/watch"
 )
 
 // MetaName is the metadata key of the session's display name.

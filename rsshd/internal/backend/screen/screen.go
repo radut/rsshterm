@@ -18,7 +18,7 @@ import (
 	"sync"
 	"time"
 
-	"gitlab.com/radutoader/projects/apple/rSSH/rsshd/internal/backend"
+	"github.com/radut/rsshterm/rsshd/internal/backend"
 )
 
 // Prefix is the screen session name prefix of managed sessions.

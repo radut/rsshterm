@@ -9,7 +9,7 @@ import (
 	"sync"
 	"time"
 
-	"gitlab.com/radutoader/projects/apple/rSSH/rsshd/internal/backend"
+	"github.com/radut/rsshterm/rsshd/internal/backend"
 )
 
 // Backend keeps sessions in a map. Tests change sessions with Set.

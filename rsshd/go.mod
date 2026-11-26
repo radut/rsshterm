@@ -1,4 +1,4 @@
-module gitlab.com/radutoader/projects/apple/rSSH/rsshd
+module github.com/radut/rsshterm/rsshd
 
 go 1.26.0
 

@@ -5,7 +5,7 @@ import (
 	"testing"
 	"time"
 
-	"gitlab.com/radutoader/projects/apple/rSSH/rsshd/internal/probe"
+	"github.com/radut/rsshterm/rsshd/internal/probe"
 )
 
 var t0 = time.Date(2026, 11, 24, 12, 0, 0, 0, time.UTC)

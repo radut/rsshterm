@@ -5,7 +5,7 @@ package timeout
 import (
 	"time"
 
-	"gitlab.com/radutoader/projects/apple/rSSH/rsshd/internal/probe"
+	"github.com/radut/rsshterm/rsshd/internal/probe"
 )
 
 // State is a session's timeout state.

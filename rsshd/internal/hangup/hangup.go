@@ -5,7 +5,7 @@ import (
 	"context"
 	"syscall"
 
-	"gitlab.com/radutoader/projects/apple/rSSH/rsshd/internal/probe"
+	"github.com/radut/rsshterm/rsshd/internal/probe"
 )
 
 // Shells sends SIGHUP to each shell's foreground process group, to the shell's own group and to the shell,

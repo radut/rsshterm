@@ -9,7 +9,7 @@ import (
 	"testing"
 	"time"
 
-	"gitlab.com/radutoader/projects/apple/rSSH/rsshd/internal/backend"
+	"github.com/radut/rsshterm/rsshd/internal/backend"
 )
 
 func TestParseStatTPGID(t *testing.T) {

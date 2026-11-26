@@ -17,9 +17,9 @@ import (
 	"sync/atomic"
 	"time"
 
-	"gitlab.com/radutoader/projects/apple/rSSH/rsshd/internal/backend"
-	"gitlab.com/radutoader/projects/apple/rSSH/rsshd/internal/timeout"
-	"gitlab.com/radutoader/projects/apple/rSSH/rsshd/internal/watch"
+	"github.com/radut/rsshterm/rsshd/internal/backend"
+	"github.com/radut/rsshterm/rsshd/internal/timeout"
+	"github.com/radut/rsshterm/rsshd/internal/watch"
 )
 
 // Limits on client input.

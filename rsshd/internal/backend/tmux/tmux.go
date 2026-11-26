@@ -16,8 +16,8 @@ import (
 	"strings"
 	"time"
 
-	"gitlab.com/radutoader/projects/apple/rSSH/rsshd/internal/backend"
-	"gitlab.com/radutoader/projects/apple/rSSH/rsshd/internal/hangup"
+	"github.com/radut/rsshterm/rsshd/internal/backend"
+	"github.com/radut/rsshterm/rsshd/internal/hangup"
 )
 
 const (

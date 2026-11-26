@@ -22,10 +22,10 @@ import (
 	"syscall"
 	"time"
 
-	"gitlab.com/radutoader/projects/apple/rSSH/rsshd/internal/backend"
-	"gitlab.com/radutoader/projects/apple/rSSH/rsshd/internal/config"
-	"gitlab.com/radutoader/projects/apple/rSSH/rsshd/internal/daemon"
-	"gitlab.com/radutoader/projects/apple/rSSH/rsshd/internal/doctor"
+	"github.com/radut/rsshterm/rsshd/internal/backend"
+	"github.com/radut/rsshterm/rsshd/internal/config"
+	"github.com/radut/rsshterm/rsshd/internal/daemon"
+	"github.com/radut/rsshterm/rsshd/internal/doctor"
 )
 
 // version is set at build time: -ldflags "-X main.version=1.2.3".

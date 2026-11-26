@@ -12,7 +12,7 @@ import (
 
 	"github.com/BurntSushi/toml"
 
-	"gitlab.com/radutoader/projects/apple/rSSH/rsshd/internal/timeout"
+	"github.com/radut/rsshterm/rsshd/internal/timeout"
 )
 
 // Defaults agreed with the owner: idle 1 h, hard 1 day, finish work on, warning 5 min ahead,

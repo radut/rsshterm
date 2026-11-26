@@ -9,7 +9,7 @@ import (
 	"syscall"
 	"time"
 
-	"gitlab.com/radutoader/projects/apple/rSSH/rsshd/internal/probe"
+	"github.com/radut/rsshterm/rsshd/internal/probe"
 )
 
 // children returns the direct children of pid, lowest first: the screen server's window processes (shells).

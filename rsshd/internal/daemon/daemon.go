@@ -14,15 +14,15 @@ import (
 	"syscall"
 	"time"
 
-	"gitlab.com/radutoader/projects/apple/rSSH/rsshd/internal/backend/multi"
-	"gitlab.com/radutoader/projects/apple/rSSH/rsshd/internal/backend/screen"
-	"gitlab.com/radutoader/projects/apple/rSSH/rsshd/internal/backend/tmux"
-	"gitlab.com/radutoader/projects/apple/rSSH/rsshd/internal/config"
-	"gitlab.com/radutoader/projects/apple/rSSH/rsshd/internal/doctor"
-	"gitlab.com/radutoader/projects/apple/rSSH/rsshd/internal/probe"
-	"gitlab.com/radutoader/projects/apple/rSSH/rsshd/internal/rpc"
-	"gitlab.com/radutoader/projects/apple/rSSH/rsshd/internal/timeout"
-	"gitlab.com/radutoader/projects/apple/rSSH/rsshd/internal/watch"
+	"github.com/radut/rsshterm/rsshd/internal/backend/multi"
+	"github.com/radut/rsshterm/rsshd/internal/backend/screen"
+	"github.com/radut/rsshterm/rsshd/internal/backend/tmux"
+	"github.com/radut/rsshterm/rsshd/internal/config"
+	"github.com/radut/rsshterm/rsshd/internal/doctor"
+	"github.com/radut/rsshterm/rsshd/internal/probe"
+	"github.com/radut/rsshterm/rsshd/internal/rpc"
+	"github.com/radut/rsshterm/rsshd/internal/timeout"
+	"github.com/radut/rsshterm/rsshd/internal/watch"
 )
 
 // NewTmux returns the tmux backend the config describes.

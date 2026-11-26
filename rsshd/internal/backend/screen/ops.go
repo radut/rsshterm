@@ -10,8 +10,8 @@ import (
 	"sync"
 	"time"
 
-	"gitlab.com/radutoader/projects/apple/rSSH/rsshd/internal/backend"
-	"gitlab.com/radutoader/projects/apple/rSSH/rsshd/internal/hangup"
+	"github.com/radut/rsshterm/rsshd/internal/backend"
+	"github.com/radut/rsshterm/rsshd/internal/hangup"
 )
 
 // Create implements backend.Backend. The state entry is written first, so a List running meanwhile never sees

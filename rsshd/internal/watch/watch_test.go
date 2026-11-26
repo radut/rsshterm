@@ -8,10 +8,10 @@ import (
 	"testing"
 	"time"
 
-	"gitlab.com/radutoader/projects/apple/rSSH/rsshd/internal/backend"
-	"gitlab.com/radutoader/projects/apple/rSSH/rsshd/internal/backend/fake"
-	"gitlab.com/radutoader/projects/apple/rSSH/rsshd/internal/probe"
-	"gitlab.com/radutoader/projects/apple/rSSH/rsshd/internal/timeout"
+	"github.com/radut/rsshterm/rsshd/internal/backend"
+	"github.com/radut/rsshterm/rsshd/internal/backend/fake"
+	"github.com/radut/rsshterm/rsshd/internal/probe"
+	"github.com/radut/rsshterm/rsshd/internal/timeout"
 )
 
 type clock struct {
