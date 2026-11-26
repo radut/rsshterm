@@ -59,6 +59,7 @@ final class AppController {
         MainActorPump.install()
         addActions()
         gtk_window_set_default_icon_name("dev.rsshterm.RSSHTerm")
+        installConnectIcons()
         installCSS()
         applyColorScheme()
         onNotify(adw_style_manager_get_default(), "dark") { [unowned self] in
@@ -203,6 +204,16 @@ final class AppController {
             request.done(text.map { String(cString: $0) })
             g_free(text)
         }, box)
+    }
+
+    /// The "How to connect" glyphs (SSH, RDP, VNC, Screen Sharing) as symbolic icons GTK finds by name.
+    func installConnectIcons() {
+        do {
+            let root = try ConnectIcons.install(into: ConnectIcons.defaultRoot())
+            gtk_icon_theme_add_search_path(gtk_icon_theme_get_for_display(gdk_display_get_default()), root.path)
+        } catch {
+            FileHandle.standardError.write(Data("rsshterm: connect icons not written: \(error)\n".utf8))
+        }
     }
 
     func installCSS() {

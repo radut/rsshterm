@@ -9,30 +9,39 @@ public struct DiscoveredHost: Hashable, Identifiable, Sendable {
     /// The Bonjour service name ("Office NAS"), when the host advertises one.
     public var serviceName: String?
     public var banner: SSHBanner?
+    /// The RFB greeting a screen port sent ("RFB 003.889" from a Mac's Screen Sharing), nil for anything else.
+    public var rfbVersion: String?
     /// What answered. A host without `.ssh` was found by ping or TCP only; `port` is then the first SSH port tried.
     public var answered: Set<LivenessCheck>
 
     public init(host: String, port: Int = 22, dnsName: String? = nil, serviceName: String? = nil, banner: SSHBanner? = nil,
-                answered: Set<LivenessCheck> = [.ssh]) {
+                answered: Set<LivenessCheck> = [.ssh], rfbVersion: String? = nil) {
         self.host = host
         self.port = port
         self.dnsName = dnsName
         self.serviceName = serviceName
         self.banner = banner
         self.answered = answered
+        self.rfbVersion = rfbVersion
+    }
+
+    /// The screen behind the open port (RDP, VNC or Screen Sharing by the RFB greeting), nil for SSH or none.
+    public var screenService: ScreenService? {
+        guard hasSSH || answered.contains(.tcp) else { return nil }
+        return ScreenService(port: port, rfbVersion: rfbVersion)
     }
 
     public var hasSSH: Bool { answered.contains(.ssh) }
 
     public var id: String { "\(host):\(port)" }
 
-    /// True when the open port is a screen's (3389 RDP, 5900 VNC / Screen Sharing), not SSH.
-    public var isScreen: Bool { ScreenService(port: port) != nil && (hasSSH || answered.contains(.tcp)) }
+    /// True when the open port is a screen's (3389 RDP, 5900 VNC or Screen Sharing), not SSH.
+    public var isScreen: Bool { screenService != nil }
 
-    /// What answered, for the results list: "SSH", "Remote Desktop (RDP)", "VNC / Screen Sharing", "port 8080",
-    /// or "ping only" for a host found without an open port.
+    /// What answered, for the results list: "SSH", "Remote Desktop (RDP)", "VNC", "Apple Screen Sharing",
+    /// "port 8080", or "ping only" for a host found without an open port.
     public var serviceTitle: String {
-        if let screen = ScreenService(port: port), hasSSH || answered.contains(.tcp) { return screen.title }
+        if let screen = screenService { return screen.title }
         if hasSSH { return port == 22 || banner != nil ? "SSH" : "port \(port)" }
         return answered.contains(.tcp) ? "port \(port)" : "ping only"
     }
@@ -48,7 +57,7 @@ public struct DiscoveredHost: Hashable, Identifiable, Sendable {
     public func merged(with other: DiscoveredHost) -> DiscoveredHost {
         DiscoveredHost(host: host, port: port, dnsName: dnsName ?? other.dnsName,
                        serviceName: serviceName ?? other.serviceName, banner: banner ?? other.banner,
-                       answered: answered.union(other.answered))
+                       answered: answered.union(other.answered), rfbVersion: rfbVersion ?? other.rfbVersion)
     }
 }
 

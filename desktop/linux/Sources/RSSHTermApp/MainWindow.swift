@@ -196,12 +196,29 @@ final class MainWindow {
 
     /// Host search Enter / Shift+Enter: the server in a new tab or in a split of the focused pane.
     /// Opens the server's terminal, or its first screen when SSH is off (`Vault.opening`).
+    /// Opens a server: with several services (SSH, RDP, VNC, Screen Sharing) it asks how first ("How to connect");
+    /// with one it opens that.
     func openServer(_ id: UUID, split: Bool) {
-        guard let model else { return }
-        if let vault = app.vault, let server = vault.servers.first(where: { $0.id == id }),
-           case .screen(let screen) = vault.opening(server) {
-            return openRemoteDesktop(screen, split: split)
+        guard let vault = app.vault, let server = vault.servers.first(where: { $0.id == id }) else {
+            return openSSH(id, split: split)
         }
+        let choices = vault.connectChoices(for: server)
+        guard choices.count > 1 else { return open(vault.opening(server), server: id, split: split) }
+        ConnectPicker(server: server, choices: choices, parent: window) { [weak self] choice in
+            self?.open(choice.opening, server: id, split: split)
+        }.present()
+    }
+
+    private func open(_ opening: ServerOpening, server id: UUID, split: Bool) {
+        switch opening {
+        case .ssh: openSSH(id, split: split)
+        case .screen(let screen): openRemoteDesktop(screen, split: split)
+        }
+    }
+
+    /// The server's SSH terminal, without asking.
+    func openSSH(_ id: UUID, split: Bool) {
+        guard let model else { return }
         let pane = Pane(content: .ssh(serverID: id))
         setModel(split ? model.updatingSelectedTab { $0.splitting(.right, with: pane) } : model.addingTab(Tab(pane: pane)))
     }

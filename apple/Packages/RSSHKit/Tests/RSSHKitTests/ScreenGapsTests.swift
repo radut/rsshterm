@@ -13,7 +13,7 @@ import Testing
     @Test func eachResultSaysWhatAnswered() {
         #expect(DiscoveredHost(host: "192.0.2.1").serviceTitle == "SSH")
         #expect(DiscoveredHost(host: "192.0.2.1", port: 3389, answered: [.tcp]).serviceTitle == "Remote Desktop (RDP)")
-        #expect(DiscoveredHost(host: "192.0.2.1", port: 5900, answered: [.tcp]).serviceTitle == "VNC / Screen Sharing")
+        #expect(DiscoveredHost(host: "192.0.2.1", port: 5900, answered: [.tcp]).serviceTitle == "VNC")
         #expect(DiscoveredHost(host: "192.0.2.1", port: 8080, answered: [.tcp]).serviceTitle == "port 8080")
         #expect(DiscoveredHost(host: "192.0.2.1", answered: [.ping]).serviceTitle == "ping only")
         #expect(DiscoveredHost(host: "192.0.2.1", port: 5900, answered: [.tcp]).isScreen)

@@ -122,8 +122,15 @@ public struct NetworkScanner: Sendable {
         }
         return open.map {
             DiscoveredHost(host: host, port: $0.port, dnsName: name, banner: $0.line.flatMap(SSHBanner.init(line:)),
-                           answered: alive.union([.ssh]))
+                           answered: alive.union([.ssh]), rfbVersion: $0.line.flatMap(Self.rfbGreeting))
         }
+    }
+
+    /// "RFB 003.889" from the first line a port sent, nil when it is not an RFB greeting. The same probe that reads
+    /// an SSH banner tells VNC from a Mac's Screen Sharing: no second connection.
+    static func rfbGreeting(_ line: String) -> String? {
+        let trimmed = line.trimmingCharacters(in: .whitespacesAndNewlines)
+        return trimmed.hasPrefix("RFB ") ? String(trimmed.prefix(11)) : nil
     }
 
     private func probeAll(_ host: String, ports: [Int]) async -> [(port: Int, outcome: ProbeOutcome)] {

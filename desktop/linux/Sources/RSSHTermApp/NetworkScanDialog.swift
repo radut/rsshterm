@@ -148,6 +148,9 @@ final class NetworkScanDialog {
                 if on != model.selection.contains(host.id) { onMain { [unowned self] in model.toggle(host) } }
             }
             adw_action_row_add_prefix(cast(r), check)
+            if let service = host.connectService {
+                adw_action_row_add_prefix(cast(r), gtk_image_new_from_icon_name(service.iconName))
+            }
             adw_action_row_set_activatable_widget(cast(r), check)
             gtk_list_box_append(cast(results), r)
         }

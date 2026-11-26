@@ -55,7 +55,7 @@ extension Vault {
 
     /// One server per host not saved yet, named by `DiscoveredHost.suggestedName`, logging in as `username` with
     /// `login` and going through `jumpHosts` (the server editor's Jump Through list, checked the same way). A host
-    /// found on 3389 or 5900 gets that screen (RDP, VNC) as a service of its server: of the SSH server this batch adds
+    /// found on 3389 or 5900 gets that screen (RDP, VNC, or Screen Sharing when the port greets as a Mac) as a service of its server: of the SSH server this batch adds
     /// for the same host, else of a saved server with that host when `screensJoinSavedServers` (the user said so),
     /// else of a new server with SSH off. A new folder or a new password is only saved when something is added; the
     /// login and the jump servers are checked even when nothing is.
@@ -96,7 +96,7 @@ extension Vault {
         for host in fresh { _ = try newServer(host, ssh: true) }
         var addedScreens: [RemoteDesktop] = []
         for host in screens {
-            guard let service = ScreenService(port: host.port) else { continue }
+            guard let service = host.screenService else { continue }
             var owner = added.first { Self.same($0.host, host.host) }
                 ?? (screensJoinSavedServers ? vault.servers(matchingHost: host.host).first : nil)
             if owner == nil {
@@ -116,7 +116,7 @@ extension Vault {
     public func serversForDiscoveredScreens(_ hosts: [DiscoveredHost]) -> [Server] {
         var found: [Server] = []
         for host in hosts {
-            guard let service = ScreenService(port: host.port) else { continue }
+            guard let service = host.screenService else { continue }
             for server in servers(matchingHost: host.host)
             where self.service(service, of: server.id) == nil && !found.contains(server) {
                 found.append(server)
@@ -131,8 +131,8 @@ extension Vault {
         -> (ssh: [DiscoveredHost], screens: [DiscoveredHost], skipped: [DiscoveredHost]) {
         var ssh: [DiscoveredHost] = [], screens: [DiscoveredHost] = [], skipped: [DiscoveredHost] = []
         for host in hosts {
-            if let service = ScreenService(port: host.port) {
-                let listed = screens.contains { Self.same($0.host, host.host) && ScreenService(port: $0.port) == service }
+            if let service = host.screenService {
+                let listed = screens.contains { Self.same($0.host, host.host) && $0.screenService == service }
                 if listed || hasScreen(service, host: host.host, joining: joining) { skipped.append(host) } else { screens.append(host) }
             } else {
                 let listed = ssh.contains { $0.port == host.port && Self.same($0.host, host.host) }

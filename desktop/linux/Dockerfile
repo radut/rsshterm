@@ -8,5 +8,6 @@ RUN apt-get update \
  && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
       libgtk-4-dev libadwaita-1-dev libvte-2.91-gtk4-dev pkg-config zlib1g-dev freerdp3-dev \
       desktop-file-utils appstream xvfb xauth dbus-x11 xdotool imagemagick openssh-client openssh-server fonts-dejavu-core \
+      librsvg2-common adwaita-icon-theme \
  && rm -rf /var/lib/apt/lists/*
 ENV GTK_A11Y=none GSK_RENDERER=cairo LIBGL_ALWAYS_SOFTWARE=1 NO_AT_BRIDGE=1 GDK_BACKEND=x11

@@ -242,11 +242,11 @@ final class ServerSidebar {
                 gtk_list_box_select_row(cast(list), row)
             }
             var items: [(String, () -> Void)] = s.sshEnabled ? [
-                ("Connect", { [unowned self] in window.openServer(s.id, split: false) }),
-                ("Connect in Split", { [unowned self] in window.openServer(s.id, split: true) }),
+                ("Connect SSH", { [unowned self] in window.openSSH(s.id, split: false) }),
+                ("Connect SSH in Split", { [unowned self] in window.openSSH(s.id, split: true) }),
             ] : []
             for screen in model.vault.services(of: s.id) {
-                let title = ScreenService(screen.kind) == .rdp ? "Remote Desktop (RDP)" : screen.kind.title
+                let title = ScreenService(screen.kind).title
                 items.append(("Open \(title)", { [unowned self] in window.openRemoteDesktop(screen.id, split: false) }))
                 items.append(("Open \(title) in Split", { [unowned self] in window.openRemoteDesktop(screen.id, split: true) }))
                 items.append(("Edit \(ScreenService(screen.kind).shortTitle) Settings…", { [unowned self] in window.editRemoteDesktop(screen.id) }))

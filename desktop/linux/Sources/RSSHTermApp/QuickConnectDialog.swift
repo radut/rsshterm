@@ -99,15 +99,18 @@ final class QuickConnectDialog {
         adw_preferences_row_set_title(cast(savePw), "Save the Password Too")
         onNotify(savePw, "active") { [unowned self] in savePassword = adw_switch_row_get_active(cast(savePw)) != 0 }
         adw_preferences_group_add(cast(saveGroup), savePw)
-        // Open As: SSH by default; RDP and VNC save the screens with the servers.
+        // Open As: SSH by default; RDP, VNC and Screen Sharing save the screens with the servers.
         let sshRow = adw_switch_row_new()!
         adw_preferences_row_set_title(cast(sshRow), "Open As SSH")
+        adw_action_row_add_prefix(cast(sshRow), gtk_image_new_from_icon_name(ConnectService.ssh.iconName))
         adw_switch_row_set_active(cast(sshRow), 1)
         onNotify(sshRow, "active") { [unowned self] in model.sshEnabled = adw_switch_row_get_active(cast(sshRow)) != 0 }
         adw_preferences_group_add(cast(saveGroup), sshRow)
         for service in ScreenService.allCases {
             let row = adw_switch_row_new()!
             adw_preferences_row_set_title(cast(row), "Also " + service.title)
+            adw_action_row_set_subtitle(cast(row), service.loginHint)
+            adw_action_row_add_prefix(cast(row), gtk_image_new_from_icon_name(ConnectService(service).iconName))
             onNotify(row, "active") { [unowned self] in
                 if adw_switch_row_get_active(cast(row)) != 0 { model.screens.insert(service) } else { model.screens.remove(service) }
             }

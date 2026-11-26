@@ -45,20 +45,22 @@ final class ServerEditorDialog {
             model.draft.groupID = i == 0 ? nil : groups[i - 1].id
         })
 
-        // Services: SSH by default; RDP and VNC open the same machine as a screen (their settings: Edit … Settings).
+        // Services: SSH by default; RDP, VNC and Screen Sharing open the same machine as a screen (their settings:
+        // Edit … Settings).
         servicesGroup = cast(adw_preferences_group_new())
         adw_preferences_group_set_title(cast(servicesGroup), "Open As")
         adw_preferences_page_add(cast(page), cast(servicesGroup))
         let sshRow = adw_switch_row_new()!
         adw_preferences_row_set_title(cast(sshRow), "SSH")
+        adw_action_row_add_prefix(cast(sshRow), gtk_image_new_from_icon_name(ConnectService.ssh.iconName))
         adw_switch_row_set_active(cast(sshRow), model.draft.sshEnabled ? 1 : 0)
         onNotify(sshRow, "active") { model.draft.sshEnabled = adw_switch_row_get_active(cast(sshRow)) != 0 }
         adw_preferences_group_add(cast(servicesGroup), sshRow)
         for service in ScreenService.allCases {
             let row = adw_switch_row_new()!
             adw_preferences_row_set_title(cast(row), service.title)
-            adw_action_row_set_subtitle(cast(row), service == .rdp ? "Port 3389, through this server's SSH when SSH is on"
-                                                                     : "Port 5900, through this server's SSH when SSH is on")
+            adw_action_row_set_subtitle(cast(row), "\(service.loginHint), through this server's SSH when SSH is on")
+            adw_action_row_add_prefix(cast(row), gtk_image_new_from_icon_name(ConnectService(service).iconName))
             adw_switch_row_set_active(cast(row), model.screens.contains(service) ? 1 : 0)
             onNotify(row, "active") {
                 if adw_switch_row_get_active(cast(row)) != 0 { model.screens.insert(service) } else { model.screens.remove(service) }

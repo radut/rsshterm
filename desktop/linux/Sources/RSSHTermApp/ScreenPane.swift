@@ -178,7 +178,7 @@ final class ScreenPane {
         switch action {
         case .retry: start()
         case .edit: window.editRemoteDesktop(desktopID)
-        case .openTerminal: if let server = desktop?.tunnelServerID { window.openServer(server, split: false) }
+        case .openTerminal: if let server = desktop?.tunnelServerID { window.openSSH(server, split: false) }
         case .trustNew: trustNewCertificate()
         }
     }
@@ -191,7 +191,7 @@ final class ScreenPane {
             ("Edit…", { [unowned self] in window.editRemoteDesktop(desktopID) }),
         ]
         if let server = desktop?.tunnelServerID {
-            items.append(("Open Terminal on the SSH Server", { [unowned self] in window.openServer(server, split: false) }))
+            items.append(("Open Terminal on the SSH Server", { [unowned self] in window.openSSH(server, split: false) }))
         }
         contextMenu(on: anchor, x: 8, y: 24, items: items)
     }

@@ -117,9 +117,9 @@ import Testing
     @Test func mergeRefusesATakenKindOrUnknownIDs() throws {
         let nas = Server(name: "nas", host: "nas.example.com", username: "admin")
         let a = RemoteDesktop(name: "a", kind: .vnc, host: "nas.example.com")
-        let b = RemoteDesktop(name: "b", kind: .appleScreenSharing, host: "nas.example.com")
+        let b = RemoteDesktop(name: "b", kind: .vnc, host: "nas.example.com", port: 5901)
         let once = try vault([nas], desktops: [a, b]).mergingRemoteDesktop(a.id, into: nas.id)
-        #expect(throws: VaultEditError.serviceExists("VNC / Screen Sharing")) { try once.mergingRemoteDesktop(b.id, into: nas.id) }
+        #expect(throws: VaultEditError.serviceExists("VNC")) { try once.mergingRemoteDesktop(b.id, into: nas.id) }
         #expect(throws: VaultEditError.unknownRemoteDesktop) { try once.mergingRemoteDesktop(UUID(), into: nas.id) }
         #expect(throws: VaultEditError.unknownServer) { try once.mergingRemoteDesktop(b.id, into: UUID()) }
     }

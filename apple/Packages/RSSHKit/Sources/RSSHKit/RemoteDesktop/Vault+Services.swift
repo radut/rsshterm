@@ -1,28 +1,72 @@
 import Foundation
 
-/// A screen a server can be opened as, next to (or instead of) SSH.
+/// A screen a server can be opened as, next to (or instead of) SSH. VNC and Apple Screen Sharing are separate
+/// services (both RFB, usually on 5900): VNC logs in with a VNC password, Screen Sharing with the Mac's account.
+/// Older builds store and read Screen Sharing as a screen of kind `appleScreenSharing`, which they list with VNC.
 public enum ScreenService: String, CaseIterable, Hashable, Sendable {
     case rdp
-    /// VNC or Apple Screen Sharing (the screen's editor picks which).
+    /// RFB with a VNC password (or none).
     case vnc
+    /// A Mac's Screen Sharing: RFB with the macOS user and password (Apple Remote Desktop authentication).
+    case screenSharing
 
-    public init(_ kind: RemoteDesktop.Kind) { self = kind == .rdp ? .rdp : .vnc }
+    public init(_ kind: RemoteDesktop.Kind) {
+        switch kind {
+        case .rdp: self = .rdp
+        case .vnc: self = .vnc
+        case .appleScreenSharing: self = .screenSharing
+        }
+    }
 
     /// The kind a new screen of this service starts as.
-    public var defaultKind: RemoteDesktop.Kind { self == .rdp ? .rdp : .vnc }
+    public var defaultKind: RemoteDesktop.Kind {
+        switch self {
+        case .rdp: .rdp
+        case .vnc: .vnc
+        case .screenSharing: .appleScreenSharing
+        }
+    }
 
-    public var title: String { self == .rdp ? "Remote Desktop (RDP)" : "VNC / Screen Sharing" }
+    public var title: String {
+        switch self {
+        case .rdp: "Remote Desktop (RDP)"
+        case .vnc: "VNC"
+        case .screenSharing: "Apple Screen Sharing"
+        }
+    }
 
-    /// The short name on toggles and menus ("RDP", "VNC").
-    public var shortTitle: String { self == .rdp ? "RDP" : "VNC" }
+    /// The short name on toggles and menus ("RDP", "VNC", "Screen Sharing").
+    public var shortTitle: String {
+        switch self {
+        case .rdp: "RDP"
+        case .vnc: "VNC"
+        case .screenSharing: "Screen Sharing"
+        }
+    }
 
-    /// The service a scanned port stands for: 3389 is RDP, 5900-5909 VNC; anything else is SSH (nil).
-    public init?(port: Int) {
+    /// What the service listens on and logs in with, under its toggle: "Port 5900 · VNC password".
+    public var loginHint: String {
+        switch self {
+        case .rdp: "Port 3389 · Windows or xrdp account"
+        case .vnc: "Port 5900 · VNC password"
+        case .screenSharing: "Port 5900 · the Mac's user and password"
+        }
+    }
+
+    /// The service a scanned port stands for: 3389 is RDP, 5900-5909 VNC; anything else is SSH (nil). With the
+    /// RFB greeting the port sent (`rfbVersion`, "RFB 003.889"), Apple's protocol version marks Screen Sharing.
+    public init?(port: Int, rfbVersion: String? = nil) {
         switch port {
         case 3389: self = .rdp
-        case 5900...5909: self = .vnc
+        case 5900...5909: self = Self.isAppleRFB(rfbVersion) ? .screenSharing : .vnc
         default: return nil
         }
+    }
+
+    /// macOS Screen Sharing greets with "RFB 003.889" (Apple's own version, which offers ARD authentication);
+    /// other RFB servers send a standard 3.3/3.7/3.8.
+    public static func isAppleRFB(_ greeting: String?) -> Bool {
+        greeting?.trimmingCharacters(in: .whitespacesAndNewlines).hasPrefix("RFB 003.889") == true
     }
 }
 
@@ -39,15 +83,18 @@ public enum ServerOpening: Hashable, Sendable {
 }
 
 extension Vault {
-    /// SSH when it is on (or the server has no screen); else its first screen, RDP before VNC.
+    /// SSH when it is on (or the server has no screen); else its first screen (RDP, VNC, Screen Sharing).
     public func opening(_ server: Server) -> ServerOpening {
         guard !server.sshEnabled, let first = services(of: server.id).first else { return .ssh }
         return .screen(first.id)
     }
 
-    /// The screens that are services of this server, RDP first.
+    /// The screens that are services of this server: RDP, VNC, Screen Sharing.
     public func services(of serverID: UUID) -> [RemoteDesktop] {
-        remoteDesktops.filter { $0.serverID == serverID }.sorted { ScreenService($0.kind) == .rdp && ScreenService($1.kind) != .rdp }
+        let order = ScreenService.allCases
+        return remoteDesktops.filter { $0.serverID == serverID }.sorted {
+            order.firstIndex(of: ScreenService($0.kind))! < order.firstIndex(of: ScreenService($1.kind))!
+        }
     }
 
     public func service(_ service: ScreenService, of serverID: UUID) -> RemoteDesktop? {

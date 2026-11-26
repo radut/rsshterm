@@ -27,6 +27,8 @@ depends:
   - libcurl4t64
   - libxml2
   - openssh-client
+  # SVG icons (the "How to connect" glyphs are symbolic SVGs written at start-up)
+  - librsvg2-common
 # secret-tool keeps the vault's device key in the Secret Service (a file fallback without it); pkexec runs the apt
 # upgrade from the updater; xdg-utils opens links.
 recommends:

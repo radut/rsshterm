@@ -82,10 +82,18 @@ cat > "$W/seed.json" <<JSON
             {"id":"2D9A6E3C-4F5B-4C7D-9E0F-9A8B7C6D5E4F","name":"CI Runner","host":"ci.example.com","port":22,
              "username":"ci"},
             {"id":"5A2D9B6F-7C8E-4FA0-9B3C-2D1E0F9A8B7C","name":"Old Login","host":"old.example.com","port":2222,
-             "username":"admin","credentialID":"$KEY_ID"}],
+             "username":"admin","credentialID":"$KEY_ID"},
+            {"id":"6B3E0C7A-8D9F-4A1B-8C4D-3E2F1A0B9C8D","name":"Studio Mac","host":"studio.example.com","port":22,
+             "username":"you"}],
  "remoteDesktops":[{"id":"3E0B7F4D-5A6C-4D8E-9F1A-0B9C8D7E6F5A","name":"Lab Screen","kind":"vnc",
              "host":"screen.example.org","port":5900,"transport":"sshShared",
              "tunnelServerID":"0B7E4C1A-2D3F-4A5B-9C8D-7E6F5A4B3C2D","groupID":"7A1B2C3D-4E5F-4A6B-8C7D-9E0F1A2B3C4D"},
+            {"id":"7C4F1D8B-9E0A-4B2C-9D5E-4F3A2B1C0D9E","name":"Studio Mac","kind":"vnc","host":"localhost","port":5900,
+             "transport":"sshShared","tunnelServerID":"6B3E0C7A-8D9F-4A1B-8C4D-3E2F1A0B9C8D",
+             "serverID":"6B3E0C7A-8D9F-4A1B-8C4D-3E2F1A0B9C8D"},
+            {"id":"8D5A2E9C-0F1B-4C3D-8E6F-5A4B3C2D1E0F","name":"Studio Mac","kind":"appleScreenSharing","host":"localhost",
+             "port":5900,"username":"you","transport":"sshShared","tunnelServerID":"6B3E0C7A-8D9F-4A1B-8C4D-3E2F1A0B9C8D",
+             "serverID":"6B3E0C7A-8D9F-4A1B-8C4D-3E2F1A0B9C8D"},
             {"id":"4F1C8A5E-6B7D-4E9F-8A2B-1C0D9E8F7A6B","name":"Lab RDP","kind":"rdp","username":"rdp",
              "host":"rdp.example.org","port":3389,"transport":"sshShared",
              "tunnelServerID":"0B7E4C1A-2D3F-4A5B-9C8D-7E6F5A4B3C2D","groupID":"7A1B2C3D-4E5F-4A6B-8C7D-9E0F1A2B3C4D"}]}
@@ -188,7 +196,17 @@ shot files-commander '^Files$'
 xdotool search --onlyvisible --name '^Files$' windowunmap >/dev/null 2>&1 || true
 xdotool search --onlyvisible --name 'rSshTerm$' windowfocus >/dev/null 2>&1 || true
 sleep 0.5
-wait_for "the sidebar lists the sample servers" '"sidebarServers":4'
+wait_for "the sidebar lists the sample servers" '"sidebarServers":5'
+
+# A server with SSH, VNC and Screen Sharing: opening it asks how, one button per service; Esc opens nothing.
+keys ctrl+shift+k
+sleep 0.5
+xdotool type --delay 60 "studio"
+keys Return
+sleep 0.8
+shot connect-picker
+keys Escape
+wait_for "the picker opened nothing" '"tabs":3'
 
 action new-server
 shot server-editor
