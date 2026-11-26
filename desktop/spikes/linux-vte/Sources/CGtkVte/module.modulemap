@@ -1,0 +1,6 @@
+module CGtkVte [system] {
+    header "shim.h"
+    link "vte-2.91-gtk4"
+    link "gtk-4"
+    export *
+}

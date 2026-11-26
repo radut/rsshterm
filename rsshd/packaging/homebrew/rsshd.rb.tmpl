@@ -1,0 +1,37 @@
+# Homebrew formula for rsshd, rendered by packaging/homebrew/render-formula.sh from a published SHA256SUMS.
+# It goes to a tap repo (homebrew-rsshd) once the owner creates one:  brew tap <ns>/rsshd <tap-url> && brew install rsshd
+class Rsshd < Formula
+  desc "Session daemon for the rSshTerm app: keeps terminal sessions alive in tmux"
+  homepage "https://gitlab.com/radutoader/projects/apple/rSSH"
+  version "@VERSION@"
+  license "Apache-2.0"
+
+  on_macos do
+    on_arm do
+      url "@BASE_URL@/releases/@VERSION@/rsshd_@VERSION@_darwin_arm64.tar.gz"
+      sha256 "@SHA256_DARWIN_ARM64@"
+    end
+    on_intel do
+      url "@BASE_URL@/releases/@VERSION@/rsshd_@VERSION@_darwin_amd64.tar.gz"
+      sha256 "@SHA256_DARWIN_AMD64@"
+    end
+  end
+
+  depends_on "tmux"
+
+  def install
+    bin.install "rsshd"
+    doc.install "THIRD_PARTY_NOTICES"
+  end
+
+  # `brew services start rsshd` runs it as a per-user launchd agent, like install.sh does.
+  service do
+    run [opt_bin/"rsshd", "serve"]
+    keep_alive successful_exit: false
+    process_type :background
+  end
+
+  test do
+    assert_match version.to_s, shell_output("#{bin}/rsshd version")
+  end
+end

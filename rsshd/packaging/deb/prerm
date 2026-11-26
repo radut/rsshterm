@@ -1,0 +1,15 @@
+#!/bin/sh
+# On removal (not on upgrade), stop the daemon of every user who runs it, since its binary is about to go away.
+# Their tmux sessions keep running.
+set -e
+
+if [ "$1" = remove ] && command -v systemctl >/dev/null 2>&1; then
+  for dir in /run/user/[0-9]*; do
+    [ -d "$dir/systemd" ] || continue
+    user=$(getent passwd "${dir##*/}" | cut -d: -f1) || continue
+    [ -n "$user" ] || continue
+    systemctl --user -M "$user@" stop rsshd.service >/dev/null 2>&1 || true
+  done
+fi
+
+exit 0

@@ -1,0 +1,16 @@
+#!/bin/sh
+# Starts nothing for anyone. On an UPGRADE it restarts rsshd only for users whose own rsshd is already running, so
+# they pick up the new binary; their tmux sessions survive (the unit has KillMode=process).
+set -e
+
+if [ "$1" = configure ] && [ -n "${2:-}" ] && command -v systemctl >/dev/null 2>&1; then
+  for dir in /run/user/[0-9]*; do
+    [ -d "$dir/systemd" ] || continue
+    user=$(getent passwd "${dir##*/}" | cut -d: -f1) || continue
+    [ -n "$user" ] || continue
+    systemctl --user -M "$user@" daemon-reload >/dev/null 2>&1 || true
+    systemctl --user -M "$user@" try-restart rsshd.service >/dev/null 2>&1 || true
+  done
+fi
+
+exit 0

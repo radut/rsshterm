@@ -1,0 +1,7 @@
+Origin: rsshd
+Label: rsshd
+Suite: stable
+Codename: stable
+Architectures: amd64 arm64
+Components: main
+Description: rsshd, the rSshTerm session daemon

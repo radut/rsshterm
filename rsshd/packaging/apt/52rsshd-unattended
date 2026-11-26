@@ -1,0 +1,2 @@
+// Lets unattended-upgrades install rsshd updates from its own apt repo (Origin/Label set in the repo's Release file).
+Unattended-Upgrade::Origins-Pattern:: "origin=rsshd,label=rsshd";

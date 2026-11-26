@@ -1,0 +1,38 @@
+#!/usr/bin/make -f
+# Launchpad builders have NO network: every Go module is vendored into the orig tarball (vendor/), and the build
+# refuses to fetch anything (GOPROXY=off, -mod=vendor, the archive's Go 1.26: GOTOOLCHAIN=local).
+export DH_VERBOSE = 1
+export GOTOOLCHAIN = local
+export GOPROXY = off
+export GOFLAGS = -mod=vendor -trimpath
+export CGO_ENABLED = 0
+export GOCACHE = $(CURDIR)/.cache/go-build
+export GOPATH = $(CURDIR)/.cache/gopath
+GO := /usr/lib/go-1.26/bin/go
+VERSION := $(shell dpkg-parsechangelog -SVersion | sed 's/-[^-]*$$//')
+
+%:
+	dh $@
+
+override_dh_auto_clean:
+	rm -rf build .cache
+
+override_dh_auto_build:
+	$(GO) build -ldflags "-s -w -X main.version=$(VERSION)" -o build/rsshd ./cmd/rsshd
+
+# Unit tests only: test/e2e drives real tmux/screen sessions and timing that a build chroot does not give (CI's
+# rsshd:test runs it).
+override_dh_auto_test:
+ifeq (,$(filter nocheck,$(DEB_BUILD_OPTIONS)))
+	$(GO) test $$($(GO) list ./... | grep -v '/test/')
+endif
+
+override_dh_auto_install:
+	install -D -m 0755 build/rsshd debian/rsshd/usr/bin/rsshd
+	install -D -m 0644 packaging/systemd/rsshd.service debian/rsshd/usr/lib/systemd/user/rsshd.service
+	install -D -m 0644 packaging/apt/52rsshd-unattended debian/rsshd/etc/apt/apt.conf.d/52rsshd-unattended
+	install -D -m 0644 packaging/rssh-archive-keyring.asc debian/rsshd/usr/share/keyrings/rsshd-archive-keyring.asc
+	install -D -m 0644 internal/backend/screen/screenrc debian/rsshd/usr/share/rsshd/screenrc
+
+# Go binaries carry no DWARF to compress (-s -w), and the user unit is enabled by each user, never by the package.
+override_dh_dwz override_dh_installsystemduser:

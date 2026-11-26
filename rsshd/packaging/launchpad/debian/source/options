@@ -1,0 +1,2 @@
+# vendor/ is part of the orig tarball on purpose (offline builders); build output never is.
+extend-diff-ignore = "^(build|\.cache)/"

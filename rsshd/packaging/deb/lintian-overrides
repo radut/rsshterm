@@ -1,0 +1,8 @@
+# Go builds a static binary on purpose (CGO_ENABLED=0): one .deb for every Debian/Ubuntu release.
+rsshd: statically-linked-binary [usr/bin/rsshd]
+# `rsshd --help` is the documentation for now.
+rsshd: no-manual-page [usr/bin/rsshd]
+# Only `systemctl --user -M <user>@` on USER managers: try-restart on upgrade (only where already running) and stop on
+# removal. deb-systemd-helper handles system units only.
+rsshd: maintainer-script-calls-systemctl [postinst:*]
+rsshd: maintainer-script-calls-systemctl [prerm:*]

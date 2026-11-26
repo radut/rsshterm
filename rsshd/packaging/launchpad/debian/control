@@ -1,0 +1,19 @@
+Source: rsshd
+Section: net
+Priority: optional
+Maintainer: @MAINTAINER@
+Build-Depends: debhelper-compat (= 13), golang-1.26-go
+Standards-Version: 4.6.2
+Homepage: https://rssh-ea902a.gitlab.io
+Rules-Requires-Root: no
+
+Package: rsshd
+Architecture: amd64 arm64
+Depends: ${misc:Depends}, ${shlibs:Depends}, tmux
+Recommends: reptyr
+Suggests: screen
+Built-Using: ${misc:Built-Using}
+Description: Session daemon for the rSshTerm app
+ rsshd keeps terminal sessions alive in tmux while the phone is away, enforces
+ idle and hard timeouts, and talks to the app over the existing SSH connection.
+ It runs as a systemd user service that each user enables for themselves.

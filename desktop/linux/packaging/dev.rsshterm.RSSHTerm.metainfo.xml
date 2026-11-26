@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>dev.rsshterm.RSSHTerm</id>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>Apache-2.0</project_license>
+  <name>rSshTerm</name>
+  <summary>Terminal tabs and splits with an encrypted SSH vault</summary>
+  <description>
+    <p>
+      rSshTerm is a terminal with tabs and splits whose SSH servers and keys live in one encrypted vault, shared
+      with the iPhone app through Google Drive.
+    </p>
+    <ul>
+      <li>Tabs and vertical or horizontal splits, Ctrl+1 to Ctrl+9 to switch tabs</li>
+      <li>A built-in ssh-agent: plain ssh in any tab uses the vault's keys</li>
+      <li>Host search and a jump switcher over open shells and vault servers</li>
+      <li>Broadcast input to several panes</li>
+      <li>A master password opens the vault on a new computer; after that this device's own key does</li>
+    </ul>
+  </description>
+  <launchable type="desktop-id">dev.rsshterm.RSSHTerm.desktop</launchable>
+  <url type="homepage">https://rssh-ea902a.gitlab.io/</url>
+  <developer id="dev.rsshterm">
+    <name>rSshTerm</name>
+  </developer>
+  <provides>
+    <binary>rsshterm</binary>
+  </provides>
+  <categories>
+    <category>System</category>
+    <category>TerminalEmulator</category>
+  </categories>
+  <content_rating type="oars-1.1"/>
+  <screenshots>
+    <screenshot type="default">
+      <caption>Tabs, a split and an SSH session</caption>
+      <image>https://rssh-ea902a.gitlab.io/desktop/screens/main-split.png</image>
+    </screenshot>
+  </screenshots>
+  <releases>
+    <release version="1.0.0" date="2026-11-26"/>
+  </releases>
+</component>

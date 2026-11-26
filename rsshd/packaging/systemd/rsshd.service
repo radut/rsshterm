@@ -1,0 +1,18 @@
+# rsshd as a systemd USER service: one per user, never system-wide. Nothing enables it for anyone; each user opts in:
+#   systemctl --user enable --now rsshd.service
+#   loginctl enable-linger "$USER"     # optional: keep rsshd and its tmux sessions after the last logout
+[Unit]
+Description=rsshd: keeps rSshTerm terminal sessions alive in tmux
+Documentation=https://gitlab.com/radutoader/projects/apple/rSSH/-/blob/main/docs/session-daemon/design.md
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/rsshd serve
+Restart=on-failure
+RestartSec=2
+# Only the daemon is stopped on restart or upgrade: the tmux server it started stays in the cgroup and keeps the
+# sessions. The default (control-group) would kill every session on each package upgrade.
+KillMode=process
+
+[Install]
+WantedBy=default.target

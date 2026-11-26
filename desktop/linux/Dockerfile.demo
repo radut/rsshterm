@@ -1,0 +1,6 @@
+# The Linux app image plus ffmpeg, for scripts/demo-record.sh (make site-media-linux). Built once, then cached.
+FROM rsshterm-linux
+RUN for i in 1 2 3 4 5; do apt-get -o Acquire::http::Timeout=20 -o Acquire::Retries=5 update -qq \
+      && DEBIAN_FRONTEND=noninteractive apt-get -o Acquire::http::Timeout=20 -o Acquire::Retries=5 install -y -qq \
+         --no-install-recommends ffmpeg && break; sleep 10; done \
+ && command -v ffmpeg

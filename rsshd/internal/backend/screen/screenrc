@@ -1,0 +1,12 @@
+# rsshd's GNU screen settings (screen -c <this file>), the counterpart of tmux.conf: the app draws its own UI,
+# so no status or caption line; a big scrollback for the app's history replay; UTF-8 everywhere.
+startup_message off
+hardstatus off
+defscrollback 10000
+defutf8 on
+utf8 on
+altscreen on
+defflow off
+vbell off
+autodetach on
+msgwait 0
