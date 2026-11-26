@@ -180,15 +180,22 @@ panes get a red-orange striped background (as in iTerm2) and the title says "bro
 ### Remote desktop
 
 VNC and Apple Screen Sharing on Linux and macOS, RDP on Linux, tunnelled over the SSH connection you already have (or
-a separate one, or direct). A server can be SSH, RDP, VNC or several at once: tick them in the server editor (Open
-As) and open the screen from the server's menu; a server with SSH off opens as its screen. A network scan adds a host
-that answers on 22 and 3389 as one server with both. A screen for a host that is already saved is never merged
+a separate one, or direct). A server can be SSH, RDP, VNC, Apple Screen Sharing or several at once: tick them in the
+server editor (Open As). VNC logs in with a VNC password, Screen Sharing with the Mac's own user and password. Opening a
+server with more than one asks how to connect, one button per service; a server with one opens straight away. A
+network scan adds a host that answers on 22 and 3389 as one server with both, and tells a Mac's Screen Sharing from
+plain VNC on 5900 by how it greets. A screen for a host that is already saved is never merged
 quietly: you are asked whether to add it to that server or keep a separate one. Saved credentials per screen, "Copy
 from SSH", and a login sheet only when one is needed.
 
 <table><tr>
 <td width="50%"><img src="https://radut.github.io/rsshterm/screens/desktop-mac/remote-desktop.png" alt="macOS: a remote desktop pane"></td>
 <td width="50%"><img src="https://radut.github.io/rsshterm/screens/desktop-linux/remote-desktop-rdp.png" alt="Linux: an RDP screen"></td>
+</tr></table>
+
+<table><tr>
+<td width="50%"><img src="https://radut.github.io/rsshterm/screens/desktop-mac/connect-picker.png" alt="macOS: How to connect, with SSH, VNC and Screen Sharing buttons"></td>
+<td width="50%"><img src="https://radut.github.io/rsshterm/screens/desktop-linux/connect-picker.png" alt="Linux: How to connect, with SSH, VNC and Screen Sharing buttons"></td>
 </tr></table>
 
 ### Coming next
