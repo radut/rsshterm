@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>rSshTerm privacy policy</title>
+<style>body{font:16px/1.5 -apple-system,system-ui,sans-serif;max-width:42rem;margin:2rem auto;padding:0 1rem;color:#222}h1,h2{line-height:1.2}a{color:#0a58ca}@media(prefers-color-scheme:dark){body{background:#111;color:#ddd}a{color:#6ea8fe}}</style>
+</head>
+<body>
+<h1>rSshTerm privacy policy</h1>
+<p>Last updated: 26 November 2026.</p>
+
+<h2>The short version</h2>
+<p>rSshTerm collects no data. The developer runs no server for the app, has no account system, and receives nothing
+from it: no analytics, no crash reports, no advertising identifiers, no tracking.</p>
+
+<h2>Your servers, passwords and keys</h2>
+<p>Everything you enter (servers, user names, passwords, private keys, the hosts you have trusted) is kept in one vault.
+The vault is encrypted on your iPhone with AES-256-GCM before it is stored anywhere. The sealed vault is kept on the
+iPhone and, if you leave iCloud sync on, in the private iCloud database of your own Apple ID. The developer has no
+access to either.</p>
+<p>The key that seals the vault is random. It is wrapped by a key that never leaves this iPhone and by a key in your
+iCloud Keychain (end-to-end encrypted by Apple), so your other Apple devices can open the vault; optionally also by a
+master password only you know. After the first unlock it is kept in the iPhone's Keychain, behind Face ID if you
+turn that on.</p>
+
+<h2>SSH connections</h2>
+<p>SSH sessions go directly from your iPhone to the servers you connect to. Nothing passes through a server of the
+developer.</p>
+
+<h2>Camera, microphone and dictation</h2>
+<p>The camera is used only when you take a photo to upload to a server or scan text into the terminal; the photo goes
+only to the server you chose. The microphone and speech recognition are used only while you dictate; recognition runs
+on the device where the iPhone supports it, otherwise Apple's speech service processes the audio. You review the text
+before anything is sent.</p>
+
+<h2>Local network and storage you add</h2>
+<p>A network scan looks for SSH servers on your local network only when you start it. S3 buckets and other file
+locations you add are contacted directly with the credentials you entered, which stay in the vault.</p>
+
+<h2>Desktop apps</h2>
+<p>The Linux and macOS apps follow the same rules. They also check for updates by downloading a public, signed version
+file from the rSshTerm release site (no identifier is sent), and, only if you turn it on, keep the sealed vault in
+your own Google Drive app folder.</p>
+
+<h2>Third parties</h2>
+<p>Only Apple's iCloud (your own private database and iCloud Keychain), your own SSH servers and the storage you add
+are contacted (plus, on the desktop, the release site and Google Drive if you turn it on). Apple's privacy policy
+applies to what iCloud stores for you.</p>
+
+<h2>Children</h2>
+<p>The app is a tool for administering servers and is not directed at children.</p>
+
+<h2>Contact</h2>
+<p>Questions: see the <a href="support.html">support page</a>.</p>
+</body>
+</html>

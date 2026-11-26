@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>rSshTerm support</title>
+<style>body{font:16px/1.5 -apple-system,system-ui,sans-serif;max-width:42rem;margin:2rem auto;padding:0 1rem;color:#222}h1,h2{line-height:1.2}a{color:#0a58ca}@media(prefers-color-scheme:dark){body{background:#111;color:#ddd}a{color:#6ea8fe}}</style>
+</head>
+<body>
+<h1>rSshTerm support</h1>
+<p>rSshTerm is an SSH client for iPhone: servers in folders, several sessions at once, an extra key row, and every
+password and key in one vault encrypted on the iPhone.</p>
+
+<h2>Getting started</h2>
+<ul>
+<li>Tap <b>+</b> on the Servers screen to add a server, or use <b>Quick Connect</b> to connect without saving it.</li>
+<li>The first connection to a host asks you to trust its host key. If the key changes later, the app warns you
+before connecting.</li>
+<li>Settings &rsaquo; Passwords &amp; Keys: add passwords, import an OpenSSH private key, or generate an ed25519 key and
+share its public key to add to <code>~/.ssh/authorized_keys</code>.</li>
+<li>Settings &rsaquo; Account: keep the encrypted vault in iCloud, sync its key with iCloud Keychain so your other
+Apple devices open it, and set a master password for when every device is lost.</li>
+</ul>
+
+<h2>Known limits</h2>
+<ul>
+<li>RSA keys sign with ssh-rsa (SHA-1), which OpenSSH 8.8 and later refuse by default; use an ed25519 key.</li>
+<li>Sessions end when the app goes to the background.</li>
+<li>File transfer (SFTP) is not available yet.</li>
+</ul>
+
+<h2>Contact</h2>
+<p>Report a problem or ask a question on the project's
+<a href="https://github.com/radut/rsshterm/issues">issue tracker</a>.</p>
+
+<p><a href="privacy.html">Privacy policy</a></p>
+</body>
+</html>

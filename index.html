@@ -1,0 +1,445 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>rSshTerm · SSH terminal with one vault and kept sessions</title>
+<meta name="description" content="rSshTerm: an SSH terminal for iPhone, iPad, Linux and macOS. One encrypted vault for every device, sessions kept on the server by rSshD, a keyboard made for shells.">
+<meta name="color-scheme" content="dark light">
+<meta name="theme-color" content="#0b0b14">
+<meta property="og:title" content="rSshTerm">
+<meta property="og:description" content="SSH terminal with one vault for every device and sessions that wait for you.">
+<meta property="og:image" content="media/ios-terminal-jb.png">
+<link rel="icon" href="favicon.png" type="image/png">
+<link rel="stylesheet" href="style.css?v=4">
+<script>try{var t=localStorage.getItem("theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}</script>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="#"><img src="media/icon.png" alt="" width="28" height="28">rSshTerm</a>
+    <nav class="nav" aria-label="Sections">
+      <a href="#apps">Apps</a>
+      <a href="#features">Features</a>
+      <a href="#desktop">Desktop</a>
+      <a href="#sessions">rSshD</a>
+      <a href="#keyboard">Keyboard</a>
+      <a href="#install">Install</a>
+    </nav>
+    <button class="theme" type="button" aria-label="Switch light or dark theme">☀</button>
+  </div>
+</header>
+
+<main>
+<section class="hero">
+  <div class="wrap">
+    <span class="eyebrow"><b>●</b> iPhone &amp; iPad in TestFlight · Linux and macOS desktop</span>
+    <h1>The SSH terminal that keeps <span>your keys in one vault</span> and your sessions on the server.</h1>
+    <p class="lede">rSshTerm is a fast, keyboard-first SSH client for iPhone, iPad, Linux and macOS, built from one Swift
+      codebase. Your servers and keys follow you to every device; rSshD keeps your shells alive between visits.</p>
+    <div class="cta">
+      <a class="btn primary" href="#mobile">For iPhone &amp; iPad</a>
+      <a class="btn primary" href="#desktop-app">For Linux &amp; Mac</a>
+      <a class="btn" href="#keyboard">Keyboard shortcuts</a>
+    </div>
+    <p class="platforms">iPhone · iPad · Ubuntu / Debian · any Linux (AppImage) · macOS</p>
+
+    <div class="showcase">
+      <div class="phone">
+        <video data-autoplay muted loop playsinline preload="metadata" poster="media/ios-keyboard-poster.jpg"
+               aria-label="The terminal's key row: symbols, F-keys, keyboard settings and hardware shortcuts">
+          <source src="media/ios-keyboard.webm" type="video/webm">
+          <source src="media/ios-keyboard.mp4" type="video/mp4">
+        </video>
+      </div>
+      <div class="window">
+        
+        <video data-autoplay muted loop playsinline preload="metadata" poster="media/linux-splits-poster.jpg"
+               aria-label="rSshTerm on Linux: splits, then one command broadcast to every pane">
+          <source src="media/linux-splits.webm" type="video/webm">
+          <source src="media/linux-splits.mp4" type="video/mp4">
+        </video>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="apps">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="kicker">Two apps, one vault</div>
+      <h2>In your pocket and on your desk.</h2>
+      <p>The same servers, keys and sessions on the phone and the laptop. Start a shell on one, pick it up on the other.</p>
+    </div>
+    <div class="duo">
+      <div class="card duo-card" id="mobile">
+        <div class="phone duo-shot"><img src="media/ios-servers.png" alt="rSshTerm on iPhone: server list with folders" loading="lazy"></div>
+        <div>
+          <h3>rSshTerm for iPhone &amp; iPad</h3>
+          <ul class="ticks">
+            <li>Key row with symbol, navigation and F-key pages, sticky Ctrl/Alt</li>
+            <li>Quick Connect and network scan: an address to a saved server in four taps</li>
+            <li>SFTP and a two-pane Commander (phone, Files, S3, servers)</li>
+            <li>Face ID, iCloud vault sync to your Mac</li>
+            <li>Hardware keyboard shortcuts on iPad</li>
+          </ul>
+          <a class="btn primary" href="#install">Get it on TestFlight</a>
+        </div>
+      </div>
+      <div class="card duo-card" id="desktop-app">
+        <div class="window duo-shot"><img src="media/mac-host-search.png" alt="rSshTerm on macOS: host search over the vault's servers" loading="lazy"></div>
+        <div>
+          <h3>rSshTerm for Linux &amp; macOS</h3>
+          <ul class="ticks">
+            <li>Tabs, splits and broadcast input to any set of panes</li>
+            <li>Host search (<kbd><span class="mod">⌘</span>K</kbd>) and the jump switcher (<kbd><span class="mod">⌘</span>J</kbd>)</li>
+            <li>Built-in agent: <code>ssh web1</code> in any local tab uses the vault key</li>
+            <li>VNC and Apple Screen Sharing over the same SSH connection; RDP on Linux</li>
+            <li>Touch ID on the Mac; signed self-update, apt, PPA or AppImage</li>
+          </ul>
+          <a class="btn primary" href="#install">Install on the desktop</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="features">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="kicker">Why rSshTerm</div>
+      <h2>Everything a shell needs, on the device you have with you.</h2>
+    </div>
+    <div class="grid">
+      <div class="card"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg><h3>One vault, every device</h3>
+        <p>AES-256-GCM vault opened by each device's own key, iCloud Keychain, or a master password. Face ID and Touch ID after.</p></div>
+      <div class="card"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><h3>Sessions that wait</h3>
+        <p>rSshD keeps each shell in tmux or screen. Lose the network, close the app: resume exactly where you were.</p></div>
+      <div class="card"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="6" width="20" height="12" rx="2"/><path d="M6 10h.01M10 10h.01M14 10h.01M18 10h.01M7 14h10"/></svg><h3>A keyboard for shells</h3>
+        <p>Key row with symbol, navigation and F-key pages, a chip bar, sticky Ctrl/Alt and real word editing.</p></div>
+      <div class="card"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg><h3>Files built in</h3>
+        <p>SFTP from inside a session, and a two-pane Commander across the phone, Files, S3 and servers.</p></div>
+      <div class="card"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M12 4v16M3 9h18"/></svg><h3>Desktop terminal</h3>
+        <p>Tabs, splits, host search and a jump switcher. <code>ssh web1</code> in any tab picks the vault key.</p></div>
+      <div class="card"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/></svg><h3>Remote desktop</h3>
+        <p>VNC and Apple Screen Sharing on Linux and macOS, RDP on Linux, tunnelled over the SSH connection you already have.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="alt">
+  <div class="wrap">
+    <div class="feature">
+      <div>
+        <div class="kicker">Terminal</div>
+        <h2>Type like you are at a desk.</h2>
+        <p class="note">On-screen or on a Magic Keyboard, the keys do what a shell expects.</p>
+        <ul>
+          <li><b>Key row with pages</b>: esc, ctrl, tab and arrows; <b>⋯</b> for symbols, PgUp/PgDn/Home/End, F1–F16, META.</li>
+          <li><b>Chip bar</b>: Paste, Esc, Tab, Shift, Ctrl, Alt, Ctrl+C/D/L, and optional Ctrl+W/U/A/E.</li>
+          <li><b>Word editing</b>: Natural text editing or Linux presets, Option as Meta per side, hold ← → ⌫ to repeat.</li>
+          <li><b>Fonts and themes</b>: bundled developer fonts with ligatures and Nerd Font icons, light and dark theme pairs.</li>
+        </ul>
+      </div>
+      <div class="media phones">
+        <div class="phone"><img src="media/ios-terminal-jb.png" alt="Terminal with JetBrains Mono ligatures and icons" loading="lazy"></div>
+        <div class="phone"><img src="media/ios-themes.png" alt="Theme gallery" loading="lazy"></div>
+      </div>
+    </div>
+
+    <div class="feature flip">
+      <div>
+        <div class="kicker">Connect</div>
+        <h2>From an address to a saved server in four taps.</h2>
+        <ul>
+          <li><b>Quick Connect</b>: paste one host or twenty, pick a user from your list, a key or a password, connect, save to a folder.</li>
+          <li><b>Network scan</b>: give it <code>192.0.2.0</code> and it checks the /24; hosts that answer SSH are one tap from your list.</li>
+          <li><b>Jump hosts</b>: chain vault servers or inline <code>user@host:port</code>.</li>
+          <li><b>Agent forwarding</b> with a prompt per use: allow once, for this session, or deny.</li>
+        </ul>
+      </div>
+      <div class="media phones">
+        <div class="phone">
+          <video data-autoplay muted loop playsinline preload="none" poster="media/ios-quick-connect-poster.jpg" aria-label="Quick Connect walk-through">
+            <source src="media/ios-quick-connect.webm" type="video/webm">
+            <source src="media/ios-quick-connect.mp4" type="video/mp4">
+          </video>
+        </div>
+        <div class="phone">
+          <video data-autoplay muted loop playsinline preload="none" poster="media/ios-scan-poster.jpg" aria-label="Network scan and add">
+            <source src="media/ios-scan.webm" type="video/webm">
+            <source src="media/ios-scan.mp4" type="video/mp4">
+          </video>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="sessions">
+  <div class="wrap">
+    <div class="feature">
+      <div>
+        <div class="kicker">rSshD</div>
+        <h2>Close the app. Your shell keeps running.</h2>
+        <p class="note">A small daemon on each server holds your sessions in tmux or GNU screen.</p>
+        <ul>
+          <li><b>Resume</b> one kept session, all of them, or start fresh; choose per server.</li>
+          <li><b>Timeouts</b>: idle and hard limits per session, and "finish work" waits for the running job.</li>
+          <li><b>Status at a glance</b>: a chip shows <code>rsshd · tmux</code>, or why sessions are not kept.</li>
+          <li><b>One-tap install</b> from the app, or one line on the server (below).</li>
+        </ul>
+      </div>
+      <div class="media phones">
+        <div class="phone">
+          <video data-autoplay muted loop playsinline preload="none" poster="media/ios-sessions-poster.jpg" aria-label="Sessions drawer, status chip and resume picker">
+            <source src="media/ios-sessions.webm" type="video/webm">
+            <source src="media/ios-sessions.mp4" type="video/mp4">
+          </video>
+        </div>
+        <div class="phone"><img src="media/ios-session-daemon-status.png" alt="Server daemon sheet" loading="lazy"></div>
+      </div>
+    </div>
+
+    <div class="feature flip">
+      <div>
+        <div class="kicker">Files</div>
+        <h2>Files where the shell is.</h2>
+        <ul>
+          <li><b>Session files</b>: the folder button opens the server's files in the shell's current folder, on the same connection.</li>
+          <li><b>Commander</b>: two panes, any source on each side: phone, Files app, SFTP, S3.</li>
+          <li><b>F3–F8</b> view, edit, copy, move, mkdir, delete; a queue with progress and cancel.</li>
+        </ul>
+      </div>
+      <div class="media phones">
+        <div class="phone">
+          <video data-autoplay muted loop playsinline preload="none" poster="media/ios-files-poster.jpg" aria-label="File browser, session files and Commander">
+            <source src="media/ios-files.webm" type="video/webm">
+            <source src="media/ios-files.mp4" type="video/mp4">
+          </video>
+        </div>
+        <div class="phone"><img src="media/ios-commander.png" alt="Two-pane Commander" loading="lazy"></div>
+      </div>
+    </div>
+
+    <div class="feature">
+      <div>
+        <div class="kicker">Vault</div>
+        <h2>Your keys, sealed once, opened everywhere.</h2>
+        <ul>
+          <li><b>Per-device keys</b>: Keychain on Apple devices, Secret Service on Linux; they never leave the device.</li>
+          <li><b>iCloud Keychain</b> brings the vault to your other Apple devices; <b>Google Drive</b> works on every platform.</li>
+          <li><b>Master password</b> (scrypt) lets a brand-new device in once; after that it uses its own key.</li>
+          <li><b>Face ID / Touch ID</b> before keys are shown; saves never overwrite a newer copy from another device.</li>
+        </ul>
+      </div>
+      <div class="media phones">
+        <div class="phone"><img src="media/ios-account.png" alt="Account: vault, iCloud, master password" loading="lazy"></div>
+        <div class="phone"><img src="media/ios-agent-forwarding-prompt.png" alt="Agent forwarding prompt" loading="lazy"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="desktop" class="alt">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="kicker">Desktop · Linux and macOS</div>
+      <h2>A real terminal, with your vault behind every tab.</h2>
+      <p>Local shells in tabs and splits, like iTerm2 or Terminator. The built-in SSH agent serves the vault's keys and
+        writes an <code>ssh_config</code>, so plain <code>ssh web1</code> just works.</p>
+    </div>
+    <div class="feature">
+      <div class="window">
+        
+        <video data-autoplay muted loop playsinline preload="none" poster="media/linux-search-poster.jpg" aria-label="Host search opens an SSH tab that logs in with the vault key">
+          <source src="media/linux-search.webm" type="video/webm">
+          <source src="media/linux-search.mp4" type="video/mp4">
+        </video>
+      </div>
+      <div>
+        <h3>Host search</h3>
+        <p class="note"><kbd>Ctrl+Shift+K</kbd> / <kbd><span class="mod">⌘</span>K</kbd>: type part of a name, Enter opens a tab, Shift+Enter a split.</p>
+        <h3 style="margin-top:20px">Jump switcher</h3>
+        <p class="note"><kbd>Ctrl+Shift+J</kbd> / <kbd><span class="mod">⌘</span>J</kbd>: every open shell, then "new session on" any server.</p>
+        <h3 style="margin-top:20px">Self-updating</h3>
+        <p class="note">A signed <code>latest.json</code> drives updates of the tarball, the AppImage and the Mac app; the
+          <code>.deb</code> updates with apt.</p>
+      </div>
+    </div>
+    <div class="feature flip">
+      <div class="window">
+        
+        <video data-autoplay muted loop playsinline preload="none" poster="media/linux-jump-poster.jpg" aria-label="Switching tabs and the jump switcher">
+          <source src="media/linux-jump.webm" type="video/webm">
+          <source src="media/linux-jump.mp4" type="video/mp4">
+        </video>
+      </div>
+      <div>
+        <h3>Tabs and splits</h3>
+        <p class="note">Cmd/Ctrl+1…9 between tabs, split right or down, focus with Alt+arrows, zoom and equalize.
+          Broadcast what you type to every pane, or pick them. Tabs, splits and SSH panes come back after a restart.</p>
+        <h3 style="margin-top:20px">Touch ID on the Mac</h3>
+        <p class="note">The device key sits behind Touch ID; the Mac also opens the iPhone's vault through iCloud.</p>
+      </div>
+    </div>
+    <div class="grid shots">
+      <div class="window">
+        <img src="media/mac-host-search.png" alt="macOS: host search" loading="lazy"></div>
+      <div class="window">
+        <img src="media/mac-unlock.png" alt="macOS: unlock the vault" loading="lazy"></div>
+    </div>
+  </div>
+</section>
+
+<section id="keyboard">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="kicker">Keyboard</div>
+      <h2>Shortcuts</h2>
+      <p>The desktop bindings come from one table shared by both apps.</p>
+    </div>
+    <div class="tabs" role="tablist" aria-label="Platform">
+      <button role="tab" id="tab-ios" aria-controls="panel-ios" aria-selected="true">iPhone / iPad</button>
+      <button role="tab" id="tab-mac" aria-controls="panel-mac" aria-selected="false" tabindex="-1">macOS</button>
+      <button role="tab" id="tab-linux" aria-controls="panel-linux" aria-selected="false" tabindex="-1">Linux</button>
+    </div>
+
+    <div role="tabpanel" id="panel-ios" aria-labelledby="tab-ios">
+      <div class="kb-layout">
+        <div class="table-scroll">
+          <table class="keys">
+            <thead><tr><th>Keys</th><th>Does</th><th>Sends</th></tr></thead>
+            <tbody>
+              <tr><td><kbd><span class="mod">⌥</span>←</kbd> <kbd><span class="mod">⌥</span>→</kbd></td><td>Word left / right</td><td>ESC b / ESC f</td></tr>
+              <tr><td><kbd><span class="mod">⌘</span>←</kbd> <kbd><span class="mod">⌘</span>→</kbd></td><td>Start / end of line</td><td>^A / ^E</td></tr>
+              <tr><td><kbd><span class="mod">⌥</span>⌫</kbd></td><td>Delete word before the cursor</td><td>ESC DEL</td></tr>
+              <tr><td><kbd><span class="mod">⌘</span>⌫</kbd></td><td>Delete to start of line</td><td>^U</td></tr>
+              <tr><td><kbd>fn<span class="mod">⌫</span></kbd> <kbd>⌦</kbd></td><td>Delete character after the cursor</td><td>ESC [3~</td></tr>
+              <tr><td><kbd><span class="mod">⌥</span>⌦</kbd></td><td>Delete word after the cursor</td><td>ESC d</td></tr>
+              <tr><td><kbd><span class="mod">⌘</span>⌦</kbd></td><td>Delete to end of line</td><td>^K</td></tr>
+              <tr><td><kbd><span class="mod">⌃</span>←</kbd> <kbd><span class="mod">⌃</span>→</kbd></td><td>Word left / right (inputrc)</td><td>ESC [1;5D / C</td></tr>
+              <tr><td><kbd><span class="mod">⌃</span>⌫</kbd></td><td>Delete word before the cursor</td><td>^W or ^H</td></tr>
+              <tr><td><kbd>Tab</kbd> <kbd>F3</kbd>…<kbd>F8</kbd></td><td>Commander: switch pane, view, edit, copy, move, mkdir, delete</td><td>⌘3…⌘8 too</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="phone"><img src="media/ios-shortcuts.png" alt="The in-app keyboard shortcut sheet" loading="lazy"></div>
+      </div>
+    </div>
+
+    <div role="tabpanel" id="panel-mac" aria-labelledby="tab-mac" hidden>
+      <div class="table-scroll">
+        <table class="keys">
+          <thead><tr><th>Keys</th><th>Does</th><th></th></tr></thead>
+          <tbody>
+            <tr><td><kbd><span class="mod">⌘</span>T</kbd> <kbd><span class="mod">⌘</span>N</kbd></td><td>New tab / window</td><td></td></tr>
+            <tr><td><kbd><span class="mod">⌘</span>1</kbd>…<kbd><span class="mod">⌘</span>9</kbd></td><td>Go to tab</td><td></td></tr>
+            <tr><td><kbd><span class="mod">⌘</span><span class="mod">⇧</span>]</kbd> <kbd><span class="mod">⌘</span><span class="mod">⇧</span>[</kbd></td><td>Next / previous tab</td><td>also Ctrl+Tab</td></tr>
+            <tr><td><kbd><span class="mod">⌘</span><span class="mod">⇧</span>←</kbd> <kbd><span class="mod">⌘</span><span class="mod">⇧</span>→</kbd></td><td>Move tab</td><td></td></tr>
+            <tr><td><kbd><span class="mod">⌘</span>R</kbd></td><td>Rename tab</td><td></td></tr>
+            <tr><td><kbd><span class="mod">⌘</span>D</kbd> <kbd><span class="mod">⌘</span><span class="mod">⇧</span>D</kbd></td><td>Split right / down</td><td></td></tr>
+            <tr><td><kbd><span class="mod">⌘</span><span class="mod">⌥</span></kbd> + arrows</td><td>Focus pane</td><td></td></tr>
+            <tr><td><kbd><span class="mod">⌘</span>]</kbd> <kbd><span class="mod">⌘</span>[</kbd></td><td>Next / previous pane</td><td></td></tr>
+            <tr><td><kbd><span class="mod">⌘</span><span class="mod">⌃</span></kbd> + arrows</td><td>Resize pane</td><td></td></tr>
+            <tr><td><kbd><span class="mod">⌘</span><span class="mod">⇧</span>↩</kbd> <kbd><span class="mod">⌘</span><span class="mod">⌃</span>=</kbd></td><td>Zoom pane / equalize</td><td></td></tr>
+            <tr><td><kbd><span class="mod">⌘</span>W</kbd></td><td>Close pane</td><td></td></tr>
+            <tr><td><kbd><span class="mod">⌘</span>K</kbd></td><td>Host search</td><td></td></tr>
+            <tr><td><kbd><span class="mod">⌘</span>J</kbd></td><td>Jump switcher</td><td></td></tr>
+            <tr><td><kbd><span class="mod">⌘</span><span class="mod">⇧</span>I</kbd></td><td>Broadcast input to all panes, on / off</td><td></td></tr>
+            <tr><td><kbd><span class="mod">⌘</span><span class="mod">⌥</span>I</kbd></td><td>Broadcast to this tab's panes</td><td></td></tr>
+            <tr><td><kbd><span class="mod">⌘</span><span class="mod">⌥</span><span class="mod">⇧</span>I</kbd></td><td>Broadcast picker</td><td>presets, checkboxes</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div role="tabpanel" id="panel-linux" aria-labelledby="tab-linux" hidden>
+      <div class="table-scroll">
+        <table class="keys">
+          <thead><tr><th>Keys</th><th>Does</th><th></th></tr></thead>
+          <tbody>
+            <tr><td><kbd>Ctrl+Shift+T</kbd> <kbd>Ctrl+Shift+N</kbd></td><td>New tab / window</td><td></td></tr>
+            <tr><td><kbd>Ctrl+1</kbd>…<kbd>Ctrl+9</kbd></td><td>Go to tab</td><td></td></tr>
+            <tr><td><kbd>Ctrl+PgDn</kbd> <kbd>Ctrl+PgUp</kbd></td><td>Next / previous tab</td><td>also Ctrl+Tab</td></tr>
+            <tr><td><kbd>Ctrl+Shift+PgUp</kbd> <kbd>Ctrl+Shift+PgDn</kbd></td><td>Move tab</td><td></td></tr>
+            <tr><td><kbd>Ctrl+Shift+R</kbd></td><td>Rename tab</td><td></td></tr>
+            <tr><td><kbd>Ctrl+Shift+E</kbd> <kbd>Ctrl+Shift+O</kbd></td><td>Split right / down</td><td></td></tr>
+            <tr><td><kbd>Alt</kbd> + arrows</td><td>Focus pane</td><td></td></tr>
+            <tr><td><kbd>Ctrl+Shift+]</kbd> <kbd>Ctrl+Shift+[</kbd></td><td>Next / previous pane</td><td></td></tr>
+            <tr><td><kbd>Ctrl+Shift+Alt</kbd> + arrows</td><td>Resize pane</td><td></td></tr>
+            <tr><td><kbd>Ctrl+Shift+X</kbd> <kbd>Ctrl+Shift+Alt+=</kbd></td><td>Zoom pane / equalize</td><td></td></tr>
+            <tr><td><kbd>Ctrl+Shift+W</kbd></td><td>Close pane</td><td></td></tr>
+            <tr><td><kbd>Ctrl+Shift+K</kbd></td><td>Host search</td><td>Shift+Enter opens a split</td></tr>
+            <tr><td><kbd>Ctrl+Shift+J</kbd></td><td>Jump switcher</td><td></td></tr>
+            <tr><td><kbd>Ctrl+Shift+I</kbd></td><td>Broadcast input to all panes, on / off</td><td></td></tr>
+            <tr><td><kbd>Ctrl+Shift+Alt+I</kbd></td><td>Broadcast picker</td><td>this tab, visible, same host…</td></tr>
+            <tr><td><kbd>Ctrl+Shift+C</kbd> <kbd>Ctrl+Shift+V</kbd></td><td>Copy / paste</td><td></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="install" class="alt">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="kicker">Install</div>
+      <h2>One line each.</h2>
+      <p>Everything is built and signed in CI; installers check checksums and signatures.</p>
+    </div>
+    <div class="install">
+      <div class="card wide">
+        <h3>iPhone and iPad</h3>
+        <p>In TestFlight (internal testing) now; the App Store release follows. Ask for an invite.</p>
+      </div>
+      <div class="card">
+        <h3>Desktop <span class="soon">first release soon</span></h3>
+        <p>Debian/Ubuntu get the signed apt repo, other Linux a tarball, macOS the notarized app.</p>
+        <div class="snippet"><pre>curl -fsSL https://rssh-ea902a.gitlab.io/desktop/install.sh | sh</pre></div>
+        <p class="note">Ubuntu PPA:</p>
+        <div class="snippet"><pre>sudo add-apt-repository ppa:radut/rsshterm &amp;&amp; sudo apt install rsshterm</pre></div>
+        <p class="note">AppImage (glibc 2.39+), updates itself:</p>
+        <div class="snippet"><pre>curl -fsSL https://rssh-ea902a.gitlab.io/desktop/install.sh | sh -s -- --appimage</pre></div>
+        <p class="note">Or download (Linux x86_64; checksums signed in <code>rsshterm_SHA256SUMS</code>):</p>
+        <div class="downloads">
+          <a class="btn small" href="https://github.com/radut/rsshterm/releases/latest/download/rsshterm_linux_amd64.AppImage">AppImage</a>
+          <a class="btn small" href="https://github.com/radut/rsshterm/releases/latest/download/rsshterm_amd64.deb">.deb</a>
+          <a class="btn small" href="https://github.com/radut/rsshterm/releases/latest/download/rsshterm_linux_amd64.tar.gz">Tarball</a>
+        </div>
+      </div>
+      <div class="card">
+        <h3>rSshD on your servers</h3>
+        <p>Debian, Ubuntu, Raspberry Pi OS and macOS; a user service, updated with apt.</p>
+        <div class="snippet"><pre>curl -fsSLO https://rssh-ea902a.gitlab.io/install.sh &amp;&amp; sh install.sh</pre></div>
+        <p class="note">Ubuntu PPA:</p>
+        <div class="snippet"><pre>sudo add-apt-repository ppa:radut/rsshd &amp;&amp; sudo apt install rsshd</pre></div>
+        <p class="note"><code>sh install.sh --uninstall</code> removes it. The app can install it for you too.</p>
+        <p class="note">Or download (checksums signed in <code>rsshd_SHA256SUMS</code>):</p>
+        <div class="downloads">
+          <a class="btn small" href="https://github.com/radut/rsshterm/releases/latest/download/rsshd_amd64.deb">.deb x86_64</a>
+          <a class="btn small" href="https://github.com/radut/rsshterm/releases/latest/download/rsshd_arm64.deb">.deb arm64</a>
+          <a class="btn small" href="https://github.com/radut/rsshterm/releases/latest/download/rsshd_linux_amd64.tar.gz">Linux x86_64</a>
+          <a class="btn small" href="https://github.com/radut/rsshterm/releases/latest/download/rsshd_linux_arm64.tar.gz">Linux arm64</a>
+          <a class="btn small" href="https://github.com/radut/rsshterm/releases/latest/download/rsshd_darwin_amd64.tar.gz">macOS Intel</a>
+          <a class="btn small" href="https://github.com/radut/rsshterm/releases/latest/download/rsshd_darwin_arm64.tar.gz">macOS Apple silicon</a>
+        </div>
+      </div>
+    </div>
+    <p class="all-releases"><a href="https://github.com/radut/rsshterm/releases">All releases on GitHub</a> · versioned files, <code>SHA256SUMS</code> and signatures.</p>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>rSshTerm · rSshD · <a href="privacy.html">Privacy</a> · <a href="support.html">Support</a> · <a href="https://github.com/radut/rsshterm/releases">Releases</a></span>
+    <span>Screens show demo data only (example.com, documentation addresses). No cookies, no trackers.</span>
+  </div>
+</footer>
+
+<script src="main.js?v=1" defer></script>
+</body>
+</html>
