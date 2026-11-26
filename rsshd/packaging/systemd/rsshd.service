@@ -3,7 +3,7 @@
 #   loginctl enable-linger "$USER"     # optional: keep rsshd and its tmux sessions after the last logout
 [Unit]
 Description=rsshd: keeps rSshTerm terminal sessions alive in tmux
-Documentation=https://gitlab.com/radutoader/projects/apple/rSSH/-/blob/main/docs/session-daemon/design.md
+Documentation=https://github.com/radut/rsshterm/tree/main/rsshd
 
 [Service]
 Type=simple
