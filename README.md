@@ -7,7 +7,7 @@
 **The SSH terminal that keeps your keys in one vault and your sessions on the server.**
 **On your iPhone and iPad, and on your Linux and Mac desktop**, from the same Swift code and the same vault.
 
-[![iOS: TestFlight](https://img.shields.io/badge/iOS-TestFlight-0a84ff?logo=apple&logoColor=white)](#install)
+![iOS: coming soon](https://img.shields.io/badge/iOS-coming%20soon-8e8e93?logo=apple&logoColor=white)
 [![Linux: apt · PPA · AppImage](https://img.shields.io/badge/Linux-apt%20·%20PPA%20·%20AppImage-e95420?logo=linux&logoColor=white)](#desktop-linux-and-macos)
 [![macOS: in progress](https://img.shields.io/badge/macOS-in%20progress-8e8e93?logo=apple&logoColor=white)](#desktop-linux-and-macos)
 [![rSshD: server daemon](https://img.shields.io/badge/rSshD-apt%20·%20install.sh-6e56cf)](#rsshd-on-your-servers)
@@ -45,7 +45,7 @@ one, pick it up on the other.
 - Face ID, iCloud vault sync to your Mac
 - Hardware keyboard shortcuts on iPad
 
-[Get it on TestFlight](#iphone-and-ipad)
+Coming soon · iOS &amp; iPadOS 18+
 </td>
 <td width="50%" valign="top">
 <img src="https://radut.github.io/rsshterm/media/mac-host-search.png" alt="rSshTerm on macOS: host search over the vault's servers">
@@ -181,7 +181,7 @@ RDP on macOS and iOS, and the macOS app in the App Store.
 
 ### iPhone and iPad
 
-rSshTerm is in **TestFlight** (internal testing). The App Store release follows; ask for an invite until then.
+rSshTerm for iPhone and iPad is **coming soon** to the App Store. Requires iOS & iPadOS 18+.
 
 ### Desktop: Linux and macOS
 
