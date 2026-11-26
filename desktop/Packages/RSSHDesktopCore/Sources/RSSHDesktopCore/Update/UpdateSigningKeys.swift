@@ -3,5 +3,5 @@
 /// release later. While the list is empty, every manifest is refused (the updater fails closed).
 /// How to create the key and print this value: docs/desktop/update.md.
 enum UpdateSigningKeys {
-    static let base64: [String] = []
+    static let base64: [String] = ["XeMpftz9QCrQv7+BYBQhvI2iSQE8SHmNHr/Btq7dOkY="]
 }
