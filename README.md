@@ -261,6 +261,14 @@ Commander: <kbd>Tab</kbd> switches panes; <kbd>F3</kbd> view, <kbd>F4</kbd> edit
 
 The bindings come from one table in the shared desktop core, so both apps stay in step.
 
+## Licence
+
+rSshD, the Linux app, the desktop core and the shared Swift packages are open source under the
+[Apache License 2.0](https://github.com/radut/rsshterm/blob/main/LICENSE); their source is published at
+[github.com/radut/rsshterm](https://github.com/radut/rsshterm) (`rsshd/`, `desktop/`, `apple/Packages/`). The iPhone,
+iPad and Mac apps from the App Store are distributed under Apple's standard licence. Third-party code keeps its own
+licence; see the credits in each app and `THIRD_PARTY_NOTICES` in each package.
+
 [Website](https://radut.github.io/rsshterm/) · [Privacy](https://radut.github.io/rsshterm/privacy.html) ·
 [Support](https://radut.github.io/rsshterm/support.html)
 
