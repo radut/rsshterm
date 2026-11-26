@@ -7,15 +7,15 @@
 **The SSH terminal that keeps your keys in one vault and your sessions on the server.**
 **On your iPhone and iPad, and on your Linux and Mac desktop**, from the same Swift code and the same vault.
 
-![iOS: coming soon](https://img.shields.io/badge/iOS-coming%20soon-8e8e93?logo=apple&logoColor=white)
-[![Linux: coming soon](https://img.shields.io/badge/Linux-coming%20soon-8e8e93?logo=linux&logoColor=white)](#desktop-linux-and-macos)
-[![macOS: in progress](https://img.shields.io/badge/macOS-in%20progress-8e8e93?logo=apple&logoColor=white)](#desktop-linux-and-macos)
+![iOS: coming soon](https://img.shields.io/badge/iOS-coming%20soon-8e8e93)
+[![Linux: coming soon](https://img.shields.io/badge/Linux-coming%20soon-8e8e93)](#desktop-linux-and-macos)
+[![macOS: in progress](https://img.shields.io/badge/macOS-in%20progress-8e8e93)](#desktop-linux-and-macos)
 [![rSshD: server daemon](https://img.shields.io/badge/rSshD-apt%20·%20install.sh-6e56cf)](#rsshd-on-your-servers)
-[![Swift 6](https://img.shields.io/badge/Swift-6-f05138?logo=swift&logoColor=white)](https://radut.github.io/rsshterm)
+[![Swift 6](https://img.shields.io/badge/Swift-6-f05138)](https://radut.github.io/rsshterm)
 
 [Website](https://radut.github.io/rsshterm/) · [Install](#install) · [Keyboard](#keyboard-shortcuts) · [Docs](#documentation)
 
-<img src="https://radut.github.io/rsshterm/media/ios-keyboard.gif" width="220" alt="Terminal with the key row: symbols page, F-keys, keyboard settings, hardware shortcuts">&nbsp;
+<img src="https://radut.github.io/rsshterm/media/ios-keyboard.gif" width="220" alt="Terminal with the on-screen keyboard: key row pages (F-keys, symbols, navigation), sticky Ctrl, chips">&nbsp;
 <img src="https://radut.github.io/rsshterm/media/ios-quick-connect.gif" width="220" alt="Quick Connect: hosts, user, key, save">&nbsp;
 <img src="https://radut.github.io/rsshterm/media/ios-files.gif" width="220" alt="Files: browser, the session's folder, two-pane Commander">
 
@@ -163,10 +163,28 @@ Coming soon
 - Signed self-update from `latest.json` (tarball, AppImage, notarized Mac app); `.deb` installs update with apt.
 - Servers, Quick Connect, network scan and files (browser and two-pane Commander), as on the phone.
 
+### Broadcast input
+
+Type once, run it on every server. <kbd>⌘⇧I</kbd> / <kbd>Ctrl+Shift+I</kbd> sends what you type to every pane,
+<kbd>⌘⌥I</kbd> to this tab's panes, and <kbd>⌘⌥⇧I</kbd> / <kbd>Ctrl+Shift+Alt+I</kbd> opens the picker: presets (this tab,
+all tabs of the window, visible panes, all windows) or the exact panes you tick, filtered by name or host. Receiving
+panes wear a striped frame and the title says "broadcasting input" until you stop.
+
+<img src="https://radut.github.io/rsshterm/screens/desktop-linux/broadcast.png" alt="Linux: one command typed once runs in every pane, striped frame on the receiving pane">
+
+<table><tr>
+<td width="50%"><img src="https://radut.github.io/rsshterm/screens/desktop-mac/broadcast-picker.png" alt="macOS: the broadcast picker with presets and pane checkboxes"></td>
+<td width="50%"><img src="https://radut.github.io/rsshterm/screens/desktop-linux/broadcast-picker.png" alt="Linux: the broadcast picker"></td>
+</tr></table>
+
 ### Remote desktop
 
 VNC and Apple Screen Sharing on Linux and macOS, RDP on Linux, tunnelled over the SSH connection you already have (or
-a separate one, or direct). Saved credentials per entry, "Copy from SSH", and a login sheet only when one is needed.
+a separate one, or direct). A server can be SSH, RDP, VNC or several at once: tick them in the server editor (Open
+As) and open the screen from the server's menu; a server with SSH off opens as its screen. A network scan adds a host
+that answers on 22 and 3389 as one server with both. A screen for a host that is already saved is never merged
+quietly: you are asked whether to add it to that server or keep a separate one. Saved credentials per screen, "Copy
+from SSH", and a login sheet only when one is needed.
 
 <table><tr>
 <td width="50%"><img src="https://radut.github.io/rsshterm/screens/desktop-mac/remote-desktop.png" alt="macOS: a remote desktop pane"></td>
@@ -247,3 +265,16 @@ The bindings come from one table in the shared desktop core, so both apps stay i
 [Support](https://radut.github.io/rsshterm/support.html)
 
 Every screenshot and animation here shows demo data only (example.com hosts and documentation addresses);.
+
+### Licences and trademarks
+
+rSshTerm and rSshD include open-source software, fonts and colour themes under their own licences: the list with the
+full licence texts is in every app (Settings › About › Acknowledgements on iPhone and iPad, rSshTerm ›
+Acknowledgements on the Mac, About › Legal on Linux) and in the `THIRD_PARTY_NOTICES` file of every package; it is
+generated from one list in this repository (`packaging/licenses/manifest.toml`).
+
+Apple, iPhone, iPad, Mac, macOS, iCloud, Face ID, Touch ID and App Store are trademarks of Apple Inc., registered in
+the U.S. and other countries and regions. Swift is a trademark of Apple Inc. Google Drive is a trademark of Google LLC.
+Ubuntu and Launchpad are trademarks of Canonical Ltd. Linux® is the registered trademark of Linus Torvalds in the U.S.
+and other countries. Raspberry Pi is a trademark of Raspberry Pi Ltd. Other names are trademarks of their respective
+owners; rSshTerm is not affiliated with or endorsed by any of them.
