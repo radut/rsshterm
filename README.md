@@ -11,9 +11,9 @@
 [![Linux: coming soon](https://img.shields.io/badge/Linux-coming%20soon-8e8e93?logo=linux&logoColor=white)](#desktop-linux-and-macos)
 [![macOS: in progress](https://img.shields.io/badge/macOS-in%20progress-8e8e93?logo=apple&logoColor=white)](#desktop-linux-and-macos)
 [![rSshD: server daemon](https://img.shields.io/badge/rSshD-apt%20·%20install.sh-6e56cf)](#rsshd-on-your-servers)
-[![Swift 6](https://img.shields.io/badge/Swift-6-f05138?logo=swift&logoColor=white)](https://rssh.radut.dev)
+[![Swift 6](https://img.shields.io/badge/Swift-6-f05138?logo=swift&logoColor=white)](https://radut.github.io/rsshterm)
 
-[Website](https://rssh.radut.dev) · [Install](#install) · [Keyboard](#keyboard-shortcuts) · [Docs](#documentation)
+[Website](https://radut.github.io/rsshterm/) · [Install](#install) · [Keyboard](#keyboard-shortcuts) · [Docs](#documentation)
 
 <img src="https://radut.github.io/rsshterm/media/ios-keyboard.gif" width="220" alt="Terminal with the key row: symbols page, F-keys, keyboard settings, hardware shortcuts">&nbsp;
 <img src="https://radut.github.io/rsshterm/media/ios-quick-connect.gif" width="220" alt="Quick Connect: hosts, user, key, save">&nbsp;
@@ -243,7 +243,7 @@ Commander: <kbd>Tab</kbd> switches panes; <kbd>F3</kbd> view, <kbd>F4</kbd> edit
 
 The bindings come from one table in the shared desktop core, so both apps stay in step.
 
-[Website](https://rssh.radut.dev) · [Privacy](https://rssh.radut.dev/privacy.html) ·
-[Support](https://rssh.radut.dev/support.html)
+[Website](https://radut.github.io/rsshterm/) · [Privacy](https://radut.github.io/rsshterm/privacy.html) ·
+[Support](https://radut.github.io/rsshterm/support.html)
 
 Every screenshot and animation here shows demo data only (example.com hosts and documentation addresses);.
