@@ -86,7 +86,7 @@ keys() { xdotool key --clearmodifiers "$@"; sleep 0.7; }
 typeline() { xdotool type --delay 70 "$1"; sleep 0.2; xdotool key Return; sleep 0.8; }
 
 geometry() {
-    wid="$(xdotool search --onlyvisible --name '^rSshTerm' | head -1)"
+    wid="$(xdotool search --onlyvisible --name 'rSshTerm$' | head -1)"
     eval "$(xdotool getwindowgeometry --shell "$wid")"
     # even sizes for x264
     CROP="$((WIDTH / 2 * 2))x$((HEIGHT / 2 * 2))+${X}+${Y}"
@@ -108,7 +108,7 @@ rm -f "$STATE"
 APP=$!
 wait_for "window open" '"tabs":1' 30
 wait_for "vault opened" '"vault":"opened"' 30
-xdotool search --sync --name '^rSshTerm' windowfocus >/dev/null 2>&1 || true
+timeout 10 xdotool search --sync --name 'rSshTerm$' windowfocus >/dev/null 2>&1 || true
 xdotool mousemove 1279 799   # the pointer out of the window
 sleep 1.5
 
@@ -125,6 +125,7 @@ keys alt+Left
 keys ctrl+shift+i
 wait_for "broadcast on" '"broadcast":"allTabs"'
 typeline 'echo typed once, runs in every pane'
+sleep 2   # the striped background on the receiving panes stays on screen a moment
 still splits-broadcast
 keys ctrl+shift+i
 wait_for "broadcast off" '"broadcast":"currentOnly"'

@@ -83,8 +83,8 @@ final class PreferencesDialog {
         }
 
         let indicatorRow = adw_switch_row_new()!
-        adw_preferences_row_set_title(cast(indicatorRow), "Show Background Pattern Indicator")
-        adw_action_row_set_subtitle(cast(indicatorRow), "Red stripes around panes that receive broadcast input.")
+        adw_preferences_row_set_title(cast(indicatorRow), "Striped Background on Receiving Panes")
+        adw_action_row_set_subtitle(cast(indicatorRow), "Diagonal red-orange stripes over every pane that receives broadcast input.")
         adw_switch_row_set_active(cast(indicatorRow), app.settings.broadcastIndicator ? 1 : 0)
         adw_preferences_group_add(cast(session), indicatorRow)
         onNotify(indicatorRow, "active") {

@@ -207,9 +207,10 @@ final class AppController {
 
     func installCSS() {
         let provider = gtk_css_provider_new()
+        let hatch = BroadcastPattern.standard
         gtk_css_provider_load_from_string(provider, """
-            .broadcast-receiving { padding: 4px; background-image: repeating-linear-gradient(45deg, \
-            rgba(224,27,36,0.85) 0px, rgba(224,27,36,0.85) 6px, transparent 6px, transparent 12px); }
+            \(hatch.css(selector: ".broadcast-hatch.dark-bg", darkBackground: true))
+            \(hatch.css(selector: ".broadcast-hatch.light-bg", darkBackground: false))
             .broadcast-badge { color: #e01b24; }
             .tab-strip .tab-item { padding: 2px 8px; border-radius: 8px; }
             .tab-strip .tab-item.selected-tab { background-color: alpha(currentColor, 0.12); }
