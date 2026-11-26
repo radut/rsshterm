@@ -12,6 +12,6 @@ rsshd ($version) stable; urgency=medium
 
   * Release $version.
 
- -- Radu Toader <radu.m.toader@gmail.com>  $date
+ -- rSshTerm <4960306+radut@users.noreply.github.com>  $date
 CL
 gzip -9nf "$out/changelog"

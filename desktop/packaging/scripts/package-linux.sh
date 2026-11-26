@@ -13,7 +13,7 @@ if [ -f "$build/SKIPPED" ] && ! ls -d "$build"/amd64 "$build"/arm64 >/dev/null 2
   [ "${REQUIRE_PRODUCT:-0}" = 1 ] && { echo "the build was skipped: nothing to release" >&2; exit 1; }
   echo "build skipped ($(cat "$build/SKIPPED")): nothing to package"; exit 0
 fi
-export DEB_MAINTAINER="${DEB_MAINTAINER:-rSshTerm <noreply@rssh-ea902a.gitlab.io>}"
+export DEB_MAINTAINER="${DEB_MAINTAINER:-rSshTerm <4960306+radut@users.noreply.github.com>}"
 mkdir -p "$dist"
 # Reproducible tarballs: fixed owner, order and time (the commit's).
 epoch=${SOURCE_DATE_EPOCH:-$(git log -1 --format=%ct 2>/dev/null || date +%s)}

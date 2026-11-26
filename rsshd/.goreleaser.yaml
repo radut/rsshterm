@@ -54,7 +54,7 @@ nfpms:
     formats: [deb]
     vendor: rSshTerm
     homepage: https://github.com/radut/rsshterm
-    maintainer: Radu Toader <radu.m.toader@gmail.com>
+    maintainer: rSshTerm <4960306+radut@users.noreply.github.com>
     description: |-
       Session daemon for the rSshTerm app
        rsshd keeps terminal sessions alive in tmux while the phone is away, enforces
