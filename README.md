@@ -8,12 +8,12 @@
 **On your iPhone and iPad, and on your Linux and Mac desktop**, from the same Swift code and the same vault.
 
 ![iOS: coming soon](https://img.shields.io/badge/iOS-coming%20soon-8e8e93)
-[![Linux: apt · AppImage](https://img.shields.io/badge/Linux-apt%20·%20AppImage-e95420)](#desktop-linux)
+[![Linux: coming soon](https://img.shields.io/badge/Linux-coming%20soon-8e8e93)](#desktop-linux-and-macos)
 [![macOS: in progress](https://img.shields.io/badge/macOS-in%20progress-8e8e93)](#desktop-linux-and-macos)
 [![rSshD: server daemon](https://img.shields.io/badge/rSshD-apt%20·%20install.sh-6e56cf)](#rsshd-on-your-servers)
 [![Swift 6](https://img.shields.io/badge/Swift-6-f05138)](https://radut.github.io/rsshterm)
 
-[Website](https://radut.github.io/rsshterm/) · [Download](https://github.com/radut/rsshterm/releases/latest) · [Install](#install) · [Keyboard](#keyboard-shortcuts) · [Docs](#documentation)
+[Website](https://radut.github.io/rsshterm/) · [Install](#install) · [Keyboard](#keyboard-shortcuts) · [Docs](#documentation)
 
 <img src="https://radut.github.io/rsshterm/media/ios-keyboard.gif" width="220" alt="Terminal with the on-screen keyboard: key row pages (F-keys, symbols, navigation), sticky Ctrl, chips">&nbsp;
 <img src="https://radut.github.io/rsshterm/media/ios-quick-connect.gif" width="220" alt="Quick Connect: hosts, user, key, save">&nbsp;
@@ -56,9 +56,9 @@ Coming soon · iOS &amp; iPadOS 18+
 - Host search (<kbd>⌘K</kbd>) and the jump switcher (<kbd>⌘J</kbd>)
 - Built-in agent: `ssh web1` in any local tab uses the vault key
 - VNC and Apple Screen Sharing over the same SSH connection; RDP on Linux
-- Touch ID on the Mac; signed self-update, apt or AppImage on Linux
+- Touch ID on the Mac; signed self-update
 
-[Install on Linux](#desktop-linux) · macOS coming soon
+Coming soon
 </td>
 </tr></table>
 
@@ -201,28 +201,9 @@ RDP on macOS and iOS, and the macOS app in the App Store.
 
 rSshTerm for iPhone and iPad is **coming soon** to the App Store. Requires iOS & iPadOS 18+.
 
-### Desktop: Linux
+### Desktop: Linux and macOS
 
-One line on Debian/Ubuntu (adds the signed apt repo, so updates come with `apt`) or any other Linux (tarball in
-`~/.local/opt`):
-
-```bash
-curl -fsSL https://rssh-ea902a.gitlab.io/desktop/install.sh | sh
-```
-
-Any distribution with glibc 2.39 or newer, as an AppImage that updates itself:
-
-```bash
-curl -fsSL https://rssh-ea902a.gitlab.io/desktop/install.sh | sh -s -- --appimage
-```
-
-Or download directly (Linux x86_64):
-[AppImage](https://github.com/radut/rsshterm/releases/latest/download/rsshterm_linux_amd64.AppImage) ·
-[.deb](https://github.com/radut/rsshterm/releases/latest/download/rsshterm_amd64.deb) ·
-[tarball](https://github.com/radut/rsshterm/releases/latest/download/rsshterm_linux_amd64.tar.gz) ·
-checksums [`rsshterm_SHA256SUMS`](https://github.com/radut/rsshterm/releases/latest/download/rsshterm_SHA256SUMS) ([signature](https://github.com/radut/rsshterm/releases/latest/download/rsshterm_SHA256SUMS.asc)).
-
-The macOS app is **coming soon**.
+The Linux and macOS apps are **coming soon**.
 
 ### rSshD on your servers
 
@@ -232,23 +213,8 @@ Debian, Ubuntu, Raspberry Pi OS (signed apt repo plus a user service) and macOS 
 curl -fsSLO https://rssh-ea902a.gitlab.io/install.sh && sh install.sh
 ```
 
-Ubuntu 24.04 and newer, from Launchpad:
-
-```bash
-sudo add-apt-repository ppa:radut/rsshd
-sudo apt install rsshd
-```
-
 `sh install.sh --uninstall` removes it; running tmux sessions are left alone. The app can also install it for you
 from the Server daemon sheet.
-
-Or download directly: .deb [x86_64](https://github.com/radut/rsshterm/releases/latest/download/rsshd_amd64.deb) / [arm64](https://github.com/radut/rsshterm/releases/latest/download/rsshd_arm64.deb) ·
-Linux tarball [x86_64](https://github.com/radut/rsshterm/releases/latest/download/rsshd_linux_amd64.tar.gz) / [arm64](https://github.com/radut/rsshterm/releases/latest/download/rsshd_linux_arm64.tar.gz) ·
-macOS tarball [Intel](https://github.com/radut/rsshterm/releases/latest/download/rsshd_darwin_amd64.tar.gz) / [Apple silicon](https://github.com/radut/rsshterm/releases/latest/download/rsshd_darwin_arm64.tar.gz) ·
-checksums [`rsshd_SHA256SUMS`](https://github.com/radut/rsshterm/releases/latest/download/rsshd_SHA256SUMS) ([signature](https://github.com/radut/rsshterm/releases/latest/download/rsshd_SHA256SUMS.asc)).
-
-[All releases on GitHub](https://github.com/radut/rsshterm/releases): versioned files, `SHA256SUMS` and signatures
-(key `3C2F847F5734F445076275DD5961ADF201732BAC`).
 
 ## Keyboard shortcuts
 
