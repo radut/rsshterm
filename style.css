@@ -218,3 +218,7 @@ section[id] { scroll-margin-top: 64px; }
 .ticks { margin: 12px 0 20px; padding-left: 20px; color: var(--muted); }
 .ticks li { margin: 6px 0; }
 @media (max-width: 900px) { .duo { grid-template-columns: 1fr; } }
+
+.grid.shots.two { grid-template-columns: 1fr 1fr; align-items: start; }
+.grid.shots.two img { max-height: 420px; width: 100%; object-fit: contain; object-position: top; background: var(--card); }
+@media (max-width: 720px) { .grid.shots.two { grid-template-columns: 1fr; } }

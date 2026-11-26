@@ -12,9 +12,9 @@
 <meta property="og:description" content="SSH terminal with one vault for every device and sessions that wait for you.">
 <meta property="og:image" content="media/ios-terminal-jb.png">
 <link rel="icon" href="favicon.png" type="image/png">
-<link rel="stylesheet" href="style.css?v=6">
+<link rel="stylesheet" href="style.css?v=7">
 <script>try{var t=localStorage.getItem("theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}</script>
-<script defer src="https://cloud.umami.is/script.js" data-website-id="c5b8f3b9-dc89-4e42-afc2-06ee72310179"></script></head>
+</head>
 <body>
 
 <header class="top">
@@ -24,6 +24,7 @@
       <a href="#apps">Apps</a>
       <a href="#features">Features</a>
       <a href="#desktop">Desktop</a>
+      <a href="#broadcast">Broadcast</a>
       <a href="#sessions">rSshD</a>
       <a href="#keyboard">Keyboard</a>
       <a href="#install">Install</a>
@@ -122,8 +123,12 @@
         <p>Key row with symbol, navigation and F-key pages, a chip bar, sticky Ctrl/Alt and real word editing.</p></div>
       <div class="card"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg><h3>Files built in</h3>
         <p>SFTP from inside a session, and a two-pane Commander across the phone, Files, S3 and servers.</p></div>
+      <div class="card"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="2"/><path d="M7.8 7.8a6 6 0 0 0 0 8.4M16.2 7.8a6 6 0 0 1 0 8.4M5 5a10 10 0 0 0 0 14M19 5a10 10 0 0 1 0 14"/></svg><h3>Broadcast input</h3>
+        <p>Type once into many servers: all panes, this tab, visible panes or the ones you tick, with a striped frame on each.</p></div>
       <div class="card"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M12 4v16M3 9h18"/></svg><h3>Desktop terminal</h3>
         <p>Tabs, splits, host search and a jump switcher. <code>ssh web1</code> in any tab picks the vault key.</p></div>
+      <div class="card"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/><path d="M7 12h3M14 12h3"/></svg><h3>Jump hosts</h3>
+        <p>Reach servers behind a bastion: chain one or more saved servers as jump hosts, on the phone and the desktop.</p></div>
       <div class="card"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/></svg><h3>Remote desktop</h3>
         <p>VNC and Apple Screen Sharing on Linux and macOS, RDP on Linux, tunnelled over the SSH connection you already have.</p></div>
     </div>
@@ -295,6 +300,37 @@
   </div>
 </section>
 
+<section id="broadcast">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="kicker">Broadcast input · Linux and macOS</div>
+      <h2>Type once, run it on every server.</h2>
+      <p>Send what you type to all panes, to this tab's panes, to the visible ones, or to exactly the panes you tick.
+        Broadcasting panes wear a striped frame and the window title says so, so you always know where your keys go.</p>
+    </div>
+    <div class="feature">
+      <div class="window">
+        <img src="media/linux-broadcast.png" alt="Linux: one command typed once runs in every pane; the receiving pane has a striped frame and the title says broadcasting input" loading="lazy">
+      </div>
+      <div>
+        <h3>One key to start</h3>
+        <p class="note"><kbd><span class="mod">⌘</span><span class="mod">⇧</span>I</kbd> / <kbd>Ctrl+Shift+I</kbd>:
+          broadcast to every pane, on and off. <kbd><span class="mod">⌘</span><span class="mod">⌥</span>I</kbd>: only this tab's panes.</p>
+        <h3 style="margin-top:20px">Pick the panes</h3>
+        <p class="note"><kbd><span class="mod">⌘</span><span class="mod">⌥</span><span class="mod">⇧</span>I</kbd> /
+          <kbd>Ctrl+Shift+Alt+I</kbd>: presets (this tab, all tabs of the window, visible panes, all windows) or tick panes one
+          by one, filtered by name or host.</p>
+        <h3 style="margin-top:20px">Always visible</h3>
+        <p class="note">A striped frame on each receiving pane, a badge, and "broadcasting input" in the title until you stop.</p>
+      </div>
+    </div>
+    <div class="grid shots two">
+      <div class="window"><img src="media/mac-broadcast-picker.png" alt="macOS: the broadcast picker with presets and pane checkboxes" loading="lazy"></div>
+      <div class="window"><img src="media/linux-broadcast-picker.png" alt="Linux: the broadcast picker" loading="lazy"></div>
+    </div>
+  </div>
+</section>
+
 <section id="keyboard">
   <div class="wrap">
     <div class="section-head">
@@ -414,8 +450,8 @@
 
 <footer>
   <div class="wrap">
-    <span>rSshTerm · rSshD · <a href="privacy.html">Privacy</a> · <a href="support.html">Support</a></span>
-    <span>Screens show demo data only (example.com, documentation addresses). No cookies; this page counts visits anonymously (Umami).</span>
+    <span>rSshTerm · rSshD · <a href="privacy.html">Privacy</a> · <a href="support.html">Support</a> · <a href="credits.html">Credits</a></span>
+    <span>Screens show demo data only (example.com, documentation addresses). No cookies, no analytics, no trackers.</span>
   </div>
 </footer>
 
