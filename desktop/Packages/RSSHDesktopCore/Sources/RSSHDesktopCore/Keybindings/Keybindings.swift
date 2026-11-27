@@ -23,6 +23,14 @@ public enum DesktopAction: Hashable, Sendable {
     case renameTab
     /// The jump switcher: every open shell, then vault servers for a new session.
     case jumpSwitcher
+    /// App commands (the Mac's File, Shell and Vault menus): terminal font size, the tool windows, the vault.
+    case biggerFont, smallerFont, resetFontSize
+    case showServers, quickConnect, showFiles, openFileManagerHere, lockVault, showKeys
+
+    /// The app commands, which open UI or change settings and never touch the layout.
+    public static let appCommands: [DesktopAction] =
+        [.biggerFont, .smallerFont, .resetFontSize, .showServers, .quickConnect, .showFiles, .openFileManagerHere,
+         .lockVault, .showKeys]
 
     public static let allCases: [DesktopAction] =
         [.newTab, .newWindow, .closePane, .splitRight, .splitDown]
@@ -34,6 +42,7 @@ public enum DesktopAction: Hashable, Sendable {
         + [.renameTab, .jumpSwitcher]
         + [.broadcastCurrentOnly, .broadcastAllTabs, .broadcastCurrentTab, .broadcastVisible, .toggleBroadcastSession,
            .broadcastPicker]
+        + appCommands
 
     /// The name in the config file: `newTab`, `focusLeft`, `selectTab3`, ...
     public var identifier: String {
@@ -64,6 +73,15 @@ public enum DesktopAction: Hashable, Sendable {
         case .toggleZoom: "toggleZoom"
         case .renameTab: "renameTab"
         case .jumpSwitcher: "jumpSwitcher"
+        case .biggerFont: "biggerFont"
+        case .smallerFont: "smallerFont"
+        case .resetFontSize: "resetFontSize"
+        case .showServers: "showServers"
+        case .quickConnect: "quickConnect"
+        case .showFiles: "showFiles"
+        case .openFileManagerHere: "openFileManagerHere"
+        case .lockVault: "lockVault"
+        case .showKeys: "showKeys"
         }
     }
 
@@ -112,11 +130,12 @@ public struct Keybindings: Equatable, Sendable {
     }
 
     /// Actions with no default chord (menu only): "current only" (Cmd/Ctrl+Shift+I toggles broadcast off), "visible
-    /// panes", and on Linux the modes whose Mac chords have no free Ctrl+Shift equivalent.
+    /// panes", and on Linux the app commands (its own menus and dialogs) and the modes whose Mac chords have no free Ctrl+Shift equivalent.
     public static func menuOnly(_ platform: Platform) -> Set<DesktopAction> {
         switch platform {
         case .macOS: [.broadcastCurrentOnly, .broadcastVisible]
-        case .linux: [.broadcastCurrentOnly, .broadcastVisible, .broadcastCurrentTab, .toggleBroadcastSession]
+        case .linux: Set([.broadcastCurrentOnly, .broadcastVisible, .broadcastCurrentTab, .toggleBroadcastSession]
+                         + DesktopAction.appCommands)
         }
     }
 
@@ -143,6 +162,9 @@ public struct Keybindings: Equatable, Sendable {
                 ("cmd+alt+i", .broadcastCurrentTab), ("cmd+shift+i", .broadcastAllTabs),
                 ("cmd+alt+shift+i", .broadcastPicker), ("cmd+ctrl+alt+shift+i", .toggleBroadcastSession), ("cmd+ctrl+=", .equalizePanes),
                 ("cmd+shift+enter", .toggleZoom), ("cmd+r", .renameTab), ("cmd+j", .jumpSwitcher),
+                ("cmd+=", .biggerFont), ("cmd+-", .smallerFont), ("cmd+0", .resetFontSize),
+                ("cmd+shift+s", .showServers), ("cmd+shift+o", .quickConnect), ("cmd+shift+f", .showFiles),
+                ("cmd+alt+f", .openFileManagerHere), ("cmd+ctrl+l", .lockVault), ("cmd+alt+shift+k", .showKeys),
             ] + (1...9).map { ("cmd+\($0)", .selectTab($0)) }
         case .linux:
             pairs = [

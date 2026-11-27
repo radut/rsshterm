@@ -23,7 +23,9 @@ extension Window {
         case .equalizePanes: return updatingSelectedTab { $0.equalized() }
         case .toggleZoom: return updatingSelectedTab { $0.togglingZoom() }
         case .newWindow, .hostSearch, .commandPalette, .renameTab, .jumpSwitcher,
-             .broadcastCurrentOnly, .broadcastAllTabs, .broadcastVisible, .toggleBroadcastSession, .broadcastPicker:
+             .broadcastCurrentOnly, .broadcastAllTabs, .broadcastVisible, .toggleBroadcastSession, .broadcastPicker,
+             .biggerFont, .smallerFont, .resetFontSize, .showServers, .quickConnect, .showFiles, .openFileManagerHere,
+             .lockVault, .showKeys:
             return self
         }
     }
