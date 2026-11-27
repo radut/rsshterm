@@ -38,6 +38,15 @@ public enum RemoteKeyStrokes {
         }
     }
 
+    /// The ⌘ (Mac) / Windows key pressed and released on its own (the Start menu on Windows).
+    public static let metaTap: [Stroke] = [Stroke(X11Keysym.metaLeft, down: true), Stroke(X11Keysym.metaLeft, down: false)]
+
+    /// Ctrl-Alt-Del: the three held, then released in reverse.
+    public static let ctrlAltDelete: [Stroke] = {
+        let keys = [X11Keysym.controlLeft, X11Keysym.altLeft, X11Keysym.delete]
+        return keys.map { Stroke($0, down: true) } + keys.reversed().map { Stroke($0, down: false) }
+    }()
+
     public static func keysym(for key: TerminalKey) -> UInt32? {
         switch key {
         case .character(let c): c.unicodeScalars.count == 1 ? c.unicodeScalars.first.flatMap(X11Keysym.keysym(for:)) : nil

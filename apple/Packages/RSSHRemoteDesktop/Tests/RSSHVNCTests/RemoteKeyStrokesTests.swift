@@ -51,3 +51,37 @@ import Testing
         #expect(RemoteKeyStrokes.strokes(for: .morePages, latch: ctrl).latch == ctrl)
     }
 }
+
+@Suite struct RemoteModifierLatchTests {
+    @Test func aLatchedShiftWrapsTheNextKeyThenReleases() {
+        let shift = RemoteKeyStrokes.strokes(for: .latch(.shift), latch: ModifierLatch()).latch
+        #expect(shift.active == .shift)
+        let (strokes, after) = RemoteKeyStrokes.strokes(for: .key(.tab), latch: shift)
+        #expect(strokes == [.init(X11Keysym.shiftLeft, down: true), .init(X11Keysym.tab, down: true),
+                            .init(X11Keysym.tab, down: false), .init(X11Keysym.shiftLeft, down: false)])
+        #expect(after.active.isEmpty)
+    }
+
+    @Test func aLatchedAltWrapsTypedText() {
+        let alt = ModifierLatch().tapped(.alt)
+        let (strokes, _) = RemoteKeyStrokes.strokes(for: .text("f"), latch: alt)
+        #expect(strokes.first == .init(X11Keysym.altLeft, down: true))
+        #expect(strokes.last == .init(X11Keysym.altLeft, down: false))
+        #expect(strokes.count == 4)
+    }
+
+    @Test func shiftAltAndTheWindowsKeyTogether() {
+        let latch = ModifierLatch().tapped(.shift).tapped(.alt)
+        let (strokes, _) = RemoteKeyStrokes.strokes(for: .key(.left), latch: latch, meta: true)
+        #expect(strokes.prefix(3).map(\.keysym) == [X11Keysym.altLeft, X11Keysym.shiftLeft, X11Keysym.metaLeft])
+        #expect(strokes.suffix(3).map(\.keysym) == [X11Keysym.metaLeft, X11Keysym.shiftLeft, X11Keysym.altLeft])
+    }
+
+    @Test func theWindowsKeyAloneAndCtrlAltDel() {
+        #expect(RemoteKeyStrokes.metaTap == [.init(X11Keysym.metaLeft, down: true), .init(X11Keysym.metaLeft, down: false)])
+        #expect(RemoteKeyStrokes.ctrlAltDelete.map(\.keysym)
+                == [X11Keysym.controlLeft, X11Keysym.altLeft, X11Keysym.delete,
+                    X11Keysym.delete, X11Keysym.altLeft, X11Keysym.controlLeft])
+        #expect(RemoteKeyStrokes.ctrlAltDelete.map(\.down) == [true, true, true, false, false, false])
+    }
+}

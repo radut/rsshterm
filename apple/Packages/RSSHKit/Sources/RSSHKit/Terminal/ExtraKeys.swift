@@ -80,6 +80,18 @@ public enum ExtraKeyLayout {
         ExtraKey("…", symbol: "ellipsis", name: "More keys", .morePages),
     ]
 
+    /// The key row on a remote screen (VNC, RDP), next to the ⊞/⌘ key: the modifiers a desktop needs latch like
+    /// ctrl (shift, ctrl, alt), arrows, and "…" for the other pages. Return is on the keyboard itself.
+    public static let remoteRow: [ExtraKey] = [
+        mainRow[0],   // esc
+        mainRow[1],   // tab, hold for shift-tab
+        ExtraKey("shift", symbol: "shift", name: "Shift", .latch(.shift)),
+        ExtraKey("ctrl", name: "Control", .latch(.ctrl)),
+        ExtraKey("alt", symbol: "option", name: "Alt", .latch(.alt)),
+        mainRow[3], mainRow[4], mainRow[5], mainRow[6],   // arrows
+        ExtraKey("…", symbol: "ellipsis", name: "More keys", .morePages),
+    ]
+
     /// What "…" cycles through: symbols, then navigation. F1–F12 are on the Fn row (the Fn chip), not here.
     public static let pages: [ExtraKeyPage] = [
         ExtraKeyPage(title: "Symbols", keys: ["/", "-", "|", "@", "~", ".", ":", ";", "_", "\\", "$", "*", "&"]

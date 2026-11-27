@@ -8,19 +8,30 @@ public struct Window: Codable, Hashable, Identifiable, Sendable {
     public let tabs: [Tab]
     public let selectedIndex: Int
     public let broadcastsInput: Bool
+    /// A title the user set (Window › Edit Window Title); nil shows the selected tab's.
+    public let title: String?
 
     /// `tabs` must not be empty.
-    public init(id: UUID = UUID(), tabs: [Tab], selectedIndex: Int = 0, broadcastsInput: Bool = false) {
+    public init(id: UUID = UUID(), tabs: [Tab], selectedIndex: Int = 0, broadcastsInput: Bool = false,
+                title: String? = nil) {
         precondition(!tabs.isEmpty, "a window has at least one tab")
         self.id = id
         self.tabs = tabs
         self.selectedIndex = min(max(selectedIndex, 0), tabs.count - 1)
         self.broadcastsInput = broadcastsInput
+        self.title = title
     }
 
-    private func with(tabs: [Tab]? = nil, selectedIndex: Int? = nil, broadcastsInput: Bool? = nil) -> Window {
+    func with(tabs: [Tab]? = nil, selectedIndex: Int? = nil, broadcastsInput: Bool? = nil,
+              title: String?? = .none) -> Window {
         Window(id: id, tabs: tabs ?? self.tabs, selectedIndex: selectedIndex ?? self.selectedIndex,
-               broadcastsInput: broadcastsInput ?? self.broadcastsInput)
+               broadcastsInput: broadcastsInput ?? self.broadcastsInput, title: title ?? self.title)
+    }
+
+    /// The same window under a title the user set; nil or blank restores the automatic one.
+    public func retitled(_ title: String?) -> Window {
+        let trimmed = title?.trimmingCharacters(in: .whitespacesAndNewlines)
+        return with(title: .some(trimmed?.isEmpty == false ? trimmed : nil))
     }
 
     public var selectedTab: Tab { tabs[selectedIndex] }
@@ -80,7 +91,7 @@ public struct Window: Codable, Hashable, Identifiable, Sendable {
 }
 
 extension Window {
-    private enum CodingKeys: String, CodingKey { case id, tabs, selectedIndex, broadcastsInput }
+    private enum CodingKeys: String, CodingKey { case id, tabs, selectedIndex, broadcastsInput, title }
 
     public init(from decoder: any Decoder) throws {
         let c = try decoder.container(keyedBy: CodingKeys.self)
@@ -90,7 +101,8 @@ extension Window {
         }
         self.init(id: try c.decode(UUID.self, forKey: .id), tabs: tabs,
                   selectedIndex: try c.decodeIfPresent(Int.self, forKey: .selectedIndex) ?? 0,
-                  broadcastsInput: try c.decodeIfPresent(Bool.self, forKey: .broadcastsInput) ?? false)
+                  broadcastsInput: try c.decodeIfPresent(Bool.self, forKey: .broadcastsInput) ?? false,
+                  title: try c.decodeIfPresent(String.self, forKey: .title))
     }
 }
 

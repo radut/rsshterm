@@ -15,7 +15,7 @@ import RSSHVNC
 final class ScreenPane {
     let id: PaneID
     let desktopID: UUID
-    private unowned let window: MainWindow
+    unowned var window: MainWindow
     private(set) var widget: Widget!
     private var picture: Widget!
     private var scroller: Widget!
@@ -99,6 +99,20 @@ final class ScreenPane {
         on(more, "clicked") { [unowned self] in moreMenu(more) }
         gtk_box_append(cast(header), more)
         gtk_box_append(cast(widget), header)
+        // The header is the screen's title strip: drag it to move the pane (like a terminal's grab handle).
+        let drag = gtk_drag_source_new()!
+        gtk_drag_source_set_actions(drag, GDK_ACTION_MOVE)
+        let paneID = id
+        onDragPrepare(drag) { [weak self] _, _ in
+            self?.window.app.dragStarted(pane: paneID)
+            return textContent(DragPayload.pane(paneID).text)
+        }
+        onDragEnd(drag) { [weak self] in self?.window.app.dragEnded() }
+        onDragCancel(drag) { [weak self] _ in
+            self?.window.app.dragEnded()
+            return false
+        }
+        gtk_widget_add_controller(header, cast(drag))
 
         let overlay = gtk_overlay_new()!
         gtk_widget_set_vexpand(overlay, 1)

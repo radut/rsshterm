@@ -11,7 +11,7 @@ public enum SessionSnapshot {
                     guard case .localShell(let command, let directory) = pane.content else { return pane.content }
                     return .localShell(command: command, directory: directories[pane.id] ?? directory)
                 }
-            }, selectedIndex: window.selectedIndex, broadcastsInput: window.broadcastsInput)
+            }, selectedIndex: window.selectedIndex, broadcastsInput: window.broadcastsInput, title: window.title)
         })
     }
 }

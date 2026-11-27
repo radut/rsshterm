@@ -170,6 +170,19 @@ public final class RDPSession: @unchecked Sendable {
         }
     }
 
+    // MARK: resize
+
+    /// True once the server opened display control: `resize` then changes the running desktop's size.
+    public var canResizeLive: Bool {
+        lifecycle.withLock { state in state == .running && rssh_rdp_can_resize(handle) != 0 }
+    }
+
+    /// Asks the server for a desktop of `width` x `height` (even, 200...8192). It answers with a new
+    /// `.connected` event at the size it chose. Nothing happens without display control (`canResizeLive`).
+    public func resize(width: Int, height: Int) {
+        live { h in rssh_rdp_resize(h, UInt32(clamping: max(0, width)), UInt32(clamping: max(0, height))) }
+    }
+
     /// Offers this device's clipboard text to the server (clipboard sharing on).
     public func setLocalClipboard(_ text: String) {
         live { h in text.withCString { rssh_rdp_set_local_text(h, $0) } }

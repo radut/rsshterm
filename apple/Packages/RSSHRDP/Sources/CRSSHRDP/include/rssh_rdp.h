@@ -46,6 +46,11 @@ void rssh_rdp_unlock_buffer(rssh_rdp *rdp);
 void rssh_rdp_mouse(rssh_rdp *rdp, uint16_t flags, uint16_t x, uint16_t y);
 void rssh_rdp_scancode(rssh_rdp *rdp, uint16_t scancode, int extended, int down);
 void rssh_rdp_unicode(rssh_rdp *rdp, uint16_t utf16, int down);
+/// 1 when the server opened display control: rssh_rdp_resize then resizes the running desktop.
+int rssh_rdp_can_resize(rssh_rdp *rdp);
+/// Asks the server for a desktop of width x height (even, 200...8192); it answers with a desktop resize (the next
+/// `connected` callback reports the new size). Ignored without display control.
+void rssh_rdp_resize(rssh_rdp *rdp, uint32_t width, uint32_t height);
 /// Offers this device's clipboard text to the server (clipboard sharing on).
 void rssh_rdp_set_local_text(rssh_rdp *rdp, const char *utf8);
 

@@ -1,6 +1,8 @@
-// Preferences: terminal font, light/dark (or follow the system), scrollback, automatic updates.
+// Preferences: terminal font (monospaced families only), light/dark (or follow the system), the dark and light
+// terminal themes (ThemeGalleryPage), scrollback, automatic updates.
 import CGtk
 import Foundation
+import RSSHKit
 import RSSHTermLinux
 
 @MainActor
@@ -9,6 +11,17 @@ final class PreferencesDialog {
     private let parent: Widget
     private var keepAlive: PreferencesDialog?
     private var titles: TabTitlesPage?
+    private var galleries: [ThemeGalleryPage] = []
+    private var refreshers: [Bool: @MainActor () -> Void] = [:]
+    private let app: AppController
+
+    /// Pushes the Dark Theme (or Light Theme) gallery.
+    func showThemeGallery(dark: Bool) {
+        let gallery = ThemeGalleryPage(app: app, dark: dark)
+        gallery.onPick = refreshers[dark]
+        galleries.append(gallery)
+        adw_preferences_dialog_push_subpage(cast(dialog), cast(gallery.page))
+    }
 
     /// Opens on the Tab Titles page.
     func showTabTitles() {
@@ -17,6 +30,7 @@ final class PreferencesDialog {
 
     init(app: AppController, parent: Widget) {
         self.parent = parent
+        self.app = app
         dialog = cast(adw_preferences_dialog_new())
         let page = adw_preferences_page_new()!
         adw_preferences_page_set_title(cast(page), "General")
@@ -30,6 +44,8 @@ final class PreferencesDialog {
         adw_preferences_row_set_title(cast(fontRow), "Font")
         let fontButton = gtk_font_dialog_button_new(gtk_font_dialog_new())!
         gtk_font_dialog_button_set_level(cast(fontButton), GTK_FONT_LEVEL_FONT)
+        // Only monospaced families (fontconfig's installed fonts, as GTK lists them).
+        gtk_font_dialog_set_filter(gtk_font_dialog_button_get_dialog(cast(fontButton)), Self.monospaceFilter())
         let desc = pango_font_description_from_string(app.settings.fontName)
         gtk_font_dialog_button_set_font_desc(cast(fontButton), desc)
         pango_font_description_free(desc)
@@ -58,6 +74,27 @@ final class PreferencesDialog {
             guard schemes.indices.contains(i) else { return }
             app.settings.colorScheme = schemes[i]
             app.settingsChanged()
+        }
+
+        for dark in [true, false] {
+            let row = adw_action_row_new()!
+            adw_preferences_row_set_title(cast(row), dark ? "Dark Theme" : "Light Theme")
+            let swatch = label("")
+            adw_action_row_add_prefix(cast(row), swatch)
+            adw_action_row_add_suffix(cast(row), gtk_image_new_from_icon_name("go-next-symbolic"))
+            gtk_list_box_row_set_activatable(cast(row), 1)
+            let refresh = { @MainActor in
+                let id = dark ? app.settings.darkThemeID : app.settings.lightThemeID
+                let scheme = TerminalColorSchemes.scheme(id: id)
+                    ?? (dark ? TerminalColorSchemes.defaultDark : TerminalColorSchemes.defaultLight)
+                adw_action_row_set_subtitle(cast(row), ThemeSwatchMarkup.escape(scheme.name)
+                    + (dark ? " · with Style Dark or Follow System" : " · with Style Light"))
+                gtk_label_set_markup(cast(swatch), ThemeSwatchMarkup.swatch(scheme))
+            }
+            refresh()
+            refreshers[dark] = refresh
+            on(row, "activated") { [unowned self] in showThemeGallery(dark: dark) }
+            adw_preferences_group_add(cast(look), row)
         }
 
         let scrollRow = adw_spin_row_new_with_range(0, Double(AppSettings.maximumScrollback), 1000)!
@@ -111,6 +148,23 @@ final class PreferencesDialog {
         titles = TabTitlesPage(app: app)
         adw_preferences_dialog_add(cast(dialog), cast(titles!.page))
         on(dialog, "closed") { [unowned self] in keepAlive = nil }
+    }
+
+    /// A GtkFilter that keeps monospaced font families (and faces of them).
+    private static func monospaceFilter() -> UnsafeMutablePointer<GtkFilter> {
+        let custom = gtk_custom_filter_new({ item, _ in
+            guard let item else { return 0 }
+            let instance = item.assumingMemoryBound(to: GTypeInstance.self)
+            if g_type_check_instance_is_a(instance, pango_font_family_get_type()) != 0 {
+                return pango_font_family_is_monospace(item.assumingMemoryBound(to: PangoFontFamily.self))
+            }
+            if g_type_check_instance_is_a(instance, pango_font_face_get_type()) != 0,
+               let family = pango_font_face_get_family(item.assumingMemoryBound(to: PangoFontFace.self)) {
+                return pango_font_family_is_monospace(family)
+            }
+            return 1
+        }, nil, nil)!
+        return UnsafeMutableRawPointer(custom).assumingMemoryBound(to: GtkFilter.self)
     }
 
     func present() {

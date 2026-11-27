@@ -26,6 +26,22 @@ public enum DesktopAction: Hashable, Sendable {
     /// App commands (the Mac's File, Shell and Vault menus): terminal font size, the tool windows, the vault.
     case biggerFont, smallerFont, resetFontSize
     case showServers, quickConnect, showFiles, openFileManagerHere, lockVault, showKeys
+    /// Moving panes and tabs (iTerm2's Session › Move Session, Ghostty's and GNOME Terminal's detach): the focused
+    /// pane to its own tab or window, the selected tab to its own window, every window's tabs into this one, the
+    /// "pick a target" mode (the pane is marked; click or arrow to a pane, Enter drops it), swapping with the
+    /// neighbouring pane.
+    case movePaneToNewTab, movePaneToNewWindow, moveTabToNewWindow, mergeAllWindows, movePaneMode
+    case swapPane(Direction)
+    /// Duplicate Tab / Pane / Window: the same servers and commands (local shells in the same folder) in new sessions.
+    case duplicateTab, duplicatePane, duplicateWindow
+    /// Window › Edit Window Title.
+    case editWindowTitle
+
+    /// The moves and duplicates, which the app runs over all its windows.
+    public static let moveCommands: [DesktopAction] =
+        [.movePaneToNewTab, .movePaneToNewWindow, .moveTabToNewWindow, .mergeAllWindows, .movePaneMode]
+        + Direction.allCases.map { .swapPane($0) }
+        + [.duplicateTab, .duplicatePane, .duplicateWindow, .editWindowTitle]
 
     /// The app commands, which open UI or change settings and never touch the layout.
     public static let appCommands: [DesktopAction] =
@@ -43,6 +59,7 @@ public enum DesktopAction: Hashable, Sendable {
         + [.broadcastCurrentOnly, .broadcastAllTabs, .broadcastCurrentTab, .broadcastVisible, .toggleBroadcastSession,
            .broadcastPicker]
         + appCommands
+        + moveCommands
 
     /// The name in the config file: `newTab`, `focusLeft`, `selectTab3`, ...
     public var identifier: String {
@@ -82,6 +99,16 @@ public enum DesktopAction: Hashable, Sendable {
         case .openFileManagerHere: "openFileManagerHere"
         case .lockVault: "lockVault"
         case .showKeys: "showKeys"
+        case .movePaneToNewTab: "movePaneToNewTab"
+        case .movePaneToNewWindow: "movePaneToNewWindow"
+        case .moveTabToNewWindow: "moveTabToNewWindow"
+        case .mergeAllWindows: "mergeAllWindows"
+        case .movePaneMode: "movePaneMode"
+        case .swapPane(let d): "swapPane" + d.rawValue.capitalized
+        case .duplicateTab: "duplicateTab"
+        case .duplicatePane: "duplicatePane"
+        case .duplicateWindow: "duplicateWindow"
+        case .editWindowTitle: "editWindowTitle"
         }
     }
 
@@ -133,8 +160,10 @@ public struct Keybindings: Equatable, Sendable {
     /// panes", and on Linux the app commands (its own menus and dialogs) and the modes whose Mac chords have no free Ctrl+Shift equivalent.
     public static func menuOnly(_ platform: Platform) -> Set<DesktopAction> {
         switch platform {
-        case .macOS: [.broadcastCurrentOnly, .broadcastVisible]
-        case .linux: Set([.broadcastCurrentOnly, .broadcastVisible, .broadcastCurrentTab, .toggleBroadcastSession]
+        case .macOS: [.broadcastCurrentOnly, .broadcastVisible, .mergeAllWindows, .duplicatePane, .duplicateWindow,
+                      .editWindowTitle]
+        case .linux: Set([.broadcastCurrentOnly, .broadcastVisible, .broadcastCurrentTab, .toggleBroadcastSession,
+                          .mergeAllWindows, .duplicateTab, .duplicatePane, .duplicateWindow, .editWindowTitle]
                          + DesktopAction.appCommands)
         }
     }
@@ -165,6 +194,11 @@ public struct Keybindings: Equatable, Sendable {
                 ("cmd+=", .biggerFont), ("cmd+-", .smallerFont), ("cmd+0", .resetFontSize),
                 ("cmd+shift+s", .showServers), ("cmd+shift+o", .quickConnect), ("cmd+shift+f", .showFiles),
                 ("cmd+alt+f", .openFileManagerHere), ("cmd+ctrl+l", .lockVault), ("cmd+alt+shift+k", .showKeys),
+                // Moves (iTerm2/Ghostty have no defaults; ⌥⇧ on the new-tab/window keys, ⌥⇧ on the focus arrows)
+                ("cmd+alt+shift+t", .movePaneToNewTab), ("cmd+alt+shift+n", .movePaneToNewWindow),
+                ("cmd+alt+n", .moveTabToNewWindow), ("cmd+alt+shift+m", .movePaneMode), ("cmd+alt+t", .duplicateTab),
+                ("cmd+alt+shift+left", .swapPane(.left)), ("cmd+alt+shift+right", .swapPane(.right)),
+                ("cmd+alt+shift+up", .swapPane(.up)), ("cmd+alt+shift+down", .swapPane(.down)),
             ] + (1...9).map { ("cmd+\($0)", .selectTab($0)) }
         case .linux:
             pairs = [
@@ -181,6 +215,10 @@ public struct Keybindings: Equatable, Sendable {
                 ("ctrl+shift+k", .hostSearch), ("ctrl+shift+p", .commandPalette),
                 ("ctrl+shift+i", .broadcastAllTabs), ("ctrl+shift+alt+i", .broadcastPicker), ("ctrl+shift+alt+=", .equalizePanes),
                 ("ctrl+shift+x", .toggleZoom), ("ctrl+shift+r", .renameTab), ("ctrl+shift+j", .jumpSwitcher),
+                ("ctrl+shift+alt+t", .movePaneToNewTab), ("ctrl+shift+alt+n", .movePaneToNewWindow),
+                ("ctrl+shift+alt+d", .moveTabToNewWindow), ("ctrl+shift+alt+m", .movePaneMode),
+                ("alt+shift+left", .swapPane(.left)), ("alt+shift+right", .swapPane(.right)),
+                ("alt+shift+up", .swapPane(.up)), ("alt+shift+down", .swapPane(.down)),
             ] + (1...9).map { ("ctrl+\($0)", .selectTab($0)) }
         }
         precondition(Set(pairs.map(\.0)).count == pairs.count, "a default chord is bound twice")

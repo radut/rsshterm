@@ -15,7 +15,11 @@ final class AppController {
     let home: String
     /// The home OpenSSH uses for ~/.ssh/config: the passwd entry's, which can differ from $HOME.
     let sshHome: String
-    private(set) var windows: [MainWindow] = []
+    var windows: [MainWindow] = []
+    /// The pane being dragged or picked (Move Pane…), so a window never offers a drop onto the pane itself.
+    var draggedPane: PaneID?
+    /// Set while the move-pane mode waits for a target.
+    var pickingPane: PaneID?
     var settings: AppSettings
     let settingsURL: URL
     var keybindings = Keybindings.defaults(for: .linux)
@@ -234,6 +238,7 @@ final class AppController {
             .file-pane.active-pane { border-color: alpha(@accent_bg_color, 0.6); }
             .file-list row.marked { background-color: alpha(@warning_bg_color, 0.35); }
             .file-list row.marked label { font-weight: bold; }
+            \(MainWindow.moveCSS)
             """)
         gtk_style_context_add_provider_for_display(gdk_display_get_default(), cast(provider), 600)
     }
@@ -855,11 +860,12 @@ final class AppController {
         KeysDialog(app: self, model: CredentialsModel(document: document), parent: window.window).present()
     }
 
-    func showPreferences(tabTitles: Bool = false) {
+    func showPreferences(tabTitles: Bool = false, darkTheme: Bool = false) {
         guard let window = activeWindow else { return }
         let dialog = PreferencesDialog(app: self, parent: window.window)
         dialog.present()
         if tabTitles { dialog.showTabTitles() }
+        if darkTheme { dialog.showThemeGallery(dark: true) }
     }
 
     // MARK: Test hook
@@ -872,6 +878,7 @@ final class AppController {
             "servers": vault?.servers.count ?? 0,
             "serverUsers": vault?.servers.map(\.username) ?? [],
             "windows": windows.map { $0.snapshot() },
+            "windowCount": windows.count,
             "files": commanderWindow?.snapshot() ?? [:],
             "sidebarServers": serverList?.visibleServers.count ?? 0,
         ]

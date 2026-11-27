@@ -9,6 +9,7 @@
 #include <freerdp/event.h>
 #include <freerdp/client/channels.h>
 #include <freerdp/client/cliprdr.h>
+#include <freerdp/client/disp.h>
 #include <freerdp/client/cmdline.h>
 #include <freerdp/channels/channels.h>
 #include <freerdp/error.h>
@@ -20,7 +21,7 @@
 
 #define QUEUE_CAP 2048
 
-typedef enum { EV_MOUSE, EV_SCANCODE, EV_UNICODE, EV_OFFER_TEXT } event_kind;
+typedef enum { EV_MOUSE, EV_SCANCODE, EV_UNICODE, EV_OFFER_TEXT, EV_RESIZE } event_kind;
 
 typedef struct {
     event_kind kind;
@@ -45,6 +46,8 @@ struct rssh_rdp {
     volatile int stop;
     int reported_connected;
     CliprdrClientContext *cliprdr;
+    DispClientContext *disp;   // the display control channel, once open
+    volatile int disp_ready;   // the server sent its display control caps: resizing works
 };
 
 typedef struct {
@@ -72,6 +75,7 @@ static void enqueue(rssh_rdp *rdp, queued_event ev) {
 }
 
 static void send_format_list(rssh_rdp *rdp);
+static void send_layout(rssh_rdp *rdp, uint32_t width, uint32_t height);
 
 static void drain(rssh_rdp *rdp) {
     queued_event local[QUEUE_CAP];
@@ -100,6 +104,9 @@ static void drain(rssh_rdp *rdp) {
             break;
         case EV_OFFER_TEXT:
             send_format_list(rdp);
+            break;
+        case EV_RESIZE:
+            send_layout(rdp, ev.a, ev.b);
             break;
         }
     }
@@ -215,6 +222,38 @@ static void attach_cliprdr(rssh_rdp *rdp, rdpContext *context, CliprdrClientCont
     rdp->cliprdr = cliprdr;
 }
 
+// MARK: display control (resize the remote desktop while connected)
+
+static UINT on_display_control_caps(DispClientContext *disp, UINT32 max_monitors, UINT32 factor_a, UINT32 factor_b) {
+    (void)max_monitors; (void)factor_a; (void)factor_b;
+    rssh_rdp *rdp = disp->custom;
+    rdp->disp_ready = 1;
+    return CHANNEL_RC_OK;
+}
+
+static void attach_disp(rssh_rdp *rdp, DispClientContext *disp) {
+    if (!disp) return;
+    disp->custom = rdp;
+    disp->DisplayControlCaps = on_display_control_caps;
+    rdp->disp = disp;
+}
+
+/// One monitor of width x height (even, 200...8192, as MS-RDPEDISP asks); the server answers with a desktop resize.
+static void send_layout(rssh_rdp *rdp, uint32_t width, uint32_t height) {
+    if (!rdp->disp || !rdp->disp_ready) return;
+    width &= ~1u;
+    height &= ~1u;
+    if (width < 200 || height < 200 || width > 8192 || height > 8192) return;
+    DISPLAY_CONTROL_MONITOR_LAYOUT layout = { 0 };
+    layout.Flags = DISPLAY_CONTROL_MONITOR_PRIMARY;
+    layout.Width = width;
+    layout.Height = height;
+    layout.Orientation = 0;   // landscape: the size already says which way the screen is held
+    layout.DesktopScaleFactor = 100;
+    layout.DeviceScaleFactor = 100;
+    (void)rdp->disp->SendMonitorLayout(rdp->disp, 1, &layout);
+}
+
 // MARK: FreeRDP callbacks
 
 static BOOL begin_paint(rdpContext *context) {
@@ -255,29 +294,33 @@ static BOOL desktop_resize(rdpContext *context) {
 
 static void on_channel_connected(void *context, const ChannelConnectedEventArgs *e) {
     rssh_rdp *rdp = owner_of((rdpContext *)context);
-    if (strcmp(e->name, CLIPRDR_SVC_CHANNEL_NAME) != 0 || rdp->cliprdr) return;
+    if (strcmp(e->name, DISP_DVC_CHANNEL_NAME) == 0) {
+        attach_disp(rdp, (DispClientContext *)e->pInterface);
+        return;
+    }
+    if (!rdp->clipboard || strcmp(e->name, CLIPRDR_SVC_CHANNEL_NAME) != 0 || rdp->cliprdr) return;
     attach_cliprdr(rdp, (rdpContext *)context, (CliprdrClientContext *)e->pInterface);
 }
 
 static void on_channel_disconnected(void *context, const ChannelDisconnectedEventArgs *e) {
     rssh_rdp *rdp = owner_of((rdpContext *)context);
     if (strcmp(e->name, CLIPRDR_SVC_CHANNEL_NAME) == 0) rdp->cliprdr = NULL;
+    if (strcmp(e->name, DISP_DVC_CHANNEL_NAME) == 0) {
+        rdp->disp_ready = 0;
+        rdp->disp = NULL;
+    }
 }
 
 static BOOL pre_connect(freerdp *instance) {
-    rssh_rdp *rdp = owner_of(instance->context);
-    if (rdp->clipboard) {
-        PubSub_SubscribeChannelConnected(instance->context->pubSub, on_channel_connected);
-        PubSub_SubscribeChannelDisconnected(instance->context->pubSub, on_channel_disconnected);
-    }
+    // Every session: the display control channel (resize while connected), and cliprdr with the clipboard on.
+    PubSub_SubscribeChannelConnected(instance->context->pubSub, on_channel_connected);
+    PubSub_SubscribeChannelDisconnected(instance->context->pubSub, on_channel_disconnected);
     return TRUE;
 }
 
 // FreeRDP 3 asks for the channel configuration here (also again after a redirection). The channels are built into
 // libfreerdp-client3: register that provider first, as the FreeRDP clients do, or cliprdr fails to load.
 static BOOL load_channels(freerdp *instance) {
-    rssh_rdp *rdp = owner_of(instance->context);
-    if (!rdp->clipboard) return TRUE;
     if (freerdp_register_addin_provider(freerdp_channels_load_static_addin_entry, 0) != CHANNEL_RC_OK) return FALSE;
     return freerdp_client_load_addins(instance->context->channels, instance->context->settings);
 }
@@ -355,7 +398,9 @@ static BOOL apply_settings(rssh_rdp *rdp, rdpSettings *s) {
     ok &= freerdp_settings_set_uint32(s, FreeRDP_DesktopHeight, rdp->height);
     ok &= freerdp_settings_set_uint32(s, FreeRDP_ColorDepth, 32);
     ok &= freerdp_settings_set_bool(s, FreeRDP_SoftwareGdi, TRUE);
-    ok &= freerdp_settings_set_bool(s, FreeRDP_SupportDisplayControl, FALSE);
+    // drdynvc + disp: the desktop follows the phone's rotation and the resolution picker without reconnecting
+    // (Windows 8.1+/Server 2012 R2+, xrdp 0.10+); servers without it get a reconnect at the new size.
+    ok &= freerdp_settings_set_bool(s, FreeRDP_SupportDisplayControl, TRUE);
     // ServerHostname is 127.0.0.1 (the tunnel), never the certificate's name: the vault pin decides instead.
     ok &= freerdp_settings_set_bool(s, FreeRDP_AutoAcceptCertificate, FALSE);
     // TLS or NLA only: legacy RDP security has no certificate, so the pin above would never be asked and the
@@ -412,6 +457,8 @@ uint32_t rssh_rdp_run(rssh_rdp *rdp) {
         freerdp_disconnect(instance);
     }
     rdp->cliprdr = NULL;
+    rdp->disp = NULL;
+    rdp->disp_ready = 0;
     freerdp_context_free(instance);
     freerdp_free(instance);
     rdp->instance = NULL;
@@ -474,6 +521,13 @@ void rssh_rdp_scancode(rssh_rdp *rdp, uint16_t scancode, int extended, int down)
 
 void rssh_rdp_unicode(rssh_rdp *rdp, uint16_t utf16, int down) {
     enqueue(rdp, (queued_event){ EV_UNICODE, utf16, 0, (uint16_t)(down != 0) });
+}
+
+int rssh_rdp_can_resize(rssh_rdp *rdp) { return rdp->disp != NULL && rdp->disp_ready; }
+
+void rssh_rdp_resize(rssh_rdp *rdp, uint32_t width, uint32_t height) {
+    enqueue(rdp, (queued_event){ EV_RESIZE, (uint16_t)(width > 8192 ? 8192 : width),
+                                 (uint16_t)(height > 8192 ? 8192 : height), 0 });
 }
 
 void rssh_rdp_set_local_text(rssh_rdp *rdp, const char *utf8) {

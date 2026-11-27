@@ -401,6 +401,40 @@ func onKeyReleased(_ controller: (any GPtr)?, _ handler: @escaping KeyUpHandler)
     return connect(controller, "key-released", unsafeBitCast(cb, to: GCallback.self), retained(handler))
 }
 
+// MARK: - Drag sources and drop targets (moving panes and tabs)
+
+typealias DragCancelHandler = @MainActor (GdkDragCancelReason) -> Bool
+typealias DragMotionHandler = @MainActor (Double, Double) -> Void
+
+/// GtkDragSource `drag-cancel` (GdkDrag *drag, GdkDragCancelReason reason) -> gboolean: TRUE skips the
+/// "snap back" animation (the drop is handled here, e.g. a tab dragged out of every window).
+@discardableResult
+func onDragCancel(_ source: (any GPtr)?, _ handler: @escaping DragCancelHandler) -> gulong {
+    let cb: @convention(c) (gpointer?, gpointer?, GdkDragCancelReason, gpointer?) -> gboolean = { _, _, reason, data in
+        onGTK { (unbox(data) as DragCancelHandler)(reason) } ? 1 : 0
+    }
+    return connect(source, "drag-cancel", unsafeBitCast(cb, to: GCallback.self), retained(handler))
+}
+
+/// GtkDragSource `drag-end` (GdkDrag *drag, gboolean delete_data).
+@discardableResult
+func onDragEnd(_ source: (any GPtr)?, _ handler: @escaping VoidHandler) -> gulong {
+    let cb: @convention(c) (gpointer?, gpointer?, gboolean, gpointer?) -> Void = { _, _, _, data in
+        onGTK { (unbox(data) as VoidHandler)() }
+    }
+    return connect(source, "drag-end", unsafeBitCast(cb, to: GCallback.self), retained(handler))
+}
+
+/// GtkDropTarget `motion` (double x, double y) -> GdkDragAction: always MOVE (the drop decides).
+@discardableResult
+func onDropMotion(_ target: (any GPtr)?, _ handler: @escaping DragMotionHandler) -> gulong {
+    let cb: @convention(c) (gpointer?, Double, Double, gpointer?) -> GdkDragAction = { _, x, y, data in
+        onGTK { (unbox(data) as DragMotionHandler)(x, y) }
+        return GDK_ACTION_MOVE
+    }
+    return connect(target, "motion", unsafeBitCast(cb, to: GCallback.self), retained(handler))
+}
+
 // MARK: - Drawing
 
 typealias DrawHandler = @MainActor (OpaquePointer?, Int32, Int32) -> Void

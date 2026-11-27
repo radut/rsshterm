@@ -100,7 +100,7 @@ extension KeyChord {
 extension DesktopAction {
     /// Where the action sits in a shortcuts list.
     public enum Category: String, CaseIterable, Sendable {
-        case tabs = "Tabs", panes = "Panes", broadcast = "Broadcast Input", font = "Font", app = "Servers & Vault"
+        case tabs = "Tabs", panes = "Panes", moving = "Move & Duplicate", broadcast = "Broadcast Input", font = "Font", app = "Servers & Vault"
     }
 
     public var category: Category {
@@ -108,6 +108,8 @@ extension DesktopAction {
         case .newTab, .newWindow, .selectTab, .nextTab, .previousTab, .moveTabLeft, .moveTabRight, .renameTab: .tabs
         case .closePane, .splitRight, .splitDown, .focus, .nextPane, .previousPane, .resizePane, .equalizePanes,
              .toggleZoom: .panes
+        case .movePaneToNewTab, .movePaneToNewWindow, .moveTabToNewWindow, .mergeAllWindows, .movePaneMode, .swapPane,
+             .duplicateTab, .duplicatePane, .duplicateWindow, .editWindowTitle: .moving
         case .broadcastCurrentOnly, .broadcastAllTabs, .broadcastCurrentTab, .broadcastVisible, .toggleBroadcastSession,
              .broadcastPicker: .broadcast
         case .biggerFont, .smallerFont, .resetFontSize: .font
@@ -154,6 +156,16 @@ extension DesktopAction {
         case .openFileManagerHere: "Open File Manager Here"
         case .lockVault: "Lock Vault"
         case .showKeys: "Keys & Passwords"
+        case .movePaneToNewTab: "Move Pane to New Tab"
+        case .movePaneToNewWindow: "Move Pane to New Window"
+        case .moveTabToNewWindow: "Move Tab to New Window"
+        case .mergeAllWindows: "Merge All Windows"
+        case .movePaneMode: "Move Pane…"
+        case .swapPane(let d): "Swap Pane " + (d == .up ? "Above" : d == .down ? "Below" : d.rawValue.capitalized)
+        case .duplicateTab: "Duplicate Tab"
+        case .duplicatePane: "Duplicate Pane"
+        case .duplicateWindow: "Duplicate Window"
+        case .editWindowTitle: "Edit Window Title"
         }
     }
 }

@@ -28,13 +28,25 @@ public struct AppSettings: Codable, Equatable, Sendable {
     public var showSidebar = true
     /// Settings › Tab Titles: the two templates and the one-line option.
     public var tabTitles = TabTitleSettings()
+    /// The terminal theme (RSSHKit TerminalColorSchemes id) when the style is dark or follows the system, and when
+    /// it is forced light. A server's own theme wins over both.
+    public var darkThemeID = TerminalColorSchemes.defaultDark.id
+    public var lightThemeID = TerminalColorSchemes.defaultLight.id
+
+    /// The theme a pane without a server theme shows: the light one only when Preferences forces Light (System keeps
+    /// the black default, as before). An id no longer known falls back to the default.
+    public var terminalScheme: TerminalColorScheme {
+        colorScheme == .light
+            ? TerminalColorSchemes.scheme(id: lightThemeID) ?? TerminalColorSchemes.defaultLight
+            : TerminalColorSchemes.scheme(id: darkThemeID) ?? TerminalColorSchemes.defaultDark
+    }
 
     private var storedScrollback = 10_000
 
     public init() {}
 
     private enum CodingKeys: String, CodingKey {
-        case fontName, colorScheme, scrollbackLines, autoInstallUpdates, includeOffered, lastUpdateCheck, restoreSession, broadcastIndicator, showSidebar, tabTitles
+        case fontName, colorScheme, scrollbackLines, autoInstallUpdates, includeOffered, lastUpdateCheck, restoreSession, broadcastIndicator, showSidebar, tabTitles, darkThemeID, lightThemeID
     }
 
     public init(from decoder: any Decoder) throws {
@@ -49,6 +61,8 @@ public struct AppSettings: Codable, Equatable, Sendable {
         if let v = try? c.decode(Bool.self, forKey: .broadcastIndicator) { broadcastIndicator = v }
         if let v = try? c.decode(Bool.self, forKey: .showSidebar) { showSidebar = v }
         if let v = try? c.decode(TabTitleSettings.self, forKey: .tabTitles) { tabTitles = v }
+        if let v = try? c.decode(String.self, forKey: .darkThemeID), !v.isEmpty { darkThemeID = v }
+        if let v = try? c.decode(String.self, forKey: .lightThemeID), !v.isEmpty { lightThemeID = v }
     }
 
     public func encode(to encoder: any Encoder) throws {
@@ -63,6 +77,8 @@ public struct AppSettings: Codable, Equatable, Sendable {
         try c.encode(broadcastIndicator, forKey: .broadcastIndicator)
         try c.encode(showSidebar, forKey: .showSidebar)
         try c.encode(tabTitles, forKey: .tabTitles)
+        try c.encode(darkThemeID, forKey: .darkThemeID)
+        try c.encode(lightThemeID, forKey: .lightThemeID)
     }
 
     public static func defaultURL(environment: [String: String], home: String = NSHomeDirectory()) -> URL {

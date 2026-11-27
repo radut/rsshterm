@@ -93,7 +93,7 @@ public indirect enum SplitNode: Codable, Hashable, Sendable {
     }
 
     /// How many panes this subtree lines up along `axis`.
-    private func slots(along axis: SplitAxis) -> Int {
+    func slots(along axis: SplitAxis) -> Int {
         switch self {
         case .split(let own, _, let first, let second) where own == axis:
             first.slots(along: axis) + second.slots(along: axis)

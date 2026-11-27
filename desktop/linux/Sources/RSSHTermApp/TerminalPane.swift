@@ -41,6 +41,9 @@ final class TerminalPane {
     var onContextMenu: ((Double, Double) -> Void)?
     /// Clicking the badge takes this pane out of the broadcast (on the pane typed in: stops broadcasting).
     var onBadgeClicked: (() -> Void)?
+    /// A drag of the pane's grab handle started (the window shows the drop zones) or ended.
+    var onGrab: (() -> Void)?
+    var onGrabEnded: (() -> Void)?
     /// While true, `commit` does not broadcast (input this pane got from a broadcast or a broadcast paste).
     var suppressBroadcast = false
 
@@ -81,6 +84,28 @@ final class TerminalPane {
         for c in ["broadcast-badge", "osd"] { gtk_widget_add_css_class(badge, c) }
         gtk_widget_set_visible(badge, 0)
         gtk_overlay_add_overlay(cast(container), badge)
+        // The grab handle (top centre, clear of the prompt): drag it onto another pane's edge, a tab, or the tab strip to move the pane.
+        let grip = gtk_image_new_from_icon_name("list-drag-handle-symbolic")!
+        gtk_widget_set_halign(grip, GTK_ALIGN_CENTER)
+        gtk_widget_set_valign(grip, GTK_ALIGN_START)
+        gtk_widget_set_margin_top(grip, 2)
+        gtk_widget_set_tooltip_text(grip, "Drag to move this pane: onto another pane's edge, a tab, or the tab strip")
+        gtk_widget_add_css_class(grip, "pane-grip")
+        gtk_widget_set_cursor_from_name(grip, "grab")
+        let drag = gtk_drag_source_new()!
+        gtk_drag_source_set_actions(drag, GDK_ACTION_MOVE)
+        let paneID = id
+        onDragPrepare(drag) { [weak self] _, _ in
+            self?.onGrab?()
+            return textContent(DragPayload.pane(paneID).text)
+        }
+        onDragEnd(drag) { [weak self] in self?.onGrabEnded?() }
+        onDragCancel(drag) { [weak self] _ in
+            self?.onGrabEnded?()
+            return false
+        }
+        gtk_widget_add_controller(grip, cast(drag))
+        gtk_overlay_add_overlay(cast(container), grip)
         vte_terminal_set_mouse_autohide(terminal, 1)
         vte_terminal_set_bold_is_bright(terminal, 1)
         apply(settings, dark: dark)
@@ -200,8 +225,8 @@ final class TerminalPane {
         cairo_stroke(cr)
     }
 
-    /// Font, scrollback and colours from the settings: the server's theme, else the black default theme, else (style
-    /// forced light in Preferences) a light one.
+    /// Font, scrollback and colours from the settings: the server's theme, else the Preferences dark theme, else
+    /// (style forced light) the Preferences light theme.
     func apply(_ settings: AppSettings, dark: Bool) {
         let look = TerminalAppearance.resolve(defaultFont: settings.fontName, server: server)
         let font = pango_font_description_from_string(look.font)
@@ -209,16 +234,8 @@ final class TerminalPane {
         pango_font_description_free(font)
         vte_terminal_set_scrollback_lines(terminal, glong(settings.scrollbackLines))
         var fg = GdkRGBA(), bg = GdkRGBA()
-        let fallback = settings.colorScheme == .light ? nil : TerminalColorSchemes.defaultDark
-        guard let scheme = look.scheme ?? fallback else {
-            _ = gdk_rgba_parse(&fg, dark ? "#d8dee9" : "#2e3440")
-            _ = gdk_rgba_parse(&bg, dark ? "#1e1f22" : "#fbfbfb")
-            vte_terminal_set_colors(terminal, &fg, &bg, nil, 0)
-            darkBackground = dark
-            gtk_widget_queue_draw(hatch)
-            return
-        }
-        // The server's theme: its 16 ANSI colours, foreground, background, cursor.
+        let scheme = look.scheme ?? settings.terminalScheme
+        // The theme's 16 ANSI colours, foreground, background, cursor.
         _ = gdk_rgba_parse(&fg, scheme.foreground)
         _ = gdk_rgba_parse(&bg, scheme.background)
         darkBackground = BroadcastPattern.isDark(hex: scheme.background)

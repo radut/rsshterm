@@ -122,3 +122,22 @@ import Testing
         #expect(KeyAction.morePages.resolve(latch: latch, applicationCursor: false).latch == latch)
     }
 }
+
+@Suite struct RemoteKeyRowTests {
+    @Test func theRemoteRowLatchesShiftCtrlAltAndEndsWithMore() {
+        let row = ExtraKeyLayout.remoteRow
+        let latches = row.compactMap { key -> KeyModifiers? in
+            if case .latch(let m) = key.action { return m } else { return nil }
+        }
+        #expect(latches == [.shift, .ctrl, .alt])
+        #expect(row.first?.action == .key(.escape))
+        #expect(row.last?.action == .morePages)
+        #expect(row.contains { $0.action == .key(.tab) && $0.longPress == .combo(.tab, .shift) })
+        // Narrow enough for an iPhone in portrait next to the ⊞ key.
+        #expect(row.count <= 11)
+    }
+
+    @Test func theTerminalRowIsUnchanged() {
+        #expect(ExtraKeyLayout.mainRow.map(\.label) == ["esc", "tab", "ctrl", "←", "↑", "↓", "→", "⏎", "…"])
+    }
+}

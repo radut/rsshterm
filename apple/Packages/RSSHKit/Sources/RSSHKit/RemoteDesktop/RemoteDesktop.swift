@@ -81,6 +81,8 @@ public struct RemoteDesktop: Codable, Hashable, Identifiable, Sendable {
     public var serverID: UUID?
     /// The user answered "Keep as a separate server" to merging it into a server with the same host.
     public var keepSeparate = false
+    /// RDP: the desktop size to ask for ("Match this device" unless the user picked one).
+    public var resolution: RDPResolution = .matchDevice
 
     public init(id: UUID = UUID(), name: String, kind: Kind, host: String, port: Int? = nil,
                 username: String? = nil, credentialID: UUID? = nil, groupID: UUID? = nil,
@@ -109,7 +111,7 @@ public struct RemoteDesktop: Codable, Hashable, Identifiable, Sendable {
 
     private enum CodingKeys: String, CodingKey {
         case id, name, kind, host, port, username, credentialID, groupID, tunnelServerID, domain, shareClipboard
-        case transport, pointerMode, askEveryTime, pinnedCertificate, serverID, keepSeparate
+        case transport, pointerMode, askEveryTime, pinnedCertificate, serverID, keepSeparate, resolution
     }
 
     public init(from decoder: any Decoder) throws {
@@ -130,6 +132,7 @@ public struct RemoteDesktop: Codable, Hashable, Identifiable, Sendable {
                   serverID: c.lenient(UUID.self, .serverID))
         pinnedCertificate = c.lenient(String.self, .pinnedCertificate)
         keepSeparate = c.lenient(Bool.self, .keepSeparate) ?? false
+        resolution = c.lenient(String.self, .resolution).map(RDPResolution.init(storageValue:)) ?? .matchDevice
     }
 
     public func encode(to encoder: any Encoder) throws {
@@ -151,6 +154,7 @@ public struct RemoteDesktop: Codable, Hashable, Identifiable, Sendable {
         try c.encodeIfPresent(pinnedCertificate, forKey: .pinnedCertificate)
         try c.encodeIfPresent(serverID, forKey: .serverID)
         if keepSeparate { try c.encode(true, forKey: .keepSeparate) }
+        if resolution != .matchDevice { try c.encode(resolution.storageValue, forKey: .resolution) }
     }
 
     /// Absent: derived from the tunnel server. A transport this build does not know (a newer build's) falls back

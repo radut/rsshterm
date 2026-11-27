@@ -327,6 +327,11 @@ keys Escape
 action tab-titles
 shot tab-titles
 keys Escape
+action terminal-theme
+sleep 2
+shot terminal-theme
+keys Escape
+keys Escape
 action check-updates
 sleep 1
 keys Escape
@@ -394,5 +399,39 @@ keys Return
 wait_for "Servers… asked for the master password and opened the vault" '"vault":"opened"' 30
 wait_for "then showed the servers sidebar" '"sidebarVisible":true'
 kill "$APP"; wait "$APP" 2>/dev/null || true
+
+echo "== run 5: panes and tabs move between tabs and windows with their sessions alive"
+start_app
+wait_for "one local tab" '"panes":\[1\]'
+keys ctrl+shift+e
+wait_for "split the tab" '"panes":\[2\]'
+typeline 'echo before-$((3*3))'
+wait_for "the split pane printed before-9" '"focusedText":"[^"]*before-9\\n'
+keys ctrl+shift+alt+t
+wait_for "Ctrl+Shift+Alt+T moved the pane into a tab of its own" '"panes":\[1,1\]'
+wait_for "the moved pane kept its scrollback" '"focusedText":"[^"]*before-9\\n'
+typeline 'echo moved-$((40+2))'
+wait_for "the moved pane's shell answers" '"focusedText":"[^"]*\\nmoved-42\\n'
+shot moved-pane
+keys ctrl+shift+r
+xdotool type --delay 40 "mover"
+keys Return
+wait_for "renamed the moved tab" '"tabTitles":\[[^]]*"mover"'
+keys ctrl+shift+alt+d
+wait_for "Ctrl+Shift+Alt+D moved the tab to a new window" '"windowCount":2'
+xdotool search --sync --onlyvisible --name '^mover' windowfocus >/dev/null 2>&1 || true
+sleep 0.5
+typeline 'echo window-$((40+2))'
+wait_for "the tab's shell answers in its new window" '"focusedText":"[^"]*before-9[^"]*\\nwindow-42\\n'
+shot moved-window '^mover'
+action merge-all-windows
+wait_for "Merge All Windows: one window with both tabs" '"windowCount":1'
+wait_for "both tabs in it" '"panes":\[1,1\]'
+action move-pane-mode
+wait_for "Move Pane… waits for a target" '"picking":true'
+keys Right
+keys Escape
+wait_for "Escape ends it" '"picking":false'
+kill "$APP"; wait "$APP" 2>/dev/null || true
 kill "$XVFB" 2>/dev/null || true
-echo "PASS: rsshterm opens as a terminal (local shell, no prompt, Servers… on demand, -e / --working-directory), tabs, split, local and SSH terminals, host search, jump, rename, broadcast, keys, preferences, unlock, session restore"
+echo "PASS: rsshterm opens as a terminal (local shell, no prompt, Servers… on demand, -e / --working-directory), tabs, split, local and SSH terminals, host search, jump, rename, broadcast, keys, preferences, unlock, session restore, moving panes and tabs between tabs and windows"

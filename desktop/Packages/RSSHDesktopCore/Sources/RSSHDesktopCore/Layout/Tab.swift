@@ -9,24 +9,33 @@ public struct Tab: Codable, Hashable, Identifiable, Sendable {
     public let root: SplitNode
     public let focused: PaneID
     public let zoomed: PaneID?
+    /// The colour the user gave the tab (View › Tab Color); nil is the theme's own.
+    public let color: TabColor?
 
-    public init(id: UUID = UUID(), title: String? = nil, pane: Pane) {
-        self.init(id: id, title: title, root: .pane(pane), focused: pane.id, zoomed: nil)
+    public init(id: UUID = UUID(), title: String? = nil, color: TabColor? = nil, pane: Pane) {
+        self.init(id: id, title: title, color: color, root: .pane(pane), focused: pane.id, zoomed: nil)
     }
 
-    private init(id: UUID, title: String?, root: SplitNode, focused: PaneID, zoomed: PaneID?) {
+    /// A tab over a whole tree (a tab moved in from elsewhere). `focused` falls back to the first pane when it is
+    /// not in `root`.
+    init(id: UUID = UUID(), title: String? = nil, color: TabColor? = nil, root: SplitNode, focused: PaneID,
+         zoomed: PaneID? = nil) {
         self.id = id
         self.title = title
+        self.color = color
         self.root = root
-        self.focused = focused
-        self.zoomed = zoomed
+        self.focused = root.contains(focused) ? focused : root.panes[0].id
+        self.zoomed = zoomed.flatMap { root.contains($0) ? $0 : nil }
     }
 
     private func with(root: SplitNode? = nil, focused: PaneID? = nil, zoomed: PaneID?? = .none,
-                      title: String?? = .none) -> Tab {
-        Tab(id: id, title: title ?? self.title, root: root ?? self.root, focused: focused ?? self.focused,
-            zoomed: zoomed ?? self.zoomed)
+                      title: String?? = .none, color: TabColor?? = .none) -> Tab {
+        Tab(id: id, title: title ?? self.title, color: color ?? self.color, root: root ?? self.root,
+            focused: focused ?? self.focused, zoomed: zoomed ?? self.zoomed)
     }
+
+    /// The same tab in another colour; nil restores the theme's.
+    public func recolored(_ color: TabColor?) -> Tab { with(color: .some(color)) }
 
     /// The same tab over another tree (focus, zoom and title kept): for edits in other files.
     func replacingRoot(_ newRoot: SplitNode) -> Tab { with(root: newRoot) }
@@ -151,7 +160,7 @@ public struct Tab: Codable, Hashable, Identifiable, Sendable {
 }
 
 extension Tab {
-    private enum CodingKeys: String, CodingKey { case id, title, root, focused, zoomed }
+    private enum CodingKeys: String, CodingKey { case id, title, root, focused, zoomed, color }
 
     /// A saved session from a damaged or older file must not crash the app: focus outside the tree is an error,
     /// a stale zoom is dropped.
@@ -163,8 +172,10 @@ extension Tab {
             throw DecodingError.dataCorruptedError(forKey: .focused, in: c, debugDescription: "focused pane not in tab")
         }
         let zoomed = try c.decodeIfPresent(PaneID.self, forKey: .zoomed).flatMap { root.contains($0) ? $0 : nil }
+        // An unknown colour (a newer app's) is dropped, not an error.
+        let color = (try? c.decodeIfPresent(String.self, forKey: .color)).flatMap { $0.flatMap(TabColor.init(rawValue:)) }
         self.init(id: try c.decode(UUID.self, forKey: .id), title: try c.decodeIfPresent(String.self, forKey: .title),
-                  root: root, focused: focused, zoomed: zoomed)
+                  color: color, root: root, focused: focused, zoomed: zoomed)
     }
 
     public func encode(to encoder: any Encoder) throws {
@@ -174,5 +185,35 @@ extension Tab {
         try c.encode(root, forKey: .root)
         try c.encode(focused, forKey: .focused)
         try c.encodeIfPresent(zoomed, forKey: .zoomed)
+        try c.encodeIfPresent(color, forKey: .color)
+    }
+}
+
+/// The colours a tab can have (View › Tab Color): a small named set both apps draw the same.
+public enum TabColor: String, Codable, CaseIterable, Sendable {
+    case red, orange, yellow, green, teal, blue, purple, pink, gray
+
+    /// The menu name.
+    public var title: String { rawValue.capitalized }
+
+    /// sRGB, 0...1.
+    public var rgb: (red: Double, green: Double, blue: Double) {
+        switch self {
+        case .red: (0.90, 0.30, 0.27)
+        case .orange: (0.95, 0.56, 0.20)
+        case .yellow: (0.93, 0.78, 0.22)
+        case .green: (0.36, 0.72, 0.36)
+        case .teal: (0.20, 0.68, 0.70)
+        case .blue: (0.27, 0.52, 0.92)
+        case .purple: (0.62, 0.40, 0.86)
+        case .pink: (0.92, 0.42, 0.66)
+        case .gray: (0.55, 0.57, 0.60)
+        }
+    }
+
+    /// `#rrggbb`, for GTK CSS.
+    public var hex: String {
+        let (r, g, b) = rgb
+        return String(format: "#%02x%02x%02x", Int(r * 255), Int(g * 255), Int(b * 255))
     }
 }

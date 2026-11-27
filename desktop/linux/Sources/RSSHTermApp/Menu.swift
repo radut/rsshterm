@@ -18,6 +18,21 @@ extension AppController {
         g_menu_append(main, "Servers… (F9)", "app.toggle-sidebar")
         g_menu_append_section(menu, nil, cast(main))
 
+        let moveMenu = g_menu_new()!
+        g_menu_append(moveMenu, "Move Pane to New Tab (Ctrl+Shift+Alt+T)", "app.move-pane-to-new-tab")
+        g_menu_append(moveMenu, "Move Pane to New Window (Ctrl+Shift+Alt+N)", "app.move-pane-to-new-window")
+        g_menu_append(moveMenu, "Move Pane… (Ctrl+Shift+Alt+M)", "app.move-pane-mode")
+        g_menu_append(moveMenu, "Move Tab to New Window (Ctrl+Shift+Alt+D)", "app.move-tab-to-new-window")
+        g_menu_append(moveMenu, "Merge All Windows", "app.merge-all-windows")
+        g_menu_append(moveMenu, "Zoom Pane (Ctrl+Shift+X)", "app.toggle-zoom")
+        g_menu_append(moveMenu, "Duplicate Tab", "app.duplicate-tab")
+        g_menu_append(moveMenu, "Duplicate Pane", "app.duplicate-pane")
+        g_menu_append(moveMenu, "Duplicate Window", "app.duplicate-window")
+        g_menu_append(moveMenu, "Edit Window Title…", "app.edit-window-title")
+        let moveSection = g_menu_new()!
+        g_menu_append_submenu(moveSection, "Window", cast(moveMenu))
+        g_menu_append_section(menu, nil, cast(moveSection))
+
         let broadcastMenu = g_menu_new()!
         g_menu_append(broadcastMenu, "Send Input to Current Session Only", "app.broadcast-current-only")
         g_menu_append(broadcastMenu, "Broadcast to All Panes in All Tabs (Ctrl+Shift+I)", "app.broadcast-all-tabs")
@@ -65,6 +80,22 @@ extension AppController {
             ("broadcast-visible", { [unowned self] in activeWindow?.perform(.broadcastVisible) }),
             ("broadcast-toggle-session", { [unowned self] in activeWindow?.perform(.toggleBroadcastSession) }),
             ("broadcast-picker", { [unowned self] in activeWindow?.perform(.broadcastPicker) }),
+            ("move-pane-to-new-tab", { [unowned self] in activeWindow?.perform(.movePaneToNewTab) }),
+            ("move-pane-to-new-window", { [unowned self] in activeWindow?.perform(.movePaneToNewWindow) }),
+            ("move-pane-mode", { [unowned self] in activeWindow?.perform(.movePaneMode) }),
+            ("move-tab-to-new-window", { [unowned self] in activeWindow?.perform(.moveTabToNewWindow) }),
+            ("merge-all-windows", { [unowned self] in activeWindow?.perform(.mergeAllWindows) }),
+            ("toggle-zoom", { [unowned self] in activeWindow?.perform(.toggleZoom) }),
+            ("duplicate-tab", { [unowned self] in activeWindow?.perform(.duplicateTab) }),
+            ("duplicate-pane", { [unowned self] in activeWindow?.perform(.duplicatePane) }),
+            ("duplicate-window", { [unowned self] in activeWindow?.perform(.duplicateWindow) }),
+            ("edit-window-title", { [unowned self] in activeWindow?.perform(.editWindowTitle) }),
+            ("swap-pane-right", { [unowned self] in activeWindow?.perform(.swapPane(.right)) }),
+            ("move-tab-to-first-window", { [unowned self] in
+                guard let w = activeWindow, let tab = w.model?.selectedTab, let first = windows.first?.model,
+                      first.id != w.model?.id else { return }
+                move(tab: tab.id, to: .window(first.id))
+            }),
             ("keys", { [unowned self] in showKeys() }),
             ("quick-connect", { [unowned self] in if let w = activeWindow { showQuickConnect(over: w) } }),
             ("toggle-sidebar", { [unowned self] in activeWindow?.toggleSidebar() }),
@@ -87,6 +118,7 @@ extension AppController {
             ("google-sign-in", { [unowned self] in signInToGoogle() }),
             ("preferences", { [unowned self] in showPreferences() }),
             ("tab-titles", { [unowned self] in showPreferences(tabTitles: true) }),
+            ("terminal-theme", { [unowned self] in showPreferences(darkTheme: true) }),
             ("check-updates", { [unowned self] in checkForUpdates(.manual) }),
             ("about", { [unowned self] in showAbout() }),
             ("try-another-login", { [unowned self] in activeWindow?.pickLoginOnFocusedPane() }),

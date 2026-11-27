@@ -134,14 +134,34 @@ zlib 1.3.1 (inside RoyalVNCKit)
   Changes: Unmodified source; on Apple platforms and Linux the system zlib is linked instead.
   Text: [845efc77857d] LICENSE
 
+ayu by Ike Ku colour theme
+  Licence: MIT
+  Source: https://github.com/ayu-theme/vscode-ayu
+  Used in: iOS/iPadOS, macOS, Linux
+
 Catppuccin colour theme
   Licence: MIT
   Source: https://github.com/catppuccin/catppuccin
   Used in: iOS/iPadOS, macOS, Linux
 
+Darcula and IntelliJ Light colour theme
+  Licence: Apache-2.0
+  Source: https://github.com/JetBrains/intellij-community
+  Used in: iOS/iPadOS, macOS, Linux
+
 Dracula colour theme
   Licence: MIT
   Source: https://draculatheme.com
+  Used in: iOS/iPadOS, macOS, Linux
+
+Everforest by sainnhe colour theme
+  Licence: MIT
+  Source: https://github.com/icewind/everforest.iterm2
+  Used in: iOS/iPadOS, macOS, Linux
+
+Ghostty default style colour theme
+  Licence: MIT
+  Source: https://github.com/ghostty-org/ghostty
   Used in: iOS/iPadOS, macOS, Linux
 
 GitHub Primer colour theme
@@ -154,9 +174,44 @@ gruvbox colour theme by Pavel Pertsev
   Source: https://github.com/morhetz/gruvbox
   Used in: iOS/iPadOS, macOS, Linux
 
-Monokai colour theme by Wimer Hazenberg (base16 port)
+Gruvbox Material by sainnhe colour theme
   Licence: MIT
-  Source: https://github.com/chriskempson/base16
+  Source: https://github.com/sainnhe/gruvbox-material
+  Used in: iOS/iPadOS, macOS, Linux
+
+Horizon by Jonathan Olaleye colour theme
+  Licence: MIT
+  Source: https://github.com/jolaleye/horizon-theme-vscode
+  Used in: iOS/iPadOS, macOS, Linux
+
+iTerm2-Color-Schemes collection by Mark Badolato (the Ghostty files many palettes are read from)
+  Licence: MIT
+  Source: https://github.com/mbadolato/iTerm2-Color-Schemes
+  Used in: iOS/iPadOS, macOS, Linux
+
+Kanagawa by rebelot colour theme
+  Licence: MIT
+  Source: https://github.com/rebelot/kanagawa.nvim
+  Used in: iOS/iPadOS, macOS, Linux
+
+Material by Kaicataldo colour theme
+  Licence: MIT
+  Source: https://github.com/kaicataldo/material.vim
+  Used in: iOS/iPadOS, macOS, Linux
+
+Monokai by Wimer Hazenberg colour theme
+  Licence: MIT
+  Source: https://github.com/tinted-theming/schemes
+  Used in: iOS/iPadOS, macOS, Linux
+
+Night Owl by Sarah Drasner colour theme
+  Licence: MIT
+  Source: https://github.com/sdras/night-owl-vscode-theme
+  Used in: iOS/iPadOS, macOS, Linux
+
+Nightfox by EdenEast colour theme
+  Licence: MIT
+  Source: https://github.com/EdenEast/nightfox.nvim
   Used in: iOS/iPadOS, macOS, Linux
 
 Nord colour theme by Arctic Ice Studio
@@ -164,14 +219,54 @@ Nord colour theme by Arctic Ice Studio
   Source: https://www.nordtheme.com
   Used in: iOS/iPadOS, macOS, Linux
 
-One Dark colour theme (Atom)
+One Dark (Atom's palette) by Josh Dick colour theme
+  Licence: MIT
+  Source: https://github.com/joshdick/onedark.vim
+  Used in: iOS/iPadOS, macOS, Linux
+
+One Half by Son A. Pham colour theme
+  Licence: MIT
+  Source: https://github.com/sonph/onehalf
+  Used in: iOS/iPadOS, macOS, Linux
+
+One Light colour theme
   Licence: MIT
   Source: https://github.com/atom/atom
+  Used in: iOS/iPadOS, macOS, Linux
+
+Palenight by Olaolu Olawuyi colour theme
+  Licence: MIT
+  Source: https://github.com/whizkydee/vscode-palenight-theme
+  Used in: iOS/iPadOS, macOS, Linux
+
+Rosé Pine colour theme
+  Licence: MIT
+  Source: https://github.com/rose-pine
+  Used in: iOS/iPadOS, macOS, Linux
+
+Snazzy by Sindre Sorhus colour theme
+  Licence: MIT
+  Source: https://github.com/sindresorhus/iterm2-snazzy
   Used in: iOS/iPadOS, macOS, Linux
 
 Solarized colour theme by Ethan Schoonover
   Licence: MIT
   Source: https://ethanschoonover.com/solarized/
+  Used in: iOS/iPadOS, macOS, Linux
+
+Solarized Osaka by craftzdog colour theme
+  Licence: Apache-2.0
+  Source: https://github.com/craftzdog/solarized-osaka.nvim
+  Used in: iOS/iPadOS, macOS, Linux
+
+SynthWave '84 by Robb Owen colour theme
+  Licence: MIT
+  Source: https://github.com/robb0wen/synthwave-vscode
+  Used in: iOS/iPadOS, macOS, Linux
+
+Tango palette (public domain) colour theme
+  Licence: MIT
+  Source: https://github.com/microsoft/terminal
   Used in: iOS/iPadOS, macOS, Linux
 
 Tokyo Night colour theme by enkia
@@ -182,6 +277,21 @@ Tokyo Night colour theme by enkia
 Tomorrow colour theme by Chris Kempson
   Licence: MIT
   Source: https://github.com/chriskempson/tomorrow-theme
+  Used in: iOS/iPadOS, macOS, Linux
+
+Visual Studio Code default themes colour theme
+  Licence: MIT
+  Source: https://github.com/microsoft/terminal
+  Used in: iOS/iPadOS, macOS, Linux
+
+Windows Terminal schemes colour theme
+  Licence: MIT
+  Source: https://github.com/microsoft/terminal
+  Used in: iOS/iPadOS, macOS, Linux
+
+Xcode colours by lunacookies colour theme
+  Licence: ISC
+  Source: https://github.com/lunacookies/vim-colors-xcode
   Used in: iOS/iPadOS, macOS, Linux
 
 ==============================================================================

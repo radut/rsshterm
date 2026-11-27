@@ -20,16 +20,21 @@ final class MainWindow {
     private let split: Widget
     private var sidebar: ServerSidebar?
     private(set) var model: Window?
-    private var panes: [PaneID: TerminalPane] = [:]
+    var panes: [PaneID: TerminalPane] = [:]
     /// "Try another login…" state of ssh panes whose login was refused (MainWindow+LoginRetry).
     var loginRetries: [PaneID: PaneLoginRetry] = [:]
     /// Remote desktop panes (no terminal).
-    private var screens: [PaneID: ScreenPane] = [:]
-    private var pages: [UUID: (page: OpaquePointer, holder: Widget)] = [:]
+    var screens: [PaneID: ScreenPane] = [:]
+    var pages: [UUID: (page: OpaquePointer, holder: Widget)] = [:]
+    /// Over the pane area while a pane or tab is dragged: takes the drop and shows where it lands (MainWindow+Moves).
+    let catcher: Widget
+    let preview: Widget
+    /// The move-pane mode (pick a target): the pane being moved, and the target under the arrow keys.
+    var picking: (pane: PaneID, target: PaneID?)?
     private var closingPages: Set<UnsafeMutableRawPointer> = []
     private var syncing = false
 
-    init(app: AppController, gtkApp: OpaquePointer, restoring: Window? = nil) {
+    init(app: AppController, gtkApp: OpaquePointer, restoring: Window? = nil, adopting pool: PanePool? = nil) {
         self.app = app
         window = adw_application_window_new(cast(gtkApp))
         gtk_window_set_title(cast(window), "rSshTerm")
@@ -45,6 +50,7 @@ final class MainWindow {
         gtk_scrolled_window_set_policy(cast(stripScroll), GTK_POLICY_AUTOMATIC, GTK_POLICY_NEVER)
         gtk_scrolled_window_set_child(cast(stripScroll), tabStrip)
         setMargins(stripScroll, 2)
+        let strip = stripScroll
 
         banner = adw_banner_new("")
         let header = adw_header_bar_new()!
@@ -53,7 +59,17 @@ final class MainWindow {
         adw_toolbar_view_add_top_bar(cast(toolbar), banner)
         adw_toolbar_view_add_top_bar(cast(toolbar), stripScroll)
         split = gtk_paned_new(GTK_ORIENTATION_HORIZONTAL)
-        gtk_paned_set_end_child(cast(split), cast(tabView))
+        let paneArea = gtk_overlay_new()!
+        gtk_overlay_set_child(cast(paneArea), cast(tabView))
+        catcher = gtk_fixed_new()
+        preview = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0)
+        gtk_widget_add_css_class(preview, "drop-preview")
+        gtk_widget_set_can_target(preview, 0)
+        gtk_widget_set_visible(preview, 0)
+        gtk_fixed_put(cast(catcher), preview, 0, 0)
+        gtk_widget_set_can_target(catcher, 0)
+        gtk_overlay_add_overlay(cast(paneArea), catcher)
+        gtk_paned_set_end_child(cast(split), paneArea)
         gtk_paned_set_shrink_start_child(cast(split), 0)
         gtk_paned_set_resize_start_child(cast(split), 0)
         adw_toolbar_view_set_content(cast(toolbar), split)
@@ -98,6 +114,8 @@ final class MainWindow {
         }
         addKeyHandler(window) { [unowned self] keyval, state in handleKey(keyval: keyval, state: state) }
 
+        installDropTargets(strip: strip)
+        if let pool { adopt(pool, for: restoring) }
         setModel(restoring ?? Window(tabs: [Tab(pane: newLocalPane())]))
         updateBanner()
     }
@@ -169,6 +187,9 @@ final class MainWindow {
             app.applyBroadcast(action, focused: model.selectedTab.focused)
             focusedPane?.grabFocus()
         case .broadcastPicker: app.showBroadcastPicker(over: self)
+        case .movePaneToNewWindow, .moveTabToNewWindow, .mergeAllWindows, .movePaneMode, .duplicateTab,
+             .duplicatePane, .duplicateWindow, .editWindowTitle:
+            app.perform(action, from: self)
         default: setModel(model.applying(action, newPane: newLocalPane))
         }
     }
@@ -200,7 +221,7 @@ final class MainWindow {
             var tabs = current.tabs
             tabs[i] = tabs[i].renamed(text.isEmpty ? nil : text)
             self.setModel(Window(id: current.id, tabs: tabs, selectedIndex: current.selectedIndex,
-                                 broadcastsInput: current.broadcastsInput))
+                                 broadcastsInput: current.broadcastsInput, title: current.title))
         }
         gtk_widget_grab_focus(entry)
     }
@@ -235,6 +256,7 @@ final class MainWindow {
     }
 
     private func handleKey(keyval: UInt32, state: UInt32) -> Bool {
+        if picking != nil { return pickKey(keyval: keyval, state: state) }
         if screenHasKeys { return false }
         let mods = GdkModifiers(state: state)
         if let clip = KeyTranslator.clipboard(keyval: keyval, modifiers: mods) {
@@ -293,7 +315,8 @@ final class MainWindow {
         let old = model
         let diff = PaneDiff(from: old, to: new)
         model = new
-        for pane in diff.added {
+        // Panes handed over from another window (a move) are already here, running.
+        for pane in diff.added where panes[pane.id] == nil && screens[pane.id] == nil {
             if case .remoteDesktop(let desktopID) = pane.content {
                 screens[pane.id] = makeScreen(pane, desktopID: desktopID)
             } else {
@@ -324,7 +347,7 @@ final class MainWindow {
             }
         }
         for id in diff.removed {
-            panes[id] = nil
+                panes[id] = nil
             loginRetries[id] = nil
             screens[id]?.stop()
             screens[id] = nil
@@ -349,10 +372,16 @@ final class MainWindow {
 
     private func makeScreen(_ pane: Pane, desktopID: UUID) -> ScreenPane {
         let screen = ScreenPane(id: pane.id, desktopID: desktopID, window: self)
-        let id = pane.id
+        wire(screen)
+        return screen
+    }
+
+    /// Points a screen's callbacks at this window (a new one, or one moved in from another window).
+    func wire(_ screen: ScreenPane) {
+        let id = screen.id
+        screen.window = self
         screen.onTitle = { [weak self] in self?.updateTitles() }
         screen.onFocus = { [weak self] in self?.paneFocused(id) }
-        return screen
     }
 
     /// A remote desktop in a new tab, or in a split of the focused pane.
@@ -387,7 +416,13 @@ final class MainWindow {
         let server: Server? = if case .ssh(let id) = pane.content { app.vault?.servers.first { $0.id == id } } else { nil }
         let t = TerminalPane(id: pane.id, plan: waits ? nil : app.spawnPlan(for: pane.content), host: host,
                              settings: app.settings, dark: app.isDark, server: server)
-        let id = pane.id
+        wire(t)
+        return t
+    }
+
+    /// Points a terminal's callbacks at this window (a new one, or one moved in from another window).
+    func wire(_ t: TerminalPane) {
+        let id = t.id
         t.onExit = { [weak self] _ in self?.paneExited(id) }
         t.onRefusedLogin = { [weak self] in self?.loginRefused(id) }
         t.onTitle = { [weak self] in self?.updateTitles() }
@@ -406,10 +441,16 @@ final class MainWindow {
                 }),
                 ("Split Right", { [weak self] in self?.perform(.splitRight) }),
                 ("Split Down", { [weak self] in self?.perform(.splitDown) }),
+                ("Move Pane ›", { [weak self, weak t] in
+                    guard let self, let t else { return }
+                    paneFocused(id)
+                    paneMoveMenu(id, on: t.widget, x: x, y: y)
+                }),
                 ("Rename Tab…", { [weak self] in self?.perform(.renameTab) }),
             ])
         }
-        return t
+        t.onGrab = { [weak self] in self?.app.dragStarted(pane: id) }
+        t.onGrabEnded = { [weak self] in self?.app.dragEnded() }
     }
 
     /// The vault opened: start the SSH panes that were waiting for it.
@@ -429,20 +470,20 @@ final class MainWindow {
         return out
     }
 
-    private func paneExited(_ id: PaneID) {
+    func paneExited(_ id: PaneID) {
         guard let model, let tabIndex = model.tabs.firstIndex(where: { $0.paneIDs.contains(id) }) else { return }
         let tab = model.tabs[tabIndex]
         if let remaining = tab.closing(id) {
             var tabs = model.tabs
             tabs[tabIndex] = remaining
             setModel(Window(id: model.id, tabs: tabs, selectedIndex: model.selectedIndex,
-                            broadcastsInput: model.broadcastsInput))
+                            broadcastsInput: model.broadcastsInput, title: model.title))
         } else {
             setModel(model.closingTab(at: tabIndex))
         }
     }
 
-    private func paneFocused(_ id: PaneID) {
+    func paneFocused(_ id: PaneID) {
         guard !syncing, let model, model.selectedTab.paneIDs.contains(id), model.selectedTab.focused != id else { return }
         self.model = model.updatingSelectedTab { $0.focusing(id) }
         app.layoutChanged()
@@ -483,7 +524,7 @@ final class MainWindow {
     }
 
     /// Takes a terminal out of its old GtkPaned or box (we hold our own reference, so it survives).
-    private func detach(_ widget: Widget) {
+    func detach(_ widget: Widget) {
         guard let parent = gtk_widget_get_parent(widget) else { return }
         if isA(parent, gtk_paned_get_type()) {
             if gtk_paned_get_start_child(cast(parent)) == widget { gtk_paned_set_start_child(cast(parent), nil) }
@@ -513,7 +554,8 @@ final class MainWindow {
         }
         let selected = tabLabels.indices.contains(model.selectedIndex) ? tabLabels[model.selectedIndex].windowTitle : ""
         let broadcasting = app.broadcast.mode == .currentOnly ? "" : "broadcasting input — "
-        gtk_window_set_title(cast(window), (selected.isEmpty ? "" : selected + " — ") + broadcasting + "rSshTerm")
+        let shown = model.title ?? selected
+        gtk_window_set_title(cast(window), (shown.isEmpty ? "" : shown + " — ") + broadcasting + "rSshTerm")
         rebuildTabStrip()
     }
 
@@ -542,6 +584,7 @@ final class MainWindow {
             gtk_widget_add_css_class(item, "flat")
             gtk_widget_add_css_class(item, "tab-item")
             if index == model.selectedIndex { gtk_widget_add_css_class(item, "selected-tab") }
+            if let color = tab.color { gtk_widget_add_css_class(item, "tab-color-" + color.rawValue) }
             gtk_widget_set_tooltip_text(item, label.windowTitle)
             gtk_widget_set_size_request(item, 180, -1)
             on(item, "clicked") { [unowned self] in selectTab(tabID) }
@@ -549,20 +592,34 @@ final class MainWindow {
                 selectTab(tabID)
                 contextMenu(on: item, x: x, y: y, items: [
                     ("Rename Tab…", { [unowned self] in perform(.renameTab) }),
+                    ("Tab Color ›", { [unowned self] in tabColorMenu(tabID, on: item, x: x, y: y) }),
+                    ("Duplicate Tab", { [unowned self] in app.perform(.duplicateTab, from: self) }),
+                    ("Move Tab ›", { [unowned self] in tabMoveMenu(tabID, on: item, x: x, y: y) }),
                     ("Close Tab", { [unowned self] in closeTab(tabID) }),
                 ])
             }
             // Drag a tab onto another to put it there.
+            // Drag a tab onto another (any window) to put it there, onto a pane's edge to make it a split, or out
+            // of every window for a window of its own. A pane dropped on a tab joins it on the right.
             let drag = gtk_drag_source_new()!
             gtk_drag_source_set_actions(drag, GDK_ACTION_MOVE)
-            onDragPrepare(drag) { _, _ in textContent("rsshterm-tab:" + tabID.uuidString) }
+            onDragPrepare(drag) { [unowned self] _, _ in
+                app.dragStarted(tab: tabID)
+                return textContent(DragPayload.tab(tabID).text)
+            }
+            onDragCancel(drag) { [unowned self] reason in
+                app.dragEnded()
+                // Dropped where nothing takes it: outside every window.
+                guard reason == GDK_DRAG_CANCEL_NO_TARGET else { return false }
+                onMain { [weak self] in self?.app.move(tab: tabID, to: .newWindow()) }
+                return true
+            }
+            onDragEnd(drag) { [unowned self] in app.dragEnded() }
             gtk_widget_add_controller(item, cast(drag))
             let drop = gtk_drop_target_new(gTypeString, GDK_ACTION_MOVE)!
             onDrop(drop) { [unowned self] value, _, _ in
-                guard let value, let raw = g_value_get_string(value) else { return false }
-                let text = String(cString: raw)
-                guard text.hasPrefix("rsshterm-tab:"), let dragged = UUID(uuidString: String(text.dropFirst(13))) else { return false }
-                moveTab(dragged, onto: tabID)
+                guard let payload = DragPayload(value) else { return false }
+                dropped(payload, onTab: tabID)
                 return true
             }
             gtk_widget_add_controller(item, cast(drop))
@@ -570,7 +627,7 @@ final class MainWindow {
         }
     }
 
-    private func moveTab(_ dragged: UUID, onto target: UUID) {
+    func moveTab(_ dragged: UUID, onto target: UUID) {
         guard let model, let from = model.tabs.firstIndex(where: { $0.id == dragged }),
               let onto = model.tabs.firstIndex(where: { $0.id == target }),
               let to = TabReorder.destination(from: from, onto: onto, count: model.tabs.count) else { return }
@@ -679,6 +736,10 @@ final class MainWindow {
             "focusedText": focusedPane?.text() ?? "",
             "loginBars": loginBars,
             "texts": model.selectedTab.paneIDs.map { panes[$0]?.text() ?? "" },
+            "id": model.id.uuidString,
+            "title": model.title ?? "",
+            "tabColors": model.tabs.map { $0.color?.rawValue ?? "" },
+            "picking": picking != nil,
         ]
     }
 }

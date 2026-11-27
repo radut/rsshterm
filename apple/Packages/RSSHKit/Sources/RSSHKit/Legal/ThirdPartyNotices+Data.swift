@@ -4,6 +4,16 @@
 extension ThirdPartyNotices {
     static let generatedComponents: [ThirdPartyComponent] = [
         ThirdPartyComponent(
+            id: #"font:0xProto"#, name: #"0xProto"#, version: #""#,
+            license: #"OFL-1.1"#, url: #"https://github.com/0xType/0xProto"#, kind: .font, platforms: [.ios, .macos],
+            acknowledgement: #""#, changes: #""#,
+            texts: [#"8841e59e7808"#]),
+        ThirdPartyComponent(
+            id: #"font:AnonymousPro"#, name: #"Anonymous Pro"#, version: #""#,
+            license: #"OFL-1.1"#, url: #"https://www.marksimonson.com/fonts/view/anonymous-pro"#, kind: .font, platforms: [.ios, .macos],
+            acknowledgement: #""#, changes: #""#,
+            texts: [#"205bc88aea56"#]),
+        ThirdPartyComponent(
             id: #"swiftpm:app-check"#, name: #"App Check Core (via Google Sign-In)"#, version: #""#,
             license: #"Apache-2.0"#, url: #"https://github.com/google/app-check"#, kind: .library, platforms: [.ios],
             acknowledgement: #""#, changes: #""#,
@@ -39,6 +49,11 @@ extension ThirdPartyNotices {
             acknowledgement: #""#, changes: #"Modified by the rSshTerm authors (agent forwarding and fixes); the changes are listed in PATCHES.md of the vendored copy."#,
             texts: [#"580a39b7c09c"#]),
         ThirdPartyComponent(
+            id: #"font:CommitMono"#, name: #"Commit Mono"#, version: #""#,
+            license: #"OFL-1.1"#, url: #"https://github.com/eigilnikolajsen/commit-mono"#, kind: .font, platforms: [.ios, .macos],
+            acknowledgement: #""#, changes: #""#,
+            texts: [#"bf3a723c2496"#]),
+        ThirdPartyComponent(
             id: #"swiftpm:cryptoswift"#, name: #"CryptoSwift (Royal Apps fork)"#, version: #"foundationessentials"#,
             license: #"Zlib-acknowledgement"#, url: #"https://github.com/royalapplications/CryptoSwift"#, kind: .library, platforms: [.ios, .macos, .linux],
             acknowledgement: #"This product includes software developed by the "Marcin Krzyzanowski" (http://krzyzanowskim.com/)."#, changes: #""#,
@@ -59,10 +74,25 @@ extension ThirdPartyNotices {
             acknowledgement: #""#, changes: #""#,
             texts: [#"1d41e10031ab"#]),
         ThirdPartyComponent(
+            id: #"font:FiraMono"#, name: #"Fira Mono"#, version: #""#,
+            license: #"OFL-1.1"#, url: #"https://github.com/mozilla/Fira"#, kind: .font, platforms: [.ios, .macos],
+            acknowledgement: #""#, changes: #""#,
+            texts: [#"d1829ff3455b"#]),
+        ThirdPartyComponent(
             id: #"embedded:freerdp"#, name: #"FreeRDP"#, version: #"3.33.1"#,
             license: #"Apache-2.0"#, url: #"https://www.freerdp.com"#, kind: .library, platforms: [.ios, .macos],
             acknowledgement: #""#, changes: #"Unmodified source, built as a static library without H.264, sound or device redirection (apple/scripts/freerdp/build-xcframework.sh). On Linux the system's libfreerdp3 is used."#,
             texts: [#"c71d239df917"#]),
+        ThirdPartyComponent(
+            id: #"font:GeistMono"#, name: #"Geist Mono"#, version: #""#,
+            license: #"OFL-1.1"#, url: #"https://github.com/vercel/geist-font"#, kind: .font, platforms: [.ios, .macos],
+            acknowledgement: #""#, changes: #""#,
+            texts: [#"021caa749f89"#]),
+        ThirdPartyComponent(
+            id: #"font:GoMono"#, name: #"Go Mono"#, version: #""#,
+            license: #"BSD-3-Clause"#, url: #"https://go.dev/blog/go-fonts"#, kind: .font, platforms: [.ios, .macos],
+            acknowledgement: #""#, changes: #""#,
+            texts: [#"911f8f578293"#]),
         ThirdPartyComponent(
             id: #"swiftpm:googlesignin-ios"#, name: #"Google Sign-In for iOS"#, version: #"10.1.0 or later"#,
             license: #"Apache-2.0"#, url: #"https://github.com/google/GoogleSignIn-iOS"#, kind: .library, platforms: [.ios],
@@ -104,6 +134,11 @@ extension ThirdPartyNotices {
             acknowledgement: #""#, changes: #""#,
             texts: [#"5d362a6f8690"#]),
         ThirdPartyComponent(
+            id: #"font:IntelOneMono"#, name: #"Intel One Mono"#, version: #""#,
+            license: #"OFL-1.1"#, url: #"https://github.com/intel/intel-one-mono"#, kind: .font, platforms: [.ios, .macos],
+            acknowledgement: #""#, changes: #""#,
+            texts: [#"5ea10c3b82a9"#]),
+        ThirdPartyComponent(
             id: #"font:IosevkaTerm"#, name: #"Iosevka Term"#, version: #""#,
             license: #"OFL-1.1"#, url: #"https://github.com/be5invis/Iosevka"#, kind: .font, platforms: [.ios, .macos],
             acknowledgement: #""#, changes: #"Subset of the upstream files (Latin, Greek, Cyrillic, symbols, box drawing, Powerline)."#,
@@ -114,10 +149,25 @@ extension ThirdPartyNotices {
             acknowledgement: #""#, changes: #""#,
             texts: [#"30f0c136e3c8"#]),
         ThirdPartyComponent(
+            id: #"font:MapleMono"#, name: #"Maple Mono"#, version: #""#,
+            license: #"OFL-1.1"#, url: #"https://github.com/subframe7536/maple-font"#, kind: .font, platforms: [.ios, .macos],
+            acknowledgement: #""#, changes: #""#,
+            texts: [#"eb2d28d2e565"#]),
+        ThirdPartyComponent(
+            id: #"font:MartianMono"#, name: #"Martian Mono"#, version: #""#,
+            license: #"OFL-1.1"#, url: #"https://github.com/evilmartians/mono"#, kind: .font, platforms: [.ios, .macos],
+            acknowledgement: #""#, changes: #""#,
+            texts: [#"ddafd2c3f37e"#]),
+        ThirdPartyComponent(
             id: #"font:MesloLG"#, name: #"Meslo LG M"#, version: #""#,
             license: #"Apache-2.0 AND Bitstream-Vera"#, url: #"https://github.com/andreberg/Meslo-Font"#, kind: .font, platforms: [.ios, .macos],
             acknowledgement: #""#, changes: #""#,
             texts: [#"c71d239df917"#, #"da8e7278deea"#, #"1068238127f2"#]),
+        ThirdPartyComponent(
+            id: #"font:MonaspaceNeon"#, name: #"Monaspace Neon"#, version: #""#,
+            license: #"OFL-1.1"#, url: #"https://github.com/githubnext/monaspace"#, kind: .font, platforms: [.ios, .macos],
+            acknowledgement: #""#, changes: #""#,
+            texts: [#"f6f999d71f7e"#]),
         ThirdPartyComponent(
             id: #"embedded:openssl"#, name: #"OpenSSL (inside the FreeRDP build)"#, version: #"3.5.9"#,
             license: #"Apache-2.0"#, url: #"https://www.openssl.org"#, kind: .library, platforms: [.ios, .macos],
@@ -128,6 +178,11 @@ extension ThirdPartyNotices {
             license: #"Apache-2.0"#, url: #"https://github.com/google/promises"#, kind: .library, platforms: [.ios],
             acknowledgement: #""#, changes: #""#,
             texts: [#"c71d239df917"#]),
+        ThirdPartyComponent(
+            id: #"font:RedHatMono"#, name: #"Red Hat Mono"#, version: #""#,
+            license: #"OFL-1.1"#, url: #"https://github.com/RedHatOfficial/RedHatFont"#, kind: .font, platforms: [.ios, .macos],
+            acknowledgement: #""#, changes: #""#,
+            texts: [#"56ea4f0f695a"#]),
         ThirdPartyComponent(
             id: #"font:RobotoMono"#, name: #"Roboto Mono"#, version: #""#,
             license: #"OFL-1.1"#, url: #"https://github.com/googlefonts/RobotoMono"#, kind: .font, platforms: [.ios, .macos],
@@ -143,6 +198,11 @@ extension ThirdPartyNotices {
             license: #"OFL-1.1"#, url: #"https://github.com/adobe-fonts/source-code-pro"#, kind: .font, platforms: [.ios, .macos],
             acknowledgement: #""#, changes: #""#,
             texts: [#"0b2c3168605c"#]),
+        ThirdPartyComponent(
+            id: #"font:SpaceMono"#, name: #"Space Mono"#, version: #""#,
+            license: #"OFL-1.1"#, url: #"https://github.com/googlefonts/spacemono"#, kind: .font, platforms: [.ios, .macos],
+            acknowledgement: #""#, changes: #""#,
+            texts: [#"8e4ee42b2553"#]),
         ThirdPartyComponent(
             id: #"swiftpm:cstb"#, name: #"stb_image (Cstb)"#, version: #"1.0.6"#,
             license: #"MIT OR Unlicense"#, url: #"https://github.com/troughton/Cstb"#, kind: .library, platforms: [.linux],
@@ -219,13 +279,33 @@ extension ThirdPartyNotices {
             acknowledgement: #""#, changes: #"Unmodified source; on Apple platforms and Linux the system zlib is linked instead."#,
             texts: [#"845efc77857d"#]),
         ThirdPartyComponent(
+            id: #"theme:ayu by Ike Ku, github.com/ayu-theme/vscode-ayu (MIT)"#, name: #"ayu by Ike Ku colour theme"#, version: #""#,
+            license: #"MIT"#, url: #"https://github.com/ayu-theme/vscode-ayu"#, kind: .theme, platforms: [.ios, .macos, .linux],
+            acknowledgement: #""#, changes: #""#,
+            texts: []),
+        ThirdPartyComponent(
             id: #"theme:Catppuccin, github.com/catppuccin/catppuccin (MIT)"#, name: #"Catppuccin colour theme"#, version: #""#,
             license: #"MIT"#, url: #"https://github.com/catppuccin/catppuccin"#, kind: .theme, platforms: [.ios, .macos, .linux],
             acknowledgement: #""#, changes: #""#,
             texts: []),
         ThirdPartyComponent(
+            id: #"theme:Darcula and IntelliJ Light, JetBrains, github.com/JetBrains/intellij-community (Apache 2.0)"#, name: #"Darcula and IntelliJ Light colour theme"#, version: #""#,
+            license: #"Apache-2.0"#, url: #"https://github.com/JetBrains/intellij-community"#, kind: .theme, platforms: [.ios, .macos, .linux],
+            acknowledgement: #""#, changes: #""#,
+            texts: []),
+        ThirdPartyComponent(
             id: #"theme:Dracula, draculatheme.com (MIT)"#, name: #"Dracula colour theme"#, version: #""#,
             license: #"MIT"#, url: #"https://draculatheme.com"#, kind: .theme, platforms: [.ios, .macos, .linux],
+            acknowledgement: #""#, changes: #""#,
+            texts: []),
+        ThirdPartyComponent(
+            id: #"theme:Everforest by sainnhe, iTerm2 port github.com/icewind/everforest.iterm2 (MIT)"#, name: #"Everforest by sainnhe colour theme"#, version: #""#,
+            license: #"MIT"#, url: #"https://github.com/icewind/everforest.iterm2"#, kind: .theme, platforms: [.ios, .macos, .linux],
+            acknowledgement: #""#, changes: #""#,
+            texts: []),
+        ThirdPartyComponent(
+            id: #"theme:Ghostty default style, github.com/ghostty-org/ghostty (MIT)"#, name: #"Ghostty default style colour theme"#, version: #""#,
+            license: #"MIT"#, url: #"https://github.com/ghostty-org/ghostty"#, kind: .theme, platforms: [.ios, .macos, .linux],
             acknowledgement: #""#, changes: #""#,
             texts: []),
         ThirdPartyComponent(
@@ -239,8 +319,43 @@ extension ThirdPartyNotices {
             acknowledgement: #""#, changes: #""#,
             texts: []),
         ThirdPartyComponent(
-            id: #"theme:Monokai by Wimer Hazenberg, base16 port, github.com/chriskempson/base16 (MIT)"#, name: #"Monokai colour theme by Wimer Hazenberg (base16 port)"#, version: #""#,
-            license: #"MIT"#, url: #"https://github.com/chriskempson/base16"#, kind: .theme, platforms: [.ios, .macos, .linux],
+            id: #"theme:Gruvbox Material by sainnhe, github.com/sainnhe/gruvbox-material (MIT)"#, name: #"Gruvbox Material by sainnhe colour theme"#, version: #""#,
+            license: #"MIT"#, url: #"https://github.com/sainnhe/gruvbox-material"#, kind: .theme, platforms: [.ios, .macos, .linux],
+            acknowledgement: #""#, changes: #""#,
+            texts: []),
+        ThirdPartyComponent(
+            id: #"theme:Horizon by Jonathan Olaleye, github.com/jolaleye/horizon-theme-vscode (MIT)"#, name: #"Horizon by Jonathan Olaleye colour theme"#, version: #""#,
+            license: #"MIT"#, url: #"https://github.com/jolaleye/horizon-theme-vscode"#, kind: .theme, platforms: [.ios, .macos, .linux],
+            acknowledgement: #""#, changes: #""#,
+            texts: []),
+        ThirdPartyComponent(
+            id: #"theme:iTerm2-Color-Schemes"#, name: #"iTerm2-Color-Schemes collection by Mark Badolato (the Ghostty files many palettes are read from)"#, version: #""#,
+            license: #"MIT"#, url: #"https://github.com/mbadolato/iTerm2-Color-Schemes"#, kind: .theme, platforms: [.ios, .macos, .linux],
+            acknowledgement: #""#, changes: #""#,
+            texts: []),
+        ThirdPartyComponent(
+            id: #"theme:Kanagawa by rebelot, github.com/rebelot/kanagawa.nvim (MIT)"#, name: #"Kanagawa by rebelot colour theme"#, version: #""#,
+            license: #"MIT"#, url: #"https://github.com/rebelot/kanagawa.nvim"#, kind: .theme, platforms: [.ios, .macos, .linux],
+            acknowledgement: #""#, changes: #""#,
+            texts: []),
+        ThirdPartyComponent(
+            id: #"theme:Material by Kaicataldo, github.com/kaicataldo/material.vim (MIT)"#, name: #"Material by Kaicataldo colour theme"#, version: #""#,
+            license: #"MIT"#, url: #"https://github.com/kaicataldo/material.vim"#, kind: .theme, platforms: [.ios, .macos, .linux],
+            acknowledgement: #""#, changes: #""#,
+            texts: []),
+        ThirdPartyComponent(
+            id: #"theme:Monokai by Wimer Hazenberg, base16 port, github.com/tinted-theming/schemes (MIT)"#, name: #"Monokai by Wimer Hazenberg colour theme"#, version: #""#,
+            license: #"MIT"#, url: #"https://github.com/tinted-theming/schemes"#, kind: .theme, platforms: [.ios, .macos, .linux],
+            acknowledgement: #""#, changes: #""#,
+            texts: []),
+        ThirdPartyComponent(
+            id: #"theme:Night Owl by Sarah Drasner, github.com/sdras/night-owl-vscode-theme (MIT)"#, name: #"Night Owl by Sarah Drasner colour theme"#, version: #""#,
+            license: #"MIT"#, url: #"https://github.com/sdras/night-owl-vscode-theme"#, kind: .theme, platforms: [.ios, .macos, .linux],
+            acknowledgement: #""#, changes: #""#,
+            texts: []),
+        ThirdPartyComponent(
+            id: #"theme:Nightfox by EdenEast, github.com/EdenEast/nightfox.nvim (MIT)"#, name: #"Nightfox by EdenEast colour theme"#, version: #""#,
+            license: #"MIT"#, url: #"https://github.com/EdenEast/nightfox.nvim"#, kind: .theme, platforms: [.ios, .macos, .linux],
             acknowledgement: #""#, changes: #""#,
             texts: []),
         ThirdPartyComponent(
@@ -249,13 +364,53 @@ extension ThirdPartyNotices {
             acknowledgement: #""#, changes: #""#,
             texts: []),
         ThirdPartyComponent(
-            id: #"theme:One Dark, Atom, github.com/atom/atom (MIT)"#, name: #"One Dark colour theme (Atom)"#, version: #""#,
+            id: #"theme:One Dark (Atom's palette) by Josh Dick, github.com/joshdick/onedark.vim (MIT)"#, name: #"One Dark (Atom's palette) by Josh Dick colour theme"#, version: #""#,
+            license: #"MIT"#, url: #"https://github.com/joshdick/onedark.vim"#, kind: .theme, platforms: [.ios, .macos, .linux],
+            acknowledgement: #""#, changes: #""#,
+            texts: []),
+        ThirdPartyComponent(
+            id: #"theme:One Half by Son A. Pham, github.com/sonph/onehalf, as shipped in Windows Terminal (MIT)"#, name: #"One Half by Son A. Pham colour theme"#, version: #""#,
+            license: #"MIT"#, url: #"https://github.com/sonph/onehalf"#, kind: .theme, platforms: [.ios, .macos, .linux],
+            acknowledgement: #""#, changes: #""#,
+            texts: []),
+        ThirdPartyComponent(
+            id: #"theme:One Light, Atom, github.com/atom/atom (MIT)"#, name: #"One Light colour theme"#, version: #""#,
             license: #"MIT"#, url: #"https://github.com/atom/atom"#, kind: .theme, platforms: [.ios, .macos, .linux],
+            acknowledgement: #""#, changes: #""#,
+            texts: []),
+        ThirdPartyComponent(
+            id: #"theme:Palenight by Olaolu Olawuyi, github.com/whizkydee/vscode-palenight-theme (MIT)"#, name: #"Palenight by Olaolu Olawuyi colour theme"#, version: #""#,
+            license: #"MIT"#, url: #"https://github.com/whizkydee/vscode-palenight-theme"#, kind: .theme, platforms: [.ios, .macos, .linux],
+            acknowledgement: #""#, changes: #""#,
+            texts: []),
+        ThirdPartyComponent(
+            id: #"theme:Rosé Pine, github.com/rose-pine (MIT)"#, name: #"Rosé Pine colour theme"#, version: #""#,
+            license: #"MIT"#, url: #"https://github.com/rose-pine"#, kind: .theme, platforms: [.ios, .macos, .linux],
+            acknowledgement: #""#, changes: #""#,
+            texts: []),
+        ThirdPartyComponent(
+            id: #"theme:Snazzy by Sindre Sorhus, github.com/sindresorhus/iterm2-snazzy (MIT)"#, name: #"Snazzy by Sindre Sorhus colour theme"#, version: #""#,
+            license: #"MIT"#, url: #"https://github.com/sindresorhus/iterm2-snazzy"#, kind: .theme, platforms: [.ios, .macos, .linux],
             acknowledgement: #""#, changes: #""#,
             texts: []),
         ThirdPartyComponent(
             id: #"theme:Solarized by Ethan Schoonover, ethanschoonover.com/solarized (MIT)"#, name: #"Solarized colour theme by Ethan Schoonover"#, version: #""#,
             license: #"MIT"#, url: #"https://ethanschoonover.com/solarized/"#, kind: .theme, platforms: [.ios, .macos, .linux],
+            acknowledgement: #""#, changes: #""#,
+            texts: []),
+        ThirdPartyComponent(
+            id: #"theme:Solarized Osaka by craftzdog, github.com/craftzdog/solarized-osaka.nvim (Apache 2.0)"#, name: #"Solarized Osaka by craftzdog colour theme"#, version: #""#,
+            license: #"Apache-2.0"#, url: #"https://github.com/craftzdog/solarized-osaka.nvim"#, kind: .theme, platforms: [.ios, .macos, .linux],
+            acknowledgement: #""#, changes: #""#,
+            texts: []),
+        ThirdPartyComponent(
+            id: #"theme:SynthWave '84 by Robb Owen, github.com/robb0wen/synthwave-vscode (MIT)"#, name: #"SynthWave '84 by Robb Owen colour theme"#, version: #""#,
+            license: #"MIT"#, url: #"https://github.com/robb0wen/synthwave-vscode"#, kind: .theme, platforms: [.ios, .macos, .linux],
+            acknowledgement: #""#, changes: #""#,
+            texts: []),
+        ThirdPartyComponent(
+            id: #"theme:Tango palette (public domain), as shipped in Windows Terminal, github.com/microsoft/terminal (MIT)"#, name: #"Tango palette (public domain) colour theme"#, version: #""#,
+            license: #"MIT"#, url: #"https://github.com/microsoft/terminal"#, kind: .theme, platforms: [.ios, .macos, .linux],
             acknowledgement: #""#, changes: #""#,
             texts: []),
         ThirdPartyComponent(
@@ -268,9 +423,119 @@ extension ThirdPartyNotices {
             license: #"MIT"#, url: #"https://github.com/chriskempson/tomorrow-theme"#, kind: .theme, platforms: [.ios, .macos, .linux],
             acknowledgement: #""#, changes: #""#,
             texts: []),
+        ThirdPartyComponent(
+            id: #"theme:Visual Studio Code default themes, as shipped in Windows Terminal, github.com/microsoft/terminal (MIT)"#, name: #"Visual Studio Code default themes colour theme"#, version: #""#,
+            license: #"MIT"#, url: #"https://github.com/microsoft/terminal"#, kind: .theme, platforms: [.ios, .macos, .linux],
+            acknowledgement: #""#, changes: #""#,
+            texts: []),
+        ThirdPartyComponent(
+            id: #"theme:Windows Terminal schemes, github.com/microsoft/terminal (MIT)"#, name: #"Windows Terminal schemes colour theme"#, version: #""#,
+            license: #"MIT"#, url: #"https://github.com/microsoft/terminal"#, kind: .theme, platforms: [.ios, .macos, .linux],
+            acknowledgement: #""#, changes: #""#,
+            texts: []),
+        ThirdPartyComponent(
+            id: #"theme:Xcode colours by lunacookies, github.com/lunacookies/vim-colors-xcode (ISC)"#, name: #"Xcode colours by lunacookies colour theme"#, version: #""#,
+            license: #"ISC"#, url: #"https://github.com/lunacookies/vim-colors-xcode"#, kind: .theme, platforms: [.ios, .macos, .linux],
+            acknowledgement: #""#, changes: #""#,
+            texts: []),
     ]
 
     static let generatedTexts: [String: LicenceText] = [
+        #"021caa749f89"#: LicenceText(title: #"LICENSE.txt"#, body: #"""
+Copyright 2026 The Geist Project Authors (https://github.com/vercel/geist-font)
+
+This Font Software is licensed under the SIL Open Font License, Version 1.1.
+This license is copied below, and is also available with a FAQ at:
+https://openfontlicense.org
+
+
+-----------------------------------------------------------
+SIL OPEN FONT LICENSE Version 1.1 - 26 February 2007
+-----------------------------------------------------------
+
+PREAMBLE
+The goals of the Open Font License (OFL) are to stimulate worldwide
+development of collaborative font projects, to support the font creation
+efforts of academic and linguistic communities, and to provide a free and
+open framework in which fonts may be shared and improved in partnership
+with others.
+
+The OFL allows the licensed fonts to be used, studied, modified and
+redistributed freely as long as they are not sold by themselves. The
+fonts, including any derivative works, can be bundled, embedded, 
+redistributed and/or sold with any software provided that any reserved
+names are not used by derivative works. The fonts and derivatives,
+however, cannot be released under any other type of license. The
+requirement for fonts to remain under this license does not apply
+to any document created using the fonts or their derivatives.
+
+DEFINITIONS
+"Font Software" refers to the set of files released by the Copyright
+Holder(s) under this license and clearly marked as such. This may
+include source files, build scripts and documentation.
+
+"Reserved Font Name" refers to any names specified as such after the
+copyright statement(s).
+
+"Original Version" refers to the collection of Font Software components as
+distributed by the Copyright Holder(s).
+
+"Modified Version" refers to any derivative made by adding to, deleting,
+or substituting -- in part or in whole -- any of the components of the
+Original Version, by changing formats or by porting the Font Software to a
+new environment.
+
+"Author" refers to any designer, engineer, programmer, technical
+writer or other person who contributed to the Font Software.
+
+PERMISSION & CONDITIONS
+Permission is hereby granted, free of charge, to any person obtaining
+a copy of the Font Software, to use, study, copy, merge, embed, modify,
+redistribute, and sell modified and unmodified copies of the Font
+Software, subject to the following conditions:
+
+1) Neither the Font Software nor any of its individual components,
+in Original or Modified Versions, may be sold by itself.
+
+2) Original or Modified Versions of the Font Software may be bundled,
+redistributed and/or sold with any software, provided that each copy
+contains the above copyright notice and this license. These can be
+included either as stand-alone text files, human-readable headers or
+in the appropriate machine-readable metadata fields within text or
+binary files as long as those fields can be easily viewed by the user.
+
+3) No Modified Version of the Font Software may use the Reserved Font
+Name(s) unless explicit written permission is granted by the corresponding
+Copyright Holder. This restriction only applies to the primary font name as
+presented to the users.
+
+4) The name(s) of the Copyright Holder(s) or the Author(s) of the Font
+Software shall not be used to promote, endorse or advertise any
+Modified Version, except to acknowledge the contribution(s) of the
+Copyright Holder(s) and the Author(s) or with their explicit written
+permission.
+
+5) The Font Software, modified or unmodified, in part or in whole,
+must be distributed entirely under this license, and must not be
+distributed under any other license. The requirement for fonts to
+remain under this license does not apply to any document created
+using the Font Software.
+
+TERMINATION
+This license becomes null and void if any of the above conditions are
+not met.
+
+DISCLAIMER
+THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO ANY WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT
+OF COPYRIGHT, PATENT, TRADEMARK, OR OTHER RIGHT. IN NO EVENT SHALL THE
+COPYRIGHT HOLDER BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+INCLUDING ANY GENERAL, SPECIAL, INDIRECT, INCIDENTAL, OR CONSEQUENTIAL
+DAMAGES, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+FROM, OUT OF THE USE OR INABILITY TO USE THE FONT SOFTWARE OR FROM
+OTHER DEALINGS IN THE FONT SOFTWARE.
+"""#),
         #"0b2c3168605c"#: LicenceText(title: #"LICENSE-OFL.md"#, body: #"""
 © 2023 Adobe (http://www.adobe.com/), with Reserved Font Name 'Source'. All Rights Reserved. Source is a trademark of Adobe in the United States and/or other countries.
 
@@ -903,6 +1168,102 @@ DAMAGES, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 FROM, OUT OF THE USE OR INABILITY TO USE THE FONT SOFTWARE OR FROM
 OTHER DEALINGS IN THE FONT SOFTWARE.
 """#),
+        #"205bc88aea56"#: LicenceText(title: #"LICENSE.txt"#, body: #"""
+Copyright (c) 2009, Mark Simonson (http://www.ms-studio.com, mark@marksimonson.com),
+with Reserved Font Name Anonymous Pro.
+
+This Font Software is licensed under the SIL Open Font License, Version 1.1.
+This license is copied below, and is also available with a FAQ at:
+http://scripts.sil.org/OFL
+
+
+-----------------------------------------------------------
+SIL OPEN FONT LICENSE Version 1.1 - 26 February 2007
+-----------------------------------------------------------
+
+PREAMBLE
+The goals of the Open Font License (OFL) are to stimulate worldwide
+development of collaborative font projects, to support the font creation
+efforts of academic and linguistic communities, and to provide a free and
+open framework in which fonts may be shared and improved in partnership
+with others.
+
+The OFL allows the licensed fonts to be used, studied, modified and
+redistributed freely as long as they are not sold by themselves. The
+fonts, including any derivative works, can be bundled, embedded, 
+redistributed and/or sold with any software provided that any reserved
+names are not used by derivative works. The fonts and derivatives,
+however, cannot be released under any other type of license. The
+requirement for fonts to remain under this license does not apply
+to any document created using the fonts or their derivatives.
+
+DEFINITIONS
+"Font Software" refers to the set of files released by the Copyright
+Holder(s) under this license and clearly marked as such. This may
+include source files, build scripts and documentation.
+
+"Reserved Font Name" refers to any names specified as such after the
+copyright statement(s).
+
+"Original Version" refers to the collection of Font Software components as
+distributed by the Copyright Holder(s).
+
+"Modified Version" refers to any derivative made by adding to, deleting,
+or substituting -- in part or in whole -- any of the components of the
+Original Version, by changing formats or by porting the Font Software to a
+new environment.
+
+"Author" refers to any designer, engineer, programmer, technical
+writer or other person who contributed to the Font Software.
+
+PERMISSION & CONDITIONS
+Permission is hereby granted, free of charge, to any person obtaining
+a copy of the Font Software, to use, study, copy, merge, embed, modify,
+redistribute, and sell modified and unmodified copies of the Font
+Software, subject to the following conditions:
+
+1) Neither the Font Software nor any of its individual components,
+in Original or Modified Versions, may be sold by itself.
+
+2) Original or Modified Versions of the Font Software may be bundled,
+redistributed and/or sold with any software, provided that each copy
+contains the above copyright notice and this license. These can be
+included either as stand-alone text files, human-readable headers or
+in the appropriate machine-readable metadata fields within text or
+binary files as long as those fields can be easily viewed by the user.
+
+3) No Modified Version of the Font Software may use the Reserved Font
+Name(s) unless explicit written permission is granted by the corresponding
+Copyright Holder. This restriction only applies to the primary font name as
+presented to the users.
+
+4) The name(s) of the Copyright Holder(s) or the Author(s) of the Font
+Software shall not be used to promote, endorse or advertise any
+Modified Version, except to acknowledge the contribution(s) of the
+Copyright Holder(s) and the Author(s) or with their explicit written
+permission.
+
+5) The Font Software, modified or unmodified, in part or in whole,
+must be distributed entirely under this license, and must not be
+distributed under any other license. The requirement for fonts to
+remain under this license does not apply to any document created
+using the Font Software.
+
+TERMINATION
+This license becomes null and void if any of the above conditions are
+not met.
+
+DISCLAIMER
+THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO ANY WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT
+OF COPYRIGHT, PATENT, TRADEMARK, OR OTHER RIGHT. IN NO EVENT SHALL THE
+COPYRIGHT HOLDER BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+INCLUDING ANY GENERAL, SPECIAL, INDIRECT, INCIDENTAL, OR CONSEQUENTIAL
+DAMAGES, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+FROM, OUT OF THE USE OR INABILITY TO USE THE FONT SOFTWARE OR FROM
+OTHER DEALINGS IN THE FONT SOFTWARE.
+"""#),
         #"2f0015108d68"#: LicenceText(title: #"LICENSE-UFL.txt"#, body: #"""
 -------------------------------
 UBUNTU FONT LICENCE Version 1.0
@@ -1412,6 +1773,102 @@ DAMAGES, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 FROM, OUT OF THE USE OR INABILITY TO USE THE FONT SOFTWARE OR FROM
 OTHER DEALINGS IN THE FONT SOFTWARE.
 """#),
+        #"56ea4f0f695a"#: LicenceText(title: #"LICENSE"#, body: #"""
+Copyright 2021 Red Hat, Inc.,
+with Reserved Font Name Red Hat.
+
+This Font Software is licensed under the SIL Open Font License, Version 1.1.
+This license is copied below, and is also available with a FAQ at:
+http://scripts.sil.org/OFL
+
+
+-----------------------------------------------------------
+SIL OPEN FONT LICENSE Version 1.1 - 26 February 2007
+-----------------------------------------------------------
+
+PREAMBLE
+The goals of the Open Font License (OFL) are to stimulate worldwide
+development of collaborative font projects, to support the font creation
+efforts of academic and linguistic communities, and to provide a free and
+open framework in which fonts may be shared and improved in partnership
+with others.
+
+The OFL allows the licensed fonts to be used, studied, modified and
+redistributed freely as long as they are not sold by themselves. The
+fonts, including any derivative works, can be bundled, embedded,
+redistributed and/or sold with any software provided that any reserved
+names are not used by derivative works. The fonts and derivatives,
+however, cannot be released under any other type of license. The
+requirement for fonts to remain under this license does not apply
+to any document created using the fonts or their derivatives.
+
+DEFINITIONS
+"Font Software" refers to the set of files released by the Copyright
+Holder(s) under this license and clearly marked as such. This may
+include source files, build scripts and documentation.
+
+"Reserved Font Name" refers to any names specified as such after the
+copyright statement(s).
+
+"Original Version" refers to the collection of Font Software components as
+distributed by the Copyright Holder(s).
+
+"Modified Version" refers to any derivative made by adding to, deleting,
+or substituting -- in part or in whole -- any of the components of the
+Original Version, by changing formats or by porting the Font Software to a
+new environment.
+
+"Author" refers to any designer, engineer, programmer, technical
+writer or other person who contributed to the Font Software.
+
+PERMISSION & CONDITIONS
+Permission is hereby granted, free of charge, to any person obtaining
+a copy of the Font Software, to use, study, copy, merge, embed, modify,
+redistribute, and sell modified and unmodified copies of the Font
+Software, subject to the following conditions:
+
+1) Neither the Font Software nor any of its individual components,
+in Original or Modified Versions, may be sold by itself.
+
+2) Original or Modified Versions of the Font Software may be bundled,
+redistributed and/or sold with any software, provided that each copy
+contains the above copyright notice and this license. These can be
+included either as stand-alone text files, human-readable headers or
+in the appropriate machine-readable metadata fields within text or
+binary files as long as those fields can be easily viewed by the user.
+
+3) No Modified Version of the Font Software may use the Reserved Font
+Name(s) unless explicit written permission is granted by the corresponding
+Copyright Holder. This restriction only applies to the primary font name as
+presented to the users.
+
+4) The name(s) of the Copyright Holder(s) or the Author(s) of the Font
+Software shall not be used to promote, endorse or advertise any
+Modified Version, except to acknowledge the contribution(s) of the
+Copyright Holder(s) and the Author(s) or with their explicit written
+permission.
+
+5) The Font Software, modified or unmodified, in part or in whole,
+must be distributed entirely under this license, and must not be
+distributed under any other license. The requirement for fonts to
+remain under this license does not apply to any document created
+using the Font Software.
+
+TERMINATION
+This license becomes null and void if any of the above conditions are
+not met.
+
+DISCLAIMER
+THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO ANY WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT
+OF COPYRIGHT, PATENT, TRADEMARK, OR OTHER RIGHT. IN NO EVENT SHALL THE
+COPYRIGHT HOLDER BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+INCLUDING ANY GENERAL, SPECIAL, INDIRECT, INCIDENTAL, OR CONSEQUENTIAL
+DAMAGES, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+FROM, OUT OF THE USE OR INABILITY TO USE THE FONT SOFTWARE OR FROM
+OTHER DEALINGS IN THE FONT SOFTWARE.
+"""#),
         #"580a39b7c09c"#: LicenceText(title: #"LICENSE"#, body: #"""
 MIT License
 
@@ -1441,6 +1898,101 @@ Copyright 2006 The Inconsolata Project Authors (https://github.com/cyrealtype/In
 This Font Software is licensed under the SIL Open Font License, Version 1.1.
 This license is copied below, and is also available with a FAQ at:
 http://scripts.sil.org/OFL
+
+
+-----------------------------------------------------------
+SIL OPEN FONT LICENSE Version 1.1 - 26 February 2007
+-----------------------------------------------------------
+
+PREAMBLE
+The goals of the Open Font License (OFL) are to stimulate worldwide
+development of collaborative font projects, to support the font creation
+efforts of academic and linguistic communities, and to provide a free and
+open framework in which fonts may be shared and improved in partnership
+with others.
+
+The OFL allows the licensed fonts to be used, studied, modified and
+redistributed freely as long as they are not sold by themselves. The
+fonts, including any derivative works, can be bundled, embedded, 
+redistributed and/or sold with any software provided that any reserved
+names are not used by derivative works. The fonts and derivatives,
+however, cannot be released under any other type of license. The
+requirement for fonts to remain under this license does not apply
+to any document created using the fonts or their derivatives.
+
+DEFINITIONS
+"Font Software" refers to the set of files released by the Copyright
+Holder(s) under this license and clearly marked as such. This may
+include source files, build scripts and documentation.
+
+"Reserved Font Name" refers to any names specified as such after the
+copyright statement(s).
+
+"Original Version" refers to the collection of Font Software components as
+distributed by the Copyright Holder(s).
+
+"Modified Version" refers to any derivative made by adding to, deleting,
+or substituting -- in part or in whole -- any of the components of the
+Original Version, by changing formats or by porting the Font Software to a
+new environment.
+
+"Author" refers to any designer, engineer, programmer, technical
+writer or other person who contributed to the Font Software.
+
+PERMISSION & CONDITIONS
+Permission is hereby granted, free of charge, to any person obtaining
+a copy of the Font Software, to use, study, copy, merge, embed, modify,
+redistribute, and sell modified and unmodified copies of the Font
+Software, subject to the following conditions:
+
+1) Neither the Font Software nor any of its individual components,
+in Original or Modified Versions, may be sold by itself.
+
+2) Original or Modified Versions of the Font Software may be bundled,
+redistributed and/or sold with any software, provided that each copy
+contains the above copyright notice and this license. These can be
+included either as stand-alone text files, human-readable headers or
+in the appropriate machine-readable metadata fields within text or
+binary files as long as those fields can be easily viewed by the user.
+
+3) No Modified Version of the Font Software may use the Reserved Font
+Name(s) unless explicit written permission is granted by the corresponding
+Copyright Holder. This restriction only applies to the primary font name as
+presented to the users.
+
+4) The name(s) of the Copyright Holder(s) or the Author(s) of the Font
+Software shall not be used to promote, endorse or advertise any
+Modified Version, except to acknowledge the contribution(s) of the
+Copyright Holder(s) and the Author(s) or with their explicit written
+permission.
+
+5) The Font Software, modified or unmodified, in part or in whole,
+must be distributed entirely under this license, and must not be
+distributed under any other license. The requirement for fonts to
+remain under this license does not apply to any document created
+using the Font Software.
+
+TERMINATION
+This license becomes null and void if any of the above conditions are
+not met.
+
+DISCLAIMER
+THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO ANY WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT
+OF COPYRIGHT, PATENT, TRADEMARK, OR OTHER RIGHT. IN NO EVENT SHALL THE
+COPYRIGHT HOLDER BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+INCLUDING ANY GENERAL, SPECIAL, INDIRECT, INCIDENTAL, OR CONSEQUENTIAL
+DAMAGES, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+FROM, OUT OF THE USE OR INABILITY TO USE THE FONT SOFTWARE OR FROM
+OTHER DEALINGS IN THE FONT SOFTWARE.
+"""#),
+        #"5ea10c3b82a9"#: LicenceText(title: #"LICENSE.txt"#, body: #"""
+Copyright 2023-2026 The Intel One Mono Project Authors (https://github.com/intel/intel-one-mono), with Reserved Font Name 'Intel'
+
+This Font Software is licensed under the SIL Open Font License, Version 1.1.
+This license is copied below, and is also available with a FAQ at:
+https://scripts.sil.org/OFL
 
 
 -----------------------------------------------------------
@@ -2262,6 +2814,224 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """#),
+        #"8841e59e7808"#: LicenceText(title: #"LICENSE"#, body: #"""
+Copyright (c) 2026, 0xType Project Authors (https://github.com/0xType)
+
+This Font Software is licensed under the SIL Open Font License, Version 1.1.
+This license is copied below, and is also available with a FAQ at:
+http://scripts.sil.org/OFL
+
+---
+
+## SIL OPEN FONT LICENSE Version 1.1 - 26 February 2007
+
+PREAMBLE
+The goals of the Open Font License (OFL) are to stimulate worldwide
+development of collaborative font projects, to support the font creation
+efforts of academic and linguistic communities, and to provide a free and
+open framework in which fonts may be shared and improved in partnership
+with others.
+
+The OFL allows the licensed fonts to be used, studied, modified and
+redistributed freely as long as they are not sold by themselves. The
+fonts, including any derivative works, can be bundled, embedded,
+redistributed and/or sold with any software provided that any reserved
+names are not used by derivative works. The fonts and derivatives,
+however, cannot be released under any other type of license. The
+requirement for fonts to remain under this license does not apply
+to any document created using the fonts or their derivatives.
+
+DEFINITIONS
+"Font Software" refers to the set of files released by the Copyright
+Holder(s) under this license and clearly marked as such. This may
+include source files, build scripts and documentation.
+
+"Reserved Font Name" refers to any names specified as such after the
+copyright statement(s).
+
+"Original Version" refers to the collection of Font Software components as
+distributed by the Copyright Holder(s).
+
+"Modified Version" refers to any derivative made by adding to, deleting,
+or substituting -- in part or in whole -- any of the components of the
+Original Version, by changing formats or by porting the Font Software to a
+new environment.
+
+"Author" refers to any designer, engineer, programmer, technical
+writer or other person who contributed to the Font Software.
+
+PERMISSION & CONDITIONS
+Permission is hereby granted, free of charge, to any person obtaining
+a copy of the Font Software, to use, study, copy, merge, embed, modify,
+redistribute, and sell modified and unmodified copies of the Font
+Software, subject to the following conditions:
+
+1. Neither the Font Software nor any of its individual components,
+   in Original or Modified Versions, may be sold by itself.
+
+2. Original or Modified Versions of the Font Software may be bundled,
+   redistributed and/or sold with any software, provided that each copy
+   contains the above copyright notice and this license. These can be
+   included either as stand-alone text files, human-readable headers or
+   in the appropriate machine-readable metadata fields within text or
+   binary files as long as those fields can be easily viewed by the user.
+
+3. No Modified Version of the Font Software may use the Reserved Font
+   Name(s) unless explicit written permission is granted by the corresponding
+   Copyright Holder. This restriction only applies to the primary font name as
+   presented to the users.
+
+4. The name(s) of the Copyright Holder(s) or the Author(s) of the Font
+   Software shall not be used to promote, endorse or advertise any
+   Modified Version, except to acknowledge the contribution(s) of the
+   Copyright Holder(s) and the Author(s) or with their explicit written
+   permission.
+
+5. The Font Software, modified or unmodified, in part or in whole,
+   must be distributed entirely under this license, and must not be
+   distributed under any other license. The requirement for fonts to
+   remain under this license does not apply to any document created
+   using the Font Software.
+
+TERMINATION
+This license becomes null and void if any of the above conditions are
+not met.
+
+DISCLAIMER
+THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO ANY WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT
+OF COPYRIGHT, PATENT, TRADEMARK, OR OTHER RIGHT. IN NO EVENT SHALL THE
+COPYRIGHT HOLDER BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+INCLUDING ANY GENERAL, SPECIAL, INDIRECT, INCIDENTAL, OR CONSEQUENTIAL
+DAMAGES, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+FROM, OUT OF THE USE OR INABILITY TO USE THE FONT SOFTWARE OR FROM
+OTHER DEALINGS IN THE FONT SOFTWARE.
+"""#),
+        #"8e4ee42b2553"#: LicenceText(title: #"LICENSE.txt"#, body: #"""
+Copyright 2016 The Space Mono Project Authors (https://github.com/googlefonts/spacemono)
+
+This Font Software is licensed under the SIL Open Font License, Version 1.1.
+This license is copied below, and is also available with a FAQ at:
+http://scripts.sil.org/OFL
+
+
+-----------------------------------------------------------
+SIL OPEN FONT LICENSE Version 1.1 - 26 February 2007
+-----------------------------------------------------------
+
+PREAMBLE
+The goals of the Open Font License (OFL) are to stimulate worldwide
+development of collaborative font projects, to support the font creation
+efforts of academic and linguistic communities, and to provide a free and
+open framework in which fonts may be shared and improved in partnership
+with others.
+
+The OFL allows the licensed fonts to be used, studied, modified and
+redistributed freely as long as they are not sold by themselves. The
+fonts, including any derivative works, can be bundled, embedded, 
+redistributed and/or sold with any software provided that any reserved
+names are not used by derivative works. The fonts and derivatives,
+however, cannot be released under any other type of license. The
+requirement for fonts to remain under this license does not apply
+to any document created using the fonts or their derivatives.
+
+DEFINITIONS
+"Font Software" refers to the set of files released by the Copyright
+Holder(s) under this license and clearly marked as such. This may
+include source files, build scripts and documentation.
+
+"Reserved Font Name" refers to any names specified as such after the
+copyright statement(s).
+
+"Original Version" refers to the collection of Font Software components as
+distributed by the Copyright Holder(s).
+
+"Modified Version" refers to any derivative made by adding to, deleting,
+or substituting -- in part or in whole -- any of the components of the
+Original Version, by changing formats or by porting the Font Software to a
+new environment.
+
+"Author" refers to any designer, engineer, programmer, technical
+writer or other person who contributed to the Font Software.
+
+PERMISSION & CONDITIONS
+Permission is hereby granted, free of charge, to any person obtaining
+a copy of the Font Software, to use, study, copy, merge, embed, modify,
+redistribute, and sell modified and unmodified copies of the Font
+Software, subject to the following conditions:
+
+1) Neither the Font Software nor any of its individual components,
+in Original or Modified Versions, may be sold by itself.
+
+2) Original or Modified Versions of the Font Software may be bundled,
+redistributed and/or sold with any software, provided that each copy
+contains the above copyright notice and this license. These can be
+included either as stand-alone text files, human-readable headers or
+in the appropriate machine-readable metadata fields within text or
+binary files as long as those fields can be easily viewed by the user.
+
+3) No Modified Version of the Font Software may use the Reserved Font
+Name(s) unless explicit written permission is granted by the corresponding
+Copyright Holder. This restriction only applies to the primary font name as
+presented to the users.
+
+4) The name(s) of the Copyright Holder(s) or the Author(s) of the Font
+Software shall not be used to promote, endorse or advertise any
+Modified Version, except to acknowledge the contribution(s) of the
+Copyright Holder(s) and the Author(s) or with their explicit written
+permission.
+
+5) The Font Software, modified or unmodified, in part or in whole,
+must be distributed entirely under this license, and must not be
+distributed under any other license. The requirement for fonts to
+remain under this license does not apply to any document created
+using the Font Software.
+
+TERMINATION
+This license becomes null and void if any of the above conditions are
+not met.
+
+DISCLAIMER
+THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO ANY WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT
+OF COPYRIGHT, PATENT, TRADEMARK, OR OTHER RIGHT. IN NO EVENT SHALL THE
+COPYRIGHT HOLDER BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+INCLUDING ANY GENERAL, SPECIAL, INDIRECT, INCIDENTAL, OR CONSEQUENTIAL
+DAMAGES, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+FROM, OUT OF THE USE OR INABILITY TO USE THE FONT SOFTWARE OR FROM
+OTHER DEALINGS IN THE FONT SOFTWARE.
+"""#),
+        #"911f8f578293"#: LicenceText(title: #"LICENSE"#, body: #"""
+Copyright 2009 The Go Authors.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are
+met:
+
+   * Redistributions of source code must retain the above copyright
+notice, this list of conditions and the following disclaimer.
+   * Redistributions in binary form must reproduce the above
+copyright notice, this list of conditions and the following disclaimer
+in the documentation and/or other materials provided with the
+distribution.
+   * Neither the name of Google LLC nor the names of its
+contributors may be used to endorse or promote products derived from
+this software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+"AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+"""#),
         #"9568a2b155e6"#: LicenceText(title: #"LICENSE.txt"#, body: #"""
                                  Apache License
                            Version 2.0, January 2004
@@ -2528,6 +3298,98 @@ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
 ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+"""#),
+        #"bf3a723c2496"#: LicenceText(title: #"LICENSE.txt"#, body: #"""
+This Font Software is licensed under the SIL Open Font License, Version 1.1.
+This license is copied below, and is also available with a FAQ at:
+http://scripts.sil.org/OFL
+
+-----------------------------------------------------------
+SIL OPEN FONT LICENSE Version 1.1 - 26 February 2007
+-----------------------------------------------------------
+
+PREAMBLE
+The goals of the Open Font License (OFL) are to stimulate worldwide
+development of collaborative font projects, to support the font creation
+efforts of academic and linguistic communities, and to provide a free and
+open framework in which fonts may be shared and improved in partnership
+with others.
+
+The OFL allows the licensed fonts to be used, studied, modified and
+redistributed freely as long as they are not sold by themselves. The
+fonts, including any derivative works, can be bundled, embedded, 
+redistributed and/or sold with any software provided that any reserved
+names are not used by derivative works. The fonts and derivatives,
+however, cannot be released under any other type of license. The
+requirement for fonts to remain under this license does not apply
+to any document created using the fonts or their derivatives.
+
+DEFINITIONS
+"Font Software" refers to the set of files released by the Copyright
+Holder(s) under this license and clearly marked as such. This may
+include source files, build scripts and documentation.
+
+"Reserved Font Name" refers to any names specified as such after the
+copyright statement(s).
+
+"Original Version" refers to the collection of Font Software components as
+distributed by the Copyright Holder(s).
+
+"Modified Version" refers to any derivative made by adding to, deleting,
+or substituting -- in part or in whole -- any of the components of the
+Original Version, by changing formats or by porting the Font Software to a
+new environment.
+
+"Author" refers to any designer, engineer, programmer, technical
+writer or other person who contributed to the Font Software.
+
+PERMISSION & CONDITIONS
+Permission is hereby granted, free of charge, to any person obtaining
+a copy of the Font Software, to use, study, copy, merge, embed, modify,
+redistribute, and sell modified and unmodified copies of the Font
+Software, subject to the following conditions:
+
+1) Neither the Font Software nor any of its individual components,
+in Original or Modified Versions, may be sold by itself.
+
+2) Original or Modified Versions of the Font Software may be bundled,
+redistributed and/or sold with any software, provided that each copy
+contains the above copyright notice and this license. These can be
+included either as stand-alone text files, human-readable headers or
+in the appropriate machine-readable metadata fields within text or
+binary files as long as those fields can be easily viewed by the user.
+
+3) No Modified Version of the Font Software may use the Reserved Font
+Name(s) unless explicit written permission is granted by the corresponding
+Copyright Holder. This restriction only applies to the primary font name as
+presented to the users.
+
+4) The name(s) of the Copyright Holder(s) or the Author(s) of the Font
+Software shall not be used to promote, endorse or advertise any
+Modified Version, except to acknowledge the contribution(s) of the
+Copyright Holder(s) and the Author(s) or with their explicit written
+permission.
+
+5) The Font Software, modified or unmodified, in part or in whole,
+must be distributed entirely under this license, and must not be
+distributed under any other license. The requirement for fonts to
+remain under this license does not apply to any document created
+using the Font Software.
+
+TERMINATION
+This license becomes null and void if any of the above conditions are
+not met.
+
+DISCLAIMER
+THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO ANY WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT
+OF COPYRIGHT, PATENT, TRADEMARK, OR OTHER RIGHT. IN NO EVENT SHALL THE
+COPYRIGHT HOLDER BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+INCLUDING ANY GENERAL, SPECIAL, INDIRECT, INCIDENTAL, OR CONSEQUENTIAL
+DAMAGES, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+FROM, OUT OF THE USE OR INABILITY TO USE THE FONT SOFTWARE OR FROM
+OTHER DEALINGS IN THE FONT SOFTWARE.
 """#),
         #"c71d239df917"#: LicenceText(title: #"LICENSE"#, body: #"""
                                  Apache License
@@ -3066,6 +3928,101 @@ DAMAGES, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 FROM, OUT OF THE USE OR INABILITY TO USE THE FONT SOFTWARE OR FROM
 OTHER DEALINGS IN THE FONT SOFTWARE.
 """#),
+        #"d1829ff3455b"#: LicenceText(title: #"LICENSE.txt"#, body: #"""
+Copyright (c) 2012-2013, The Mozilla Corporation and Telefonica S.A.
+
+This Font Software is licensed under the SIL Open Font License, Version 1.1.
+This license is copied below, and is also available with a FAQ at:
+http://scripts.sil.org/OFL
+
+
+-----------------------------------------------------------
+SIL OPEN FONT LICENSE Version 1.1 - 26 February 2007
+-----------------------------------------------------------
+
+PREAMBLE
+The goals of the Open Font License (OFL) are to stimulate worldwide
+development of collaborative font projects, to support the font creation
+efforts of academic and linguistic communities, and to provide a free and
+open framework in which fonts may be shared and improved in partnership
+with others.
+
+The OFL allows the licensed fonts to be used, studied, modified and
+redistributed freely as long as they are not sold by themselves. The
+fonts, including any derivative works, can be bundled, embedded,
+redistributed and/or sold with any software provided that any reserved
+names are not used by derivative works. The fonts and derivatives,
+however, cannot be released under any other type of license. The
+requirement for fonts to remain under this license does not apply
+to any document created using the fonts or their derivatives.
+
+DEFINITIONS
+"Font Software" refers to the set of files released by the Copyright
+Holder(s) under this license and clearly marked as such. This may
+include source files, build scripts and documentation.
+
+"Reserved Font Name" refers to any names specified as such after the
+copyright statement(s).
+
+"Original Version" refers to the collection of Font Software components as
+distributed by the Copyright Holder(s).
+
+"Modified Version" refers to any derivative made by adding to, deleting,
+or substituting -- in part or in whole -- any of the components of the
+Original Version, by changing formats or by porting the Font Software to a
+new environment.
+
+"Author" refers to any designer, engineer, programmer, technical
+writer or other person who contributed to the Font Software.
+
+PERMISSION & CONDITIONS
+Permission is hereby granted, free of charge, to any person obtaining
+a copy of the Font Software, to use, study, copy, merge, embed, modify,
+redistribute, and sell modified and unmodified copies of the Font
+Software, subject to the following conditions:
+
+1) Neither the Font Software nor any of its individual components,
+in Original or Modified Versions, may be sold by itself.
+
+2) Original or Modified Versions of the Font Software may be bundled,
+redistributed and/or sold with any software, provided that each copy
+contains the above copyright notice and this license. These can be
+included either as stand-alone text files, human-readable headers or
+in the appropriate machine-readable metadata fields within text or
+binary files as long as those fields can be easily viewed by the user.
+
+3) No Modified Version of the Font Software may use the Reserved Font
+Name(s) unless explicit written permission is granted by the corresponding
+Copyright Holder. This restriction only applies to the primary font name as
+presented to the users.
+
+4) The name(s) of the Copyright Holder(s) or the Author(s) of the Font
+Software shall not be used to promote, endorse or advertise any
+Modified Version, except to acknowledge the contribution(s) of the
+Copyright Holder(s) and the Author(s) or with their explicit written
+permission.
+
+5) The Font Software, modified or unmodified, in part or in whole,
+must be distributed entirely under this license, and must not be
+distributed under any other license. The requirement for fonts to
+remain under this license does not apply to any document created
+using the Font Software.
+
+TERMINATION
+This license becomes null and void if any of the above conditions are
+not met.
+
+DISCLAIMER
+THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO ANY WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT
+OF COPYRIGHT, PATENT, TRADEMARK, OR OTHER RIGHT. IN NO EVENT SHALL THE
+COPYRIGHT HOLDER BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+INCLUDING ANY GENERAL, SPECIAL, INDIRECT, INCIDENTAL, OR CONSEQUENTIAL
+DAMAGES, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+FROM, OUT OF THE USE OR INABILITY TO USE THE FONT SOFTWARE OR FROM
+OTHER DEALINGS IN THE FONT SOFTWARE.
+"""#),
         #"d8fb11cde540"#: LicenceText(title: #"NOTICE.txt"#, body: #"""
                             The SwiftASN1 Project
                             =====================
@@ -3157,6 +4114,101 @@ otherwise to promote the sale, use or other dealings in this Font Software
 without prior written authorization from the Gnome Foundation or Bitstream
 Inc., respectively. For further information, contact: fonts at gnome dot
 org.
+"""#),
+        #"ddafd2c3f37e"#: LicenceText(title: #"LICENSE.txt"#, body: #"""
+Copyright 2021 The Martian Mono Project Authors (https://github.com/evilmartians/mono)
+
+This Font Software is licensed under the SIL Open Font License, Version 1.1.
+This license is copied below, and is also available with a FAQ at:
+http://scripts.sil.org/OFL
+
+
+-----------------------------------------------------------
+SIL OPEN FONT LICENSE Version 1.1 - 26 February 2007
+-----------------------------------------------------------
+
+PREAMBLE
+The goals of the Open Font License (OFL) are to stimulate worldwide
+development of collaborative font projects, to support the font creation
+efforts of academic and linguistic communities, and to provide a free and
+open framework in which fonts may be shared and improved in partnership
+with others.
+
+The OFL allows the licensed fonts to be used, studied, modified and
+redistributed freely as long as they are not sold by themselves. The
+fonts, including any derivative works, can be bundled, embedded, 
+redistributed and/or sold with any software provided that any reserved
+names are not used by derivative works. The fonts and derivatives,
+however, cannot be released under any other type of license. The
+requirement for fonts to remain under this license does not apply
+to any document created using the fonts or their derivatives.
+
+DEFINITIONS
+"Font Software" refers to the set of files released by the Copyright
+Holder(s) under this license and clearly marked as such. This may
+include source files, build scripts and documentation.
+
+"Reserved Font Name" refers to any names specified as such after the
+copyright statement(s).
+
+"Original Version" refers to the collection of Font Software components as
+distributed by the Copyright Holder(s).
+
+"Modified Version" refers to any derivative made by adding to, deleting,
+or substituting -- in part or in whole -- any of the components of the
+Original Version, by changing formats or by porting the Font Software to a
+new environment.
+
+"Author" refers to any designer, engineer, programmer, technical
+writer or other person who contributed to the Font Software.
+
+PERMISSION & CONDITIONS
+Permission is hereby granted, free of charge, to any person obtaining
+a copy of the Font Software, to use, study, copy, merge, embed, modify,
+redistribute, and sell modified and unmodified copies of the Font
+Software, subject to the following conditions:
+
+1) Neither the Font Software nor any of its individual components,
+in Original or Modified Versions, may be sold by itself.
+
+2) Original or Modified Versions of the Font Software may be bundled,
+redistributed and/or sold with any software, provided that each copy
+contains the above copyright notice and this license. These can be
+included either as stand-alone text files, human-readable headers or
+in the appropriate machine-readable metadata fields within text or
+binary files as long as those fields can be easily viewed by the user.
+
+3) No Modified Version of the Font Software may use the Reserved Font
+Name(s) unless explicit written permission is granted by the corresponding
+Copyright Holder. This restriction only applies to the primary font name as
+presented to the users.
+
+4) The name(s) of the Copyright Holder(s) or the Author(s) of the Font
+Software shall not be used to promote, endorse or advertise any
+Modified Version, except to acknowledge the contribution(s) of the
+Copyright Holder(s) and the Author(s) or with their explicit written
+permission.
+
+5) The Font Software, modified or unmodified, in part or in whole,
+must be distributed entirely under this license, and must not be
+distributed under any other license. The requirement for fonts to
+remain under this license does not apply to any document created
+using the Font Software.
+
+TERMINATION
+This license becomes null and void if any of the above conditions are
+not met.
+
+DISCLAIMER
+THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO ANY WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT
+OF COPYRIGHT, PATENT, TRADEMARK, OR OTHER RIGHT. IN NO EVENT SHALL THE
+COPYRIGHT HOLDER BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+INCLUDING ANY GENERAL, SPECIAL, INDIRECT, INCIDENTAL, OR CONSEQUENTIAL
+DAMAGES, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+FROM, OUT OF THE USE OR INABILITY TO USE THE FONT SOFTWARE OR FROM
+OTHER DEALINGS IN THE FONT SOFTWARE.
 """#),
         #"e09827667e0b"#: LicenceText(title: #"ICU-LICENSE"#, body: #"""
 UNICODE LICENSE V3
@@ -3746,6 +4798,196 @@ Ubuntu and Canonical are registered trademarks of Canonical Ltd.
 
 The licence accompanying these works does not grant any rights
 under trademark law and all such rights are reserved.
+"""#),
+        #"eb2d28d2e565"#: LicenceText(title: #"LICENSE.txt"#, body: #"""
+Copyright 2022 The Maple Mono Project Authors (https://github.com/subframe7536/maple-font)
+
+This Font Software is licensed under the SIL Open Font License, Version 1.1.
+This license is copied below, and is also available with a FAQ at:
+https://openfontlicense.org
+
+
+-----------------------------------------------------------
+SIL OPEN FONT LICENSE Version 1.1 - 26 February 2007
+-----------------------------------------------------------
+
+PREAMBLE
+The goals of the Open Font License (OFL) are to stimulate worldwide
+development of collaborative font projects, to support the font creation
+efforts of academic and linguistic communities, and to provide a free and
+open framework in which fonts may be shared and improved in partnership
+with others.
+
+The OFL allows the licensed fonts to be used, studied, modified and
+redistributed freely as long as they are not sold by themselves. The
+fonts, including any derivative works, can be bundled, embedded,
+redistributed and/or sold with any software provided that any reserved
+names are not used by derivative works. The fonts and derivatives,
+however, cannot be released under any other type of license. The
+requirement for fonts to remain under this license does not apply
+to any document created using the fonts or their derivatives.
+
+DEFINITIONS
+"Font Software" refers to the set of files released by the Copyright
+Holder(s) under this license and clearly marked as such. This may
+include source files, build scripts and documentation.
+
+"Reserved Font Name" refers to any names specified as such after the
+copyright statement(s).
+
+"Original Version" refers to the collection of Font Software components as
+distributed by the Copyright Holder(s).
+
+"Modified Version" refers to any derivative made by adding to, deleting,
+or substituting -- in part or in whole -- any of the components of the
+Original Version, by changing formats or by porting the Font Software to a
+new environment.
+
+"Author" refers to any designer, engineer, programmer, technical
+writer or other person who contributed to the Font Software.
+
+PERMISSION & CONDITIONS
+Permission is hereby granted, free of charge, to any person obtaining
+a copy of the Font Software, to use, study, copy, merge, embed, modify,
+redistribute, and sell modified and unmodified copies of the Font
+Software, subject to the following conditions:
+
+1) Neither the Font Software nor any of its individual components,
+in Original or Modified Versions, may be sold by itself.
+
+2) Original or Modified Versions of the Font Software may be bundled,
+redistributed and/or sold with any software, provided that each copy
+contains the above copyright notice and this license. These can be
+included either as stand-alone text files, human-readable headers or
+in the appropriate machine-readable metadata fields within text or
+binary files as long as those fields can be easily viewed by the user.
+
+3) No Modified Version of the Font Software may use the Reserved Font
+Name(s) unless explicit written permission is granted by the corresponding
+Copyright Holder. This restriction only applies to the primary font name as
+presented to the users.
+
+4) The name(s) of the Copyright Holder(s) or the Author(s) of the Font
+Software shall not be used to promote, endorse or advertise any
+Modified Version, except to acknowledge the contribution(s) of the
+Copyright Holder(s) and the Author(s) or with their explicit written
+permission.
+
+5) The Font Software, modified or unmodified, in part or in whole,
+must be distributed entirely under this license, and must not be
+distributed under any other license. The requirement for fonts to
+remain under this license does not apply to any document created
+using the Font Software.
+
+TERMINATION
+This license becomes null and void if any of the above conditions are
+not met.
+
+DISCLAIMER
+THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO ANY WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT
+OF COPYRIGHT, PATENT, TRADEMARK, OR OTHER RIGHT. IN NO EVENT SHALL THE
+COPYRIGHT HOLDER BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+INCLUDING ANY GENERAL, SPECIAL, INDIRECT, INCIDENTAL, OR CONSEQUENTIAL
+DAMAGES, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+FROM, OUT OF THE USE OR INABILITY TO USE THE FONT SOFTWARE OR FROM
+OTHER DEALINGS IN THE FONT SOFTWARE.
+"""#),
+        #"f6f999d71f7e"#: LicenceText(title: #"LICENSE"#, body: #"""
+Copyright (c) 2023, GitHub https://github.com/githubnext/monaspace
+with Reserved Font Name "Monaspace", including subfamilies: "Argon", "Neon", "Xenon", "Radon", and "Krypton"
+
+This Font Software is licensed under the SIL Open Font License, Version 1.1.
+This license is copied below, and is also available with a FAQ at:
+http://scripts.sil.org/OFL
+
+-----------------------------------------------------------
+SIL OPEN FONT LICENSE Version 1.1 - 26 February 2007
+-----------------------------------------------------------
+
+PREAMBLE
+The goals of the Open Font License (OFL) are to stimulate worldwide
+development of collaborative font projects, to support the font creation
+efforts of academic and linguistic communities, and to provide a free and
+open framework in which fonts may be shared and improved in partnership
+with others.
+
+The OFL allows the licensed fonts to be used, studied, modified and
+redistributed freely as long as they are not sold by themselves. The
+fonts, including any derivative works, can be bundled, embedded, 
+redistributed and/or sold with any software provided that any reserved
+names are not used by derivative works. The fonts and derivatives,
+however, cannot be released under any other type of license. The
+requirement for fonts to remain under this license does not apply
+to any document created using the fonts or their derivatives.
+
+DEFINITIONS
+"Font Software" refers to the set of files released by the Copyright
+Holder(s) under this license and clearly marked as such. This may
+include source files, build scripts and documentation.
+
+"Reserved Font Name" refers to any names specified as such after the
+copyright statement(s).
+
+"Original Version" refers to the collection of Font Software components as
+distributed by the Copyright Holder(s).
+
+"Modified Version" refers to any derivative made by adding to, deleting,
+or substituting — in part or in whole — any of the components of the
+Original Version, by changing formats or by porting the Font Software to a
+new environment.
+
+"Author" refers to any designer, engineer, programmer, technical
+writer or other person who contributed to the Font Software.
+
+PERMISSION & CONDITIONS
+Permission is hereby granted, free of charge, to any person obtaining
+a copy of the Font Software, to use, study, copy, merge, embed, modify,
+redistribute, and sell modified and unmodified copies of the Font
+Software, subject to the following conditions:
+
+1) Neither the Font Software nor any of its individual components,
+in Original or Modified Versions, may be sold by itself.
+
+2) Original or Modified Versions of the Font Software may be bundled,
+redistributed and/or sold with any software, provided that each copy
+contains the above copyright notice and this license. These can be
+included either as stand-alone text files, human-readable headers or
+in the appropriate machine-readable metadata fields within text or
+binary files as long as those fields can be easily viewed by the user.
+
+3) No Modified Version of the Font Software may use the Reserved Font
+Name(s) unless explicit written permission is granted by the corresponding
+Copyright Holder. This restriction only applies to the primary font name as
+presented to the users.
+
+4) The name(s) of the Copyright Holder(s) or the Author(s) of the Font
+Software shall not be used to promote, endorse or advertise any
+Modified Version, except to acknowledge the contribution(s) of the
+Copyright Holder(s) and the Author(s) or with their explicit written
+permission.
+
+5) The Font Software, modified or unmodified, in part or in whole,
+must be distributed entirely under this license, and must not be
+distributed under any other license. The requirement for fonts to
+remain under this license does not apply to any document created
+using the Font Software.
+
+TERMINATION
+This license becomes null and void if any of the above conditions are
+not met.
+
+DISCLAIMER
+THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO ANY WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT
+OF COPYRIGHT, PATENT, TRADEMARK, OR OTHER RIGHT. IN NO EVENT SHALL THE
+COPYRIGHT HOLDER BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+INCLUDING ANY GENERAL, SPECIAL, INDIRECT, INCIDENTAL, OR CONSEQUENTIAL
+DAMAGES, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+FROM, OUT OF THE USE OR INABILITY TO USE THE FONT SOFTWARE OR FROM
+OTHER DEALINGS IN THE FONT SOFTWARE.
 """#),
     ]
 }

@@ -22,10 +22,13 @@ extension Window {
         case .broadcastCurrentTab: return togglingBroadcast()
         case .equalizePanes: return updatingSelectedTab { $0.equalized() }
         case .toggleZoom: return updatingSelectedTab { $0.togglingZoom() }
+        case .movePaneToNewTab: return movingFocusedPaneToNewTab()
+        case .swapPane(let direction): return updatingSelectedTab { $0.swappingFocused(direction) }
         case .newWindow, .hostSearch, .commandPalette, .renameTab, .jumpSwitcher,
              .broadcastCurrentOnly, .broadcastAllTabs, .broadcastVisible, .toggleBroadcastSession, .broadcastPicker,
              .biggerFont, .smallerFont, .resetFontSize, .showServers, .quickConnect, .showFiles, .openFileManagerHere,
-             .lockVault, .showKeys:
+             .lockVault, .showKeys, .movePaneToNewWindow, .moveTabToNewWindow, .mergeAllWindows, .movePaneMode,
+             .duplicateTab, .duplicatePane, .duplicateWindow, .editWindowTitle:
             return self
         }
     }

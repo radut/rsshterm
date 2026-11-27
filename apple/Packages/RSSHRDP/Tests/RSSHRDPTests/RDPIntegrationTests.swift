@@ -98,6 +98,36 @@ struct RDPIntegrationTests {
         try await client.close()
     }
 
+    /// The phone turned: display control resizes the running desktop (portrait here) without reconnecting.
+    @Test func theRunningDesktopResizesThroughDisplayControl() async throws {
+        let fingerprint = try await firstFingerprint()
+        let (client, forwarder) = try await tunnel()
+        let session = RDPSession(port: forwarder.localPort, login: login, pinnedCertificate: fingerprint,
+                                 options: { var o = RDPSession.Options(); o.width = 1024; o.height = 768; return o }())
+        session.connect()
+        // One consumer for the whole test: cancelling a collect ends the event stream.
+        let resizer = Task {
+            for _ in 0..<80 where !session.canResizeLive { try await Task.sleep(for: .milliseconds(250)) }
+            guard session.canResizeLive else { return false }
+            session.resize(width: 768, height: 1024)
+            return true
+        }
+        let events = await collect(session, seconds: 40) { $0.contains(.connected(width: 768, height: 1024)) }
+        #expect(try await resizer.value, "xrdp opened no display control channel")
+        #expect(events.contains(.connected(width: 1024, height: 768)))
+        // xrdp opens display control but does not resize a FreeRDP 3 client: 0.9 (this rig, Ubuntu 24.04) sends
+        // updates before the reactivation's sync and FreeRDP (3.5 and 3.33 alike) ends the session; 0.10 (Debian
+        // 13) never answers. The app then connects again at the new size (RemoteDesktopConnection.requestSize).
+        // Windows resizes live. Passes as soon as the rig's xrdp does.
+        withKnownIssue("xrdp does not resize a FreeRDP 3 session", isIntermittent: true) {
+            #expect(events.contains(.connected(width: 768, height: 1024)),
+                    "events: \(events.filter { if case .updated = $0 { false } else { true } })")
+        }
+        session.disconnect()
+        await forwarder.close()
+        try await client.close()
+    }
+
     @Test func freeRDPKeepsNoCertificateStoreOfItsOwn() throws {
         // Every certificate is accepted for one session only (2): the vault pin is the only store.
         let home = URL(fileURLWithPath: NSHomeDirectory())

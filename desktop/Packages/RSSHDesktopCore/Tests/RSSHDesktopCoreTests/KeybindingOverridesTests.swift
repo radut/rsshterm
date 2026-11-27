@@ -12,10 +12,10 @@ import Testing
     }
 
     @Test func encodesAsTheConfigFileSection() throws {
-        let overrides = KeybindingOverrides(["newTab": ["cmd+alt+t"], "hostSearch": []])
+        let overrides = KeybindingOverrides(["newTab": ["cmd+ctrl+t"], "hostSearch": []])
         let json = try JSONEncoder().encode(overrides)
         let config = try JSONDecoder().decode(KeybindingConfig.self, from: json)
-        #expect(config.keybindings == ["newTab": ["cmd+alt+t"], "hostSearch": []])
+        #expect(config.keybindings == ["newTab": ["cmd+ctrl+t"], "hostSearch": []])
         #expect(try JSONDecoder().decode(KeybindingOverrides.self, from: json) == overrides)
         let text = #"{"keybindings": {"splitRight": ["cmd+e"]}}"#
         let decoded = try JSONDecoder().decode(KeybindingOverrides.self, from: Data(text.utf8))
@@ -31,9 +31,9 @@ import Testing
     }
 
     @Test func settingAShortcut() {
-        let next = KeybindingOverrides().setting(.newTab, to: [c("cmd+alt+t")], platform: .macOS)
+        let next = KeybindingOverrides().setting(.newTab, to: [c("cmd+ctrl+t")], platform: .macOS)
         let keys = next.keybindings(for: .macOS)
-        #expect(keys.chords(for: .newTab) == [c("cmd+alt+t")])
+        #expect(keys.chords(for: .newTab) == [c("cmd+ctrl+t")])
         #expect(keys.action(for: c("cmd+t")) == nil)
         #expect(next.isCustomized(.newTab))
         #expect(!next.isCustomized(.splitRight))
@@ -58,14 +58,14 @@ import Testing
     }
 
     @Test func settingTheDefaultsBackDropsTheEntry() {
-        let changed = KeybindingOverrides().setting(.newTab, to: [c("cmd+alt+t")], platform: .macOS)
+        let changed = KeybindingOverrides().setting(.newTab, to: [c("cmd+ctrl+t")], platform: .macOS)
         let back = changed.setting(.newTab, to: [c("cmd+t")], platform: .macOS)
         #expect(back == KeybindingOverrides())
     }
 
     @Test func resetOneAndAll() {
         var o = KeybindingOverrides()
-        o = o.setting(.newTab, to: [c("cmd+alt+t")], platform: .macOS)
+        o = o.setting(.newTab, to: [c("cmd+ctrl+t")], platform: .macOS)
         o = o.setting(.hostSearch, to: [], platform: .macOS)
         let one = o.resetting(.newTab, platform: .macOS)
         #expect(one.keybindings(for: .macOS).chords(for: .newTab) == [c("cmd+t")])
