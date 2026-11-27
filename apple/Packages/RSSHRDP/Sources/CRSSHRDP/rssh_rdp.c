@@ -10,6 +10,8 @@
 #include <freerdp/client/channels.h>
 #include <freerdp/client/cliprdr.h>
 #include <freerdp/client/disp.h>
+#include <freerdp/codec/color.h>
+#include <freerdp/graphics.h>
 #include <freerdp/client/cmdline.h>
 #include <freerdp/channels/channels.h>
 #include <freerdp/error.h>
@@ -35,6 +37,11 @@ struct rssh_rdp {
     uint16_t port;
     uint32_t width, height;
     int clipboard;
+    rssh_rdp_config quality;   // only its quality fields are used
+    uint32_t reported_w, reported_h;
+    volatile int codec;
+    pBitmapUpdate gdi_bitmap_update;
+    pSurfaceBits gdi_surface_bits;
 
     HANDLE wake;
     pthread_mutex_t queue_lock;
@@ -273,8 +280,11 @@ static BOOL end_paint(rdpContext *context) {
     INT32 x = invalid->x, y = invalid->y, w = invalid->w, h = invalid->h;
     UINT32 width = gdi->width, height = gdi->height;
     pthread_mutex_unlock(&rdp->frame_lock);
-    if (!rdp->reported_connected) {
+    // The first paint, and any paint at another size, reports the desktop's size.
+    if (!rdp->reported_connected || width != rdp->reported_w || height != rdp->reported_h) {
         rdp->reported_connected = 1;
+        rdp->reported_w = width;
+        rdp->reported_h = height;
         if (rdp->cb.connected) rdp->cb.connected(rdp->cb.ctx, width, height);
     }
     if (has && rdp->cb.frame) rdp->cb.frame(rdp->cb.ctx, x, y, w, h);
@@ -291,6 +301,89 @@ static BOOL desktop_resize(rdpContext *context) {
     rdp->reported_connected = 0;   // the next paint reports the new size
     return ok;
 }
+
+// MARK: pointer (the remote cursor's shape)
+
+int rssh_rdp_pointer_rgba(uint8_t *dst, uint32_t width, uint32_t height, uint32_t xor_bpp, const uint8_t *xor_mask,
+                          uint32_t xor_length, const uint8_t *and_mask, uint32_t and_length) {
+    if (!dst || width == 0 || height == 0 || width > 384 || height > 384) return 0;
+    if (xor_bpp != 1 && xor_bpp != 16 && xor_bpp != 24 && xor_bpp != 32) return 0;
+    return freerdp_image_copy_from_pointer_data(dst, PIXEL_FORMAT_RGBA32, width * 4, 0, 0, width, height, xor_mask,
+                                                xor_length, and_mask, and_length, xor_bpp, NULL) ? 1 : 0;
+}
+
+static BOOL pointer_new(rdpContext *context, rdpPointer *pointer) {
+    (void)context; (void)pointer;
+    return TRUE;
+}
+
+static void pointer_free(rdpContext *context, rdpPointer *pointer) { (void)context; (void)pointer; }
+
+static BOOL pointer_set(rdpContext *context, rdpPointer *pointer) {
+    rssh_rdp *rdp = owner_of(context);
+    if (!rdp->cb.cursor || pointer->width == 0 || pointer->height == 0 || pointer->width > 384 || pointer->height > 384)
+        return TRUE;
+    size_t size = (size_t)pointer->width * pointer->height * 4;
+    uint8_t *rgba = calloc(1, size);
+    if (!rgba) return TRUE;
+    const gdiPalette *palette = context->gdi ? &context->gdi->palette : NULL;
+    if (freerdp_image_copy_from_pointer_data(rgba, PIXEL_FORMAT_RGBA32, pointer->width * 4, 0, 0, pointer->width,
+                                             pointer->height, pointer->xorMaskData, pointer->lengthXorMask,
+                                             pointer->andMaskData, pointer->lengthAndMask, pointer->xorBpp, palette)) {
+        rdp->cb.cursor(rdp->cb.ctx, 0, rgba, pointer->width, pointer->height, pointer->xPos, pointer->yPos);
+    }
+    free(rgba);
+    return TRUE;
+}
+
+static BOOL pointer_set_null(rdpContext *context) {
+    rssh_rdp *rdp = owner_of(context);
+    if (rdp->cb.cursor) rdp->cb.cursor(rdp->cb.ctx, 1, NULL, 0, 0, 0, 0);
+    return TRUE;
+}
+
+static BOOL pointer_set_default(rdpContext *context) {
+    rssh_rdp *rdp = owner_of(context);
+    if (rdp->cb.cursor) rdp->cb.cursor(rdp->cb.ctx, 2, NULL, 0, 0, 0, 0);
+    return TRUE;
+}
+
+static BOOL pointer_set_position(rdpContext *context, UINT32 x, UINT32 y) {
+    (void)context; (void)x; (void)y;
+    return TRUE;
+}
+
+static void register_pointer(rdpContext *context) {
+    rdpPointer pointer = { 0 };
+    pointer.size = sizeof(rdpPointer);
+    pointer.New = pointer_new;
+    pointer.Free = pointer_free;
+    pointer.Set = pointer_set;
+    pointer.SetNull = pointer_set_null;
+    pointer.SetDefault = pointer_set_default;
+    pointer.SetPosition = pointer_set_position;
+    graphics_register_pointer(context->graphics, &pointer);
+}
+
+// MARK: codec (for the session's stats line)
+
+static BOOL bitmap_update(rdpContext *context, const BITMAP_UPDATE *bitmap) {
+    rssh_rdp *rdp = owner_of(context);
+    if (rdp->codec == 0) rdp->codec = 1;
+    return rdp->gdi_bitmap_update ? rdp->gdi_bitmap_update(context, bitmap) : TRUE;
+}
+
+static BOOL surface_bits(rdpContext *context, const SURFACE_BITS_COMMAND *cmd) {
+    rssh_rdp *rdp = owner_of(context);
+    switch (cmd->bmp.codecID) {
+    case RDP_CODEC_ID_REMOTEFX: rdp->codec = 2; break;
+    case RDP_CODEC_ID_NSCODEC: rdp->codec = 3; break;
+    default: rdp->codec = 4; break;
+    }
+    return rdp->gdi_surface_bits ? rdp->gdi_surface_bits(context, cmd) : TRUE;
+}
+
+int rssh_rdp_codec(rssh_rdp *rdp) { return rdp->codec; }
 
 static void on_channel_connected(void *context, const ChannelConnectedEventArgs *e) {
     rssh_rdp *rdp = owner_of((rdpContext *)context);
@@ -332,6 +425,12 @@ static BOOL post_connect(freerdp *instance) {
     instance->context->update->BeginPaint = begin_paint;
     instance->context->update->EndPaint = end_paint;
     instance->context->update->DesktopResize = desktop_resize;
+    // Counting codecs for the stats line, then handing on to the GDI's own handlers.
+    rdp->gdi_bitmap_update = instance->context->update->BitmapUpdate;
+    instance->context->update->BitmapUpdate = bitmap_update;
+    rdp->gdi_surface_bits = instance->context->update->SurfaceBits;
+    instance->context->update->SurfaceBits = surface_bits;
+    register_pointer(instance->context);
     return TRUE;
 }
 
@@ -381,6 +480,8 @@ rssh_rdp *rssh_rdp_new(const rssh_rdp_config *config, rssh_rdp_callbacks callbac
     rdp->width = config->width ? config->width : 1280;
     rdp->height = config->height ? config->height : 800;
     rdp->clipboard = config->clipboard;
+    rdp->quality = *config;
+    rdp->quality.host = rdp->quality.username = rdp->quality.domain = rdp->quality.password = NULL;
     pthread_mutex_init(&rdp->queue_lock, NULL);
     pthread_mutex_init(&rdp->frame_lock, NULL);
     rdp->wake = CreateEvent(NULL, TRUE, FALSE, NULL);
@@ -396,7 +497,25 @@ static BOOL apply_settings(rssh_rdp *rdp, rdpSettings *s) {
     if (rdp->password) ok &= freerdp_settings_set_string(s, FreeRDP_Password, rdp->password);
     ok &= freerdp_settings_set_uint32(s, FreeRDP_DesktopWidth, rdp->width);
     ok &= freerdp_settings_set_uint32(s, FreeRDP_DesktopHeight, rdp->height);
-    ok &= freerdp_settings_set_uint32(s, FreeRDP_ColorDepth, 32);
+    ok &= freerdp_settings_set_uint32(s, FreeRDP_ColorDepth, rdp->quality.color_depth ? rdp->quality.color_depth : 32);
+    // Large pointers (96x96, 384x384), as Windows draws them at high DPI.
+    ok &= freerdp_settings_set_uint32(s, FreeRDP_LargePointerFlag, 0x03);
+    if (rdp->quality.connection_type) {
+        // freerdp_set_connection_type sets the performance flags for the type; the quality's own choices follow.
+        ok &= freerdp_set_connection_type(s, rdp->quality.connection_type);
+        ok &= freerdp_settings_set_bool(s, FreeRDP_NetworkAutoDetect, rdp->quality.network_autodetect ? TRUE : FALSE);
+        ok &= freerdp_settings_set_bool(s, FreeRDP_RemoteFxCodec, rdp->quality.remote_fx ? TRUE : FALSE);
+        ok &= freerdp_settings_set_bool(s, FreeRDP_DisableWallpaper, rdp->quality.wallpaper ? FALSE : TRUE);
+        ok &= freerdp_settings_set_bool(s, FreeRDP_DisableThemes, rdp->quality.themes ? FALSE : TRUE);
+        ok &= freerdp_settings_set_bool(s, FreeRDP_DisableMenuAnims, rdp->quality.menu_anims ? FALSE : TRUE);
+        ok &= freerdp_settings_set_bool(s, FreeRDP_DisableFullWindowDrag, rdp->quality.full_window_drag ? FALSE : TRUE);
+        ok &= freerdp_settings_set_bool(s, FreeRDP_AllowFontSmoothing, rdp->quality.font_smoothing ? TRUE : FALSE);
+        ok &= freerdp_settings_set_bool(s, FreeRDP_AllowDesktopComposition, rdp->quality.composition ? TRUE : FALSE);
+        ok &= freerdp_settings_set_bool(s, FreeRDP_CompressionEnabled, rdp->quality.compression ? TRUE : FALSE);
+    }
+    // No graphics pipeline (GFX): this FreeRDP has no H.264, and the classic pipeline paints through BeginPaint/
+    // EndPaint under the frame lock.
+    ok &= freerdp_settings_set_bool(s, FreeRDP_SupportGraphicsPipeline, FALSE);
     ok &= freerdp_settings_set_bool(s, FreeRDP_SoftwareGdi, TRUE);
     // drdynvc + disp: the desktop follows the phone's rotation and the resolution picker without reconnecting
     // (Windows 8.1+/Server 2012 R2+, xrdp 0.10+); servers without it get a reconnect at the new size.

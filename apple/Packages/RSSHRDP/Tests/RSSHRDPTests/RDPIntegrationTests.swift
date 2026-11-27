@@ -128,6 +128,29 @@ struct RDPIntegrationTests {
         try await client.close()
     }
 
+    /// The server's pointer shape (xrdp sends its pointer on connect) reaches the session as an RGBA cursor, and
+    /// the Low bandwidth quality still draws.
+    @Test func thePointerShapeArrivesAtLowBandwidth() async throws {
+        let fingerprint = try await firstFingerprint()
+        let (client, forwarder) = try await tunnel()
+        var options = RDPSession.Options()
+        options.quality = RDPQualityProfile(.lowBandwidth)
+        let session = RDPSession(port: forwarder.localPort, login: login, pinnedCertificate: fingerprint, options: options)
+        session.connect()
+        let events = await collect(session) { seen in
+            Self.painted(seen) && (session.cursor.map { !$0.isHidden } ?? false)
+        }
+        #expect(Self.painted(events))
+        let cursor = try #require(session.cursor, "no pointer shape; events: \(events.prefix(5))")
+        #expect(!cursor.isHidden)
+        #expect(cursor.width > 1 && cursor.height > 1)
+        #expect((0..<cursor.height).contains { y in (0..<cursor.width).contains { cursor.alpha(x: $0, y: y) > 0 } })
+        #expect(session.codec != "—")
+        session.disconnect()
+        await forwarder.close()
+        try await client.close()
+    }
+
     @Test func freeRDPKeepsNoCertificateStoreOfItsOwn() throws {
         // Every certificate is accepted for one session only (2): the vault pin is the only store.
         let home = URL(fileURLWithPath: NSHomeDirectory())

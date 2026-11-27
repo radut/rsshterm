@@ -50,6 +50,41 @@ public struct RemoteDesktop: Codable, Hashable, Identifiable, Sendable {
         case touch, trackpad
     }
 
+    /// How the screen trades picture for bandwidth (RDP: colour depth, graphics pipeline, desktop extras; VNC: colour
+    /// depth and encodings). Negotiated when connecting.
+    public enum Quality: String, Codable, CaseIterable, Sendable {
+        case auto, high, balanced, lowBandwidth
+
+        public var title: String {
+            switch self {
+            case .auto: "Auto"
+            case .high: "High"
+            case .balanced: "Balanced"
+            case .lowBandwidth: "Low bandwidth"
+            }
+        }
+
+        /// Every setting it changes is negotiated at connect: a change mid-session connects again.
+        public var needsReconnect: Bool { true }
+    }
+
+    /// iPhone: how the screen is held during a session. Landscape (default) turns the app to landscape when the
+    /// session opens, whatever the rotation lock, as the Windows App does.
+    public enum Orientation: String, Codable, CaseIterable, Sendable {
+        case landscape, portrait, followDevice
+
+        public var title: String {
+            switch self {
+            case .landscape: "Landscape"
+            case .portrait: "Portrait"
+            case .followDevice: "Follow device"
+            }
+        }
+
+        /// The session's rotate button: portrait from landscape, landscape from anything else.
+        public var toggled: Orientation { self == .landscape ? .portrait : .landscape }
+    }
+
     public var id: UUID
     public var name: String
     public var kind: Kind
@@ -83,6 +118,10 @@ public struct RemoteDesktop: Codable, Hashable, Identifiable, Sendable {
     public var keepSeparate = false
     /// RDP: the desktop size to ask for ("Match this device" unless the user picked one).
     public var resolution: RDPResolution = .matchDevice
+    /// Picture against bandwidth; Auto adapts to the network.
+    public var quality: Quality = .auto
+    /// iPhone: landscape, portrait, or as the device is held, during a session.
+    public var orientation: Orientation = .landscape
 
     public init(id: UUID = UUID(), name: String, kind: Kind, host: String, port: Int? = nil,
                 username: String? = nil, credentialID: UUID? = nil, groupID: UUID? = nil,
@@ -111,7 +150,7 @@ public struct RemoteDesktop: Codable, Hashable, Identifiable, Sendable {
 
     private enum CodingKeys: String, CodingKey {
         case id, name, kind, host, port, username, credentialID, groupID, tunnelServerID, domain, shareClipboard
-        case transport, pointerMode, askEveryTime, pinnedCertificate, serverID, keepSeparate, resolution
+        case transport, pointerMode, askEveryTime, pinnedCertificate, serverID, keepSeparate, resolution, quality, orientation
     }
 
     public init(from decoder: any Decoder) throws {
@@ -133,6 +172,8 @@ public struct RemoteDesktop: Codable, Hashable, Identifiable, Sendable {
         pinnedCertificate = c.lenient(String.self, .pinnedCertificate)
         keepSeparate = c.lenient(Bool.self, .keepSeparate) ?? false
         resolution = c.lenient(String.self, .resolution).map(RDPResolution.init(storageValue:)) ?? .matchDevice
+        quality = c.lenient(Quality.self, .quality) ?? .auto
+        orientation = c.lenient(Orientation.self, .orientation) ?? .landscape
     }
 
     public func encode(to encoder: any Encoder) throws {
@@ -155,6 +196,8 @@ public struct RemoteDesktop: Codable, Hashable, Identifiable, Sendable {
         try c.encodeIfPresent(serverID, forKey: .serverID)
         if keepSeparate { try c.encode(true, forKey: .keepSeparate) }
         if resolution != .matchDevice { try c.encode(resolution.storageValue, forKey: .resolution) }
+        if quality != .auto { try c.encode(quality, forKey: .quality) }
+        if orientation != .landscape { try c.encode(orientation, forKey: .orientation) }
     }
 
     /// Absent: derived from the tunnel server. A transport this build does not know (a newer build's) falls back

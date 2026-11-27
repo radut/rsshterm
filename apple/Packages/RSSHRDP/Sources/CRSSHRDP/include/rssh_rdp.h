@@ -15,6 +15,10 @@ typedef struct {
     void (*frame)(void *ctx, int32_t x, int32_t y, int32_t width, int32_t height);
     /// The server's clipboard text (UTF-8), when clipboard sharing is on.
     void (*remote_text)(void *ctx, const char *utf8);
+    /// The pointer shape: kind 0 = `rgba` (width x height, straight alpha, top-down) with its hotspot, 1 = hidden,
+    /// 2 = the system default arrow (rgba NULL for 1 and 2).
+    void (*cursor)(void *ctx, int kind, const uint8_t *rgba, uint32_t width, uint32_t height, uint32_t hot_x,
+                   uint32_t hot_y);
 } rssh_rdp_callbacks;
 
 typedef struct {
@@ -25,6 +29,11 @@ typedef struct {
     const char *password;   // NULL: none
     uint32_t width, height;
     int clipboard;          // 1: text clipboard both ways (cliprdr)
+    // Quality (RDPQualityProfile): 0 leaves FreeRDP's defaults.
+    uint32_t color_depth;   // 16 or 32
+    uint32_t connection_type;   // CONNECTION_TYPE_* (7 = auto-detect)
+    int network_autodetect, remote_fx, wallpaper, themes, menu_anims, full_window_drag, font_smoothing,
+        composition, compression;
 } rssh_rdp_config;
 
 rssh_rdp *rssh_rdp_new(const rssh_rdp_config *config, rssh_rdp_callbacks callbacks);
@@ -51,6 +60,13 @@ int rssh_rdp_can_resize(rssh_rdp *rdp);
 /// Asks the server for a desktop of width x height (even, 200...8192); it answers with a desktop resize (the next
 /// `connected` callback reports the new size). Ignored without display control.
 void rssh_rdp_resize(rssh_rdp *rdp, uint32_t width, uint32_t height);
+/// The codec of the last screen update: 0 none yet, 1 bitmap updates, 2 RemoteFX, 3 NSCodec, 4 other surface bits.
+int rssh_rdp_codec(rssh_rdp *rdp);
+
+/// An RDP pointer's XOR/AND masks (bottom-up, word-padded, as on the wire) to `width * height * 4` bytes of RGBA,
+/// top-down, straight alpha. `xor_bpp` 1, 16, 24 or 32 (8 needs the session's palette). Returns 1 on success.
+int rssh_rdp_pointer_rgba(uint8_t *dst, uint32_t width, uint32_t height, uint32_t xor_bpp, const uint8_t *xor_mask,
+                          uint32_t xor_length, const uint8_t *and_mask, uint32_t and_length);
 /// Offers this device's clipboard text to the server (clipboard sharing on).
 void rssh_rdp_set_local_text(rssh_rdp *rdp, const char *utf8);
 

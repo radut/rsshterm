@@ -27,6 +27,8 @@ public final class RDPSession: @unchecked Sendable {
         public var height = 800
         /// Text clipboard both ways (cliprdr). Off unless the entry turns it on.
         public var clipboard = false
+        /// The entry's Quality; nil leaves FreeRDP's defaults (32-bit colour).
+        public var quality: RDPQualityProfile?
         public init() {}
     }
 
@@ -66,14 +68,35 @@ public final class RDPSession: @unchecked Sendable {
             Unmanaged<Box>.fromOpaque(ctx!).takeUnretainedValue()
                 .continuation.yield(.remoteClipboard(String(cString: text!)))
         }
+        callbacks.cursor = { ctx, kind, rgba, width, height, hotX, hotY in
+            let box = Unmanaged<Box>.fromOpaque(ctx!).takeUnretainedValue()
+            let shape: RemoteCursor? = switch kind {
+            case 0: rgba.flatMap { pixels in
+                RemoteCursor(width: Int(width), height: Int(height), hotX: Int(hotX), hotY: Int(hotY),
+                             rgba: Array(UnsafeBufferPointer(start: pixels, count: Int(width) * Int(height) * 4)))
+            }
+            case 1: RemoteCursor.hidden
+            default: nil   // the system default: the app draws its arrow
+            }
+            box.setCursor(shape)
+            // An empty update: the view redraws and picks up the new shape.
+            box.continuation.yield(.updated(x: 0, y: 0, width: 0, height: 0))
+        }
         let user = login?.username, pass = login?.password
         handle = host.withCString { h in
             Self.withOptionalCString(user) { u in
                 Self.withOptionalCString(domain) { d in
                     Self.withOptionalCString(pass) { p in
-                        var config = rssh_rdp_config(host: h, port: UInt16(clamping: port), username: u, domain: d,
-                                                     password: p, width: UInt32(options.width),
-                                                     height: UInt32(options.height), clipboard: options.clipboard ? 1 : 0)
+                        var config = rssh_rdp_config()
+                        config.host = h
+                        config.port = UInt16(clamping: port)
+                        config.username = u
+                        config.domain = d
+                        config.password = p
+                        config.width = UInt32(options.width)
+                        config.height = UInt32(options.height)
+                        config.clipboard = options.clipboard ? 1 : 0
+                        if let q = options.quality { Self.apply(q, to: &config) }
                         return rssh_rdp_new(&config, callbacks)
                     }
                 }
@@ -188,6 +211,39 @@ public final class RDPSession: @unchecked Sendable {
         live { h in text.withCString { rssh_rdp_set_local_text(h, $0) } }
     }
 
+    private static func apply(_ q: RDPQualityProfile, to config: inout rssh_rdp_config) {
+        func flag(_ b: Bool) -> Int32 { b ? 1 : 0 }
+        config.color_depth = q.colorDepth
+        config.connection_type = q.connectionType
+        config.network_autodetect = flag(q.networkAutoDetect)
+        config.remote_fx = flag(q.remoteFX)
+        config.wallpaper = flag(q.wallpaper)
+        config.themes = flag(q.themes)
+        config.menu_anims = flag(q.menuAnimations)
+        config.full_window_drag = flag(q.fullWindowDrag)
+        config.font_smoothing = flag(q.fontSmoothing)
+        config.composition = flag(q.desktopComposition)
+        config.compression = flag(q.compression)
+    }
+
+    // MARK: cursor, codec
+
+    /// The pointer shape the server set: nil for none yet or the system default (draw an arrow), `.hidden` when it
+    /// hid the pointer. A change is reported as an empty `.updated`.
+    public var cursor: RemoteCursor? { box.cursor }
+
+    /// What the last screen update used, for a stats line.
+    public var codec: String {
+        let code = lifecycle.withLock { state in state == .finished ? Int32(0) : rssh_rdp_codec(handle) }
+        return switch code {
+        case 1: "Bitmap"
+        case 2: "RemoteFX"
+        case 3: "NSCodec"
+        case 4: "Surface bits"
+        default: "—"
+        }
+    }
+
     private static func withOptionalCString<T>(_ s: String?, _ body: (UnsafePointer<CChar>?) -> T) -> T {
         guard let s else { return body(nil) }
         return s.withCString { body($0) }
@@ -199,6 +255,10 @@ public final class RDPSession: @unchecked Sendable {
         let continuation: AsyncStream<RDPSessionEvent>.Continuation
         let pinned: String?
         private(set) var refusedCertificate = false
+        private let cursorLock = NSLock()
+        private var latestCursor: RemoteCursor?
+        var cursor: RemoteCursor? { cursorLock.withLock { latestCursor } }
+        func setCursor(_ cursor: RemoteCursor?) { cursorLock.withLock { latestCursor = cursor } }
 
         init(continuation: AsyncStream<RDPSessionEvent>.Continuation, pinned: String?) {
             self.continuation = continuation

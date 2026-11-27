@@ -63,11 +63,11 @@ struct VNCIntegrationTests {
                                  login: VNCLogin(username: nil, password: try #require(env["RSSH_RD_IT_VNC_PASSWORD"])),
                                  options: { var o = VNCSession.Options(); o.clipboard = false; return o }())
         session.connect()
-        let events = await collect(session) { seen in
-            seen.contains { if case .updated = $0 { true } else { false } }
-        }
+        // A frame (an empty update only says the cursor changed).
+        let painted: @Sendable (VNCSessionEvent) -> Bool = { if case .updated(_, _, let w, _) = $0 { w > 0 } else { false } }
+        let events = await collect(session) { seen in seen.contains(where: painted) }
         #expect(events.contains(.connected(width: 800, height: 600)))
-        #expect(events.contains { if case .updated = $0 { true } else { false } })
+        #expect(events.contains(where: painted))
         let fb = try #require(session.framebuffer)
         #expect(fb.size.width == 800 && fb.size.height == 600)
         // The xterm drew something: not every pixel is the same.

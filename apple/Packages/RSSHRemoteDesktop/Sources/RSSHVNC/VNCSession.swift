@@ -41,7 +41,24 @@ public final class VNCSession: @unchecked Sendable {
         public var shared = true
         public var clipboard = false
         public var colorDepth = 24
+        /// Frame encodings in the order the server should prefer them.
+        public var encodings: [VNCFrameEncodingType] = VNCFrameEncodingType.defaultFrameEncodings
         public init() {}
+
+        /// The entry's Quality: High prefers lossless ZRLE, Low bandwidth 16-bit colour with Tight first (RoyalVNCKit
+        /// sets Tight's compression and JPEG levels itself), Auto and Balanced keep the defaults.
+        public init(quality: RemoteDesktop.Quality) {
+            self.init()
+            switch quality {
+            case .auto, .balanced:
+                break
+            case .high:
+                encodings = [.zrle, .hextile, .zlib, .tight, .coRRE, .rre]
+            case .lowBandwidth:
+                colorDepth = 16
+                encodings = [.tight, .zrle, .zlib, .hextile, .coRRE, .rre]
+            }
+        }
     }
 
     public let events: AsyncStream<VNCSessionEvent>
@@ -59,7 +76,7 @@ public final class VNCSession: @unchecked Sendable {
             hostname: host, port: UInt16(clamping: port), isShared: options.shared, isScalingEnabled: true,
             useDisplayLink: false, inputMode: .none, isClipboardRedirectionEnabled: options.clipboard,
             colorDepth: options.colorDepth == 16 ? .depth16Bit : (options.colorDepth == 8 ? .depth8Bit : .depth24Bit),
-            frameEncodings: .default)
+            frameEncodings: options.encodings)
         connection = VNCConnection(settings: settings, logger: SilentLogger())
         bridge = Bridge(login: login, continuation: continuation)
         connection.delegate = bridge
@@ -70,6 +87,10 @@ public final class VNCSession: @unchecked Sendable {
 
     public func connect() { connection.connect() }
     public func disconnect() { connection.disconnect() }
+
+    /// The pointer shape the server sent (Cursor pseudo-encoding); nil until it sends one. A change is reported as
+    /// an empty `.updated`.
+    public var cursor: RemoteCursor? { bridge.cursor }
 
     /// The pixels (BGRA, 32 bits per pixel) the view draws; nil before the server sent its size.
     public var framebuffer: VNCFramebuffer? { connection.framebuffer }
@@ -156,7 +177,18 @@ public final class VNCSession: @unchecked Sendable {
             continuation.yield(.updated(x: Int(x), y: Int(y), width: Int(width), height: Int(height)))
         }
 
-        func connection(_ connection: VNCConnection, didUpdateCursor cursor: VNCCursor) {}
+        private let cursorLock = NSLock()
+        private var latestCursor: RemoteCursor?
+        var cursor: RemoteCursor? { cursorLock.withLock { latestCursor } }
+
+        /// RoyalVNCKit decodes the cursor to RGBA with a 0/255 alpha from its mask.
+        func connection(_ connection: VNCConnection, didUpdateCursor cursor: VNCCursor) {
+            let shape = cursor.isEmpty ? RemoteCursor.hidden
+                : RemoteCursor(width: Int(cursor.size.width), height: Int(cursor.size.height),
+                               hotX: Int(cursor.hotspot.x), hotY: Int(cursor.hotspot.y), rgba: [UInt8](cursor.imageData))
+            cursorLock.withLock { latestCursor = shape }
+            continuation.yield(.updated(x: 0, y: 0, width: 0, height: 0))
+        }
 
         static func accountKind(_ type: VNCAuthenticationType) -> VNCAccountKind {
             switch type {
@@ -205,3 +237,6 @@ extension RemoteDesktop {
         return VNCLogin(username: kind.usesUsername ? username : nil, password: password)
     }
 }
+
+/// A plain value enum (RoyalVNCKit predates strict concurrency): safe to share.
+extension VNCFrameEncodingType: @retroactive @unchecked Sendable {}
