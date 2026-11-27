@@ -36,7 +36,7 @@
 <main>
 <section class="hero">
   <div class="wrap">
-    <span class="eyebrow"><b>●</b> Linux desktop 1.0.0 out now · iPhone, iPad and macOS coming soon</span>
+    <span class="eyebrow"><b>●</b> Linux desktop 1.0.0 out now · macOS out now · iPhone and iPad coming soon</span>
     <h1>The SSH terminal that keeps <span>your keys in one vault</span> and your sessions on the server.</h1>
     <p class="lede">rSshTerm is a fast, keyboard-first SSH client for iPhone, iPad, Linux and macOS, built from one Swift
       codebase. Your servers and keys follow you to every device; rSshD keeps your shells alive between visits.</p>
@@ -45,7 +45,7 @@
       <a class="btn primary" href="#desktop-app">For Linux &amp; Mac</a>
       <a class="btn" href="#keyboard">Keyboard shortcuts</a>
     </div>
-    <p class="platforms">Linux (apt · AppImage) now · iPhone · iPad · macOS coming soon</p>
+    <p class="platforms">Linux (apt · AppImage) and macOS (notarized DMG) now · iPhone · iPad coming soon</p>
 
     <div class="showcase">
       <div class="phone">
@@ -102,6 +102,7 @@
             <li>Touch ID on the Mac; signed self-update</li>
           </ul>
           <a class="btn primary" href="#install">Install on Linux</a>
+          <a class="btn primary" href="https://github.com/radut/rsshterm/releases/download/desktop-v1.0.1/rsshterm_1.0.1_macos_universal.dmg">Download for Mac</a>
         </div>
       </div>
     </div>
@@ -434,18 +435,22 @@
         <p>Coming soon to the App Store. Requires iOS &amp; iPadOS 18+.</p>
       </div>
       <div class="card">
-        <h3>Linux desktop <span class="soon">1.0.0</span></h3>
+        <h3>Linux desktop <span class="soon" data-release="desktop">1.0.1</span></h3>
         <p>Debian/Ubuntu get the signed apt repo (updates come with apt), other Linux a tarball.</p>
         <div class="snippet"><pre>curl -fsSL https://rssh-ea902a.gitlab.io/desktop/install.sh | sh</pre></div>
         <p class="note">AppImage (glibc 2.39+), updates itself:</p>
         <div class="snippet"><pre>curl -fsSL https://rssh-ea902a.gitlab.io/desktop/install.sh | sh -s -- --appimage</pre></div>
-        <p class="note">Or download (Linux x86_64; checksums signed in <code>rsshterm_SHA256SUMS</code>):</p>
+        <p class="note">Or download (Linux x86_64; checksums signed in <a href="https://github.com/radut/rsshterm/releases/download/desktop-v1.0.1/SHA256SUMS"><code>SHA256SUMS</code></a>):</p>
         <div class="downloads">
-          <a class="btn small" href="https://github.com/radut/rsshterm/releases/latest/download/rsshterm_linux_amd64.AppImage">AppImage</a>
-          <a class="btn small" href="https://github.com/radut/rsshterm/releases/latest/download/rsshterm_amd64.deb">.deb</a>
-          <a class="btn small" href="https://github.com/radut/rsshterm/releases/latest/download/rsshterm_linux_amd64.tar.gz">Tarball</a>
+          <a class="btn small" href="https://github.com/radut/rsshterm/releases/download/desktop-v1.0.1/rsshterm_1.0.1_linux_amd64.AppImage">AppImage</a>
+          <a class="btn small" href="https://github.com/radut/rsshterm/releases/download/desktop-v1.0.1/rsshterm_1.0.1_amd64.deb">.deb</a>
+          <a class="btn small" href="https://github.com/radut/rsshterm/releases/download/desktop-v1.0.1/rsshterm_1.0.1_linux_amd64.tar.gz">Tarball</a>
         </div>
-        <p class="note">The macOS app is coming soon.</p>
+        <p class="note">macOS 15+ (Apple silicon and Intel): signed with Developer ID, notarized, updates itself. Open
+          the DMG and drag rSshTerm to Applications.</p>
+        <div class="downloads">
+          <a class="btn small" href="https://github.com/radut/rsshterm/releases/download/desktop-v1.0.1/rsshterm_1.0.1_macos_universal.dmg">Download for Mac (.dmg)</a>
+        </div>
       </div>
       <div class="card">
         <h3>rSshD on your servers</h3>
@@ -454,14 +459,14 @@
         <p class="note">Ubuntu 24.04 and newer, from Launchpad:</p>
         <div class="snippet"><pre>sudo add-apt-repository ppa:radut/rsshd &amp;&amp; sudo apt install rsshd</pre></div>
         <p class="note"><code>sh install.sh --uninstall</code> removes it. The app can install it for you too.</p>
-        <p class="note">Or download (checksums signed in <code>rsshd_SHA256SUMS</code>):</p>
+        <p class="note">Or download (checksums signed in <a href="https://github.com/radut/rsshterm/releases/download/rsshd-v1.0.0/SHA256SUMS"><code>SHA256SUMS</code></a>):</p>
         <div class="downloads">
-          <a class="btn small" href="https://github.com/radut/rsshterm/releases/latest/download/rsshd_amd64.deb">.deb x86_64</a>
-          <a class="btn small" href="https://github.com/radut/rsshterm/releases/latest/download/rsshd_arm64.deb">.deb arm64</a>
-          <a class="btn small" href="https://github.com/radut/rsshterm/releases/latest/download/rsshd_linux_amd64.tar.gz">Linux x86_64</a>
-          <a class="btn small" href="https://github.com/radut/rsshterm/releases/latest/download/rsshd_linux_arm64.tar.gz">Linux arm64</a>
-          <a class="btn small" href="https://github.com/radut/rsshterm/releases/latest/download/rsshd_darwin_amd64.tar.gz">macOS Intel</a>
-          <a class="btn small" href="https://github.com/radut/rsshterm/releases/latest/download/rsshd_darwin_arm64.tar.gz">macOS Apple silicon</a>
+          <a class="btn small" href="https://github.com/radut/rsshterm/releases/download/rsshd-v1.0.0/rsshd_1.0.0_amd64.deb">.deb x86_64</a>
+          <a class="btn small" href="https://github.com/radut/rsshterm/releases/download/rsshd-v1.0.0/rsshd_1.0.0_arm64.deb">.deb arm64</a>
+          <a class="btn small" href="https://github.com/radut/rsshterm/releases/download/rsshd-v1.0.0/rsshd_1.0.0_linux_amd64.tar.gz">Linux x86_64</a>
+          <a class="btn small" href="https://github.com/radut/rsshterm/releases/download/rsshd-v1.0.0/rsshd_1.0.0_linux_arm64.tar.gz">Linux arm64</a>
+          <a class="btn small" href="https://github.com/radut/rsshterm/releases/download/rsshd-v1.0.0/rsshd_1.0.0_darwin_amd64.tar.gz">macOS Intel</a>
+          <a class="btn small" href="https://github.com/radut/rsshterm/releases/download/rsshd-v1.0.0/rsshd_1.0.0_darwin_arm64.tar.gz">macOS Apple silicon</a>
         </div>
       </div>
     </div>
