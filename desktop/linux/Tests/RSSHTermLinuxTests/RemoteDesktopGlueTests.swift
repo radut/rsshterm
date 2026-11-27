@@ -59,6 +59,24 @@ let X11KeysymReturn: UInt32 = 0xff0d
         #expect(form.port == "3390")
     }
 
+    @Test func emptyPortTakesTheNewKindsDefault() {
+        var form = RemoteDesktopForm(desktop: RemoteDesktop(name: "Lab", kind: .rdp, host: "lab.example.org"), servers: [gateway])
+        form.port = ""
+        form.setKind(.vnc)
+        #expect(form.port == "5900")
+        form.port = " "
+        form.setKind(.rdp)
+        #expect(form.port == "3389")
+    }
+
+    @Test func aDefaultPortFollowsEvenFromAnotherKind() {
+        // VNC and Screen Sharing share 5900: switching VNC -> Screen Sharing -> RDP still lands on 3389.
+        var form = RemoteDesktopForm(desktop: nil, servers: [gateway])
+        form.setKind(.appleScreenSharing)
+        form.setKind(.rdp)
+        #expect(form.port == "3389")
+    }
+
     @Test func validation() {
         var form = RemoteDesktopForm(desktop: nil, servers: [gateway])
         form.name = "Lab VNC"

@@ -146,7 +146,10 @@ public final class QuickConnectModel {
                 draft.sshEnabled = sshEnabled
                 guard let server = try? draft.makeServer(id: UUID()) else { continue }
                 let joins = screensJoinSavedServers && !screens.isEmpty && !out.servers(matchingHost: server.host).isEmpty
-                if !joins, out.servers.contains(where: { QuickAddress(username: server.username, host: server.host, port: server.port).matches($0) }) {
+                // A duplicate SSH-only save adds nothing; with screens ticked and "Keep Separate" the user asked for
+                // a server of its own, so it is saved.
+                if !joins, screens.isEmpty,
+                   out.servers.contains(where: { QuickAddress(username: server.username, host: server.host, port: server.port).matches($0) }) {
                     continue
                 }
                 let result = try out.addingServer(server, screens: screens, screensJoinSavedServers: screensJoinSavedServers)

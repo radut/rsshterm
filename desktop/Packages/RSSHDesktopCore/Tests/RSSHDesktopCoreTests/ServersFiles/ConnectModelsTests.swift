@@ -73,6 +73,26 @@ import Glibc
         _ = await quick.save(to: .ungrouped, screensJoinSavedServers: true)
         #expect(doc.vault.servers == [nas] && doc.vault.service(.vnc, of: nas.id) != nil)
     }
+
+    @Test func keepSeparateSavesTheScreensOnANewServer() async throws {
+        // "Keep Separate" for a host saved with the same user and port: a server with the ticked RDP is still saved
+        // (it used to be skipped as a duplicate, "0 server(s) saved").
+        let nas = Server(name: "nas", host: "nas.example.com", username: "admin")
+        let doc = TestDocument(Vault(servers: [nas]))
+        let quick = QuickConnectModel(document: doc, address: QuickAddress.parse("admin@nas.example.com"))
+        quick.screens = [.rdp]
+        let saved = await quick.save(to: .ungrouped, screensJoinSavedServers: false)
+        let server = try #require(saved.first)
+        #expect(server.id != nas.id && doc.vault.servers.count == 2)
+        #expect(doc.vault.service(.rdp, of: server.id) != nil && doc.vault.service(.rdp, of: nas.id) == nil)
+    }
+
+    @Test func aDuplicateWithoutScreensIsStillSkipped() async throws {
+        let nas = Server(name: "nas", host: "nas.example.com", username: "admin")
+        let doc = TestDocument(Vault(servers: [nas]))
+        let quick = QuickConnectModel(document: doc, address: QuickAddress.parse("admin@nas.example.com"))
+        #expect(await quick.save(to: .ungrouped).isEmpty && doc.vault.servers == [nas])
+    }
 }
 
 /// A scan answer per host, as the RSSHKit scanner tests use.

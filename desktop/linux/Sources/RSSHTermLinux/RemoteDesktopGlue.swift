@@ -87,9 +87,9 @@ public struct RemoteDesktopForm: Sendable {
         domain = desktop?.domain ?? ""
     }
 
-    /// Changes the kind; the port follows while it is still the old kind's default.
+    /// Changes the kind; the port follows while it is empty or a kind's default (3389, 5900), as on iOS.
     public mutating func setKind(_ newKind: RemoteDesktop.Kind) {
-        if port == String(kind.defaultPort) { port = String(newKind.defaultPort) }
+        port = RemoteDesktop.Kind.port(port, switching: kind, to: newKind, typed: false)
         kind = newKind
     }
 
