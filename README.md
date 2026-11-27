@@ -58,7 +58,7 @@ Coming soon · iOS &amp; iPadOS 18+
 - VNC and Apple Screen Sharing over the same SSH connection; RDP on Linux
 - Touch ID on the Mac; signed self-update, apt or AppImage on Linux
 
-[Install on Linux](#desktop-linux) · [Download for Mac](https://github.com/radut/rsshterm/releases/download/desktop-v1.0.1/rsshterm_1.0.1_macos_universal.dmg)
+[Install on Linux](#desktop-linux) · [Download for Mac](https://github.com/radut/rsshterm/releases/download/desktop-v1.0.2/rsshterm_1.0.2_macos_universal.dmg)
 </td>
 </tr></table>
 
@@ -229,14 +229,14 @@ curl -fsSL https://rssh-ea902a.gitlab.io/desktop/install.sh | sh -s -- --appimag
 ```
 
 Or download directly (Linux x86_64):
-[AppImage](https://github.com/radut/rsshterm/releases/download/desktop-v1.0.1/rsshterm_1.0.1_linux_amd64.AppImage) ·
-[.deb](https://github.com/radut/rsshterm/releases/download/desktop-v1.0.1/rsshterm_1.0.1_amd64.deb) ·
-[tarball](https://github.com/radut/rsshterm/releases/download/desktop-v1.0.1/rsshterm_1.0.1_linux_amd64.tar.gz) ·
-checksums [`SHA256SUMS`](https://github.com/radut/rsshterm/releases/download/desktop-v1.0.1/SHA256SUMS) ([signature](https://github.com/radut/rsshterm/releases/download/desktop-v1.0.1/SHA256SUMS.asc)).
+[AppImage](https://github.com/radut/rsshterm/releases/download/desktop-v1.0.2/rsshterm_1.0.2_linux_amd64.AppImage) ·
+[.deb](https://github.com/radut/rsshterm/releases/download/desktop-v1.0.2/rsshterm_1.0.2_amd64.deb) ·
+[tarball](https://github.com/radut/rsshterm/releases/download/desktop-v1.0.2/rsshterm_1.0.2_linux_amd64.tar.gz) ·
+checksums [`SHA256SUMS`](https://github.com/radut/rsshterm/releases/download/desktop-v1.0.2/SHA256SUMS) ([signature](https://github.com/radut/rsshterm/releases/download/desktop-v1.0.2/SHA256SUMS.asc)).
 
 ### Desktop: macOS
 
-[**Download rSshTerm for Mac**](https://github.com/radut/rsshterm/releases/download/desktop-v1.0.1/rsshterm_1.0.1_macos_universal.dmg)
+[**Download rSshTerm for Mac**](https://github.com/radut/rsshterm/releases/download/desktop-v1.0.2/rsshterm_1.0.2_macos_universal.dmg)
 (universal: Apple silicon and Intel, macOS 15+). Open the DMG and drag rSshTerm to Applications. It is signed with
 Developer ID and notarized by Apple, and updates itself. Or in Terminal:
 
@@ -244,7 +244,7 @@ Developer ID and notarized by Apple, and updates itself. Or in Terminal:
 curl -fsSL https://rssh-ea902a.gitlab.io/desktop/install.sh | sh
 ```
 
-Checksum: in [`SHA256SUMS`](https://github.com/radut/rsshterm/releases/download/desktop-v1.0.1/SHA256SUMS) ([signature](https://github.com/radut/rsshterm/releases/download/desktop-v1.0.1/SHA256SUMS.asc)).
+Checksum: in [`SHA256SUMS`](https://github.com/radut/rsshterm/releases/download/desktop-v1.0.2/SHA256SUMS) ([signature](https://github.com/radut/rsshterm/releases/download/desktop-v1.0.2/SHA256SUMS.asc)).
 
 ### rSshD on your servers
 
