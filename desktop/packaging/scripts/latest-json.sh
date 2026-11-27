@@ -6,7 +6,7 @@
 #
 # One asset per line, so install.sh can read it with sed (no jq on a fresh machine). Platform keys come from the file
 # names: rsshterm_<v>_linux_<amd64|arm64>.tar.gz -> linux-<arch>, rsshterm_<v>_linux_<arch>.AppImage ->
-# linux-<arch>-appimage, rsshterm_<v>_macos_universal.zip -> macos-universal.
+# linux-<arch>-appimage, rsshterm_<v>_macos_universal.dmg (else .zip) -> macos-universal.
 # Notes: the dist's NOTES file (the tag message), else empty. published: the dist's PUBLISHED (UTC ISO 8601), optional.
 # Usage: latest-json.sh <version> <dist-dir> <base-url-of-the-release-dir>   Needs jq (for the notes text only).
 set -eu
@@ -25,12 +25,16 @@ if [ -f "$dist/PUBLISHED" ]; then
 fi
 printf '{\n  "version": "%s",%s\n  "notes": %s,\n  "assets": {' "$ver" "$published" "$notes"
 sep=
+has_dmg=0; ! grep -q "  rsshterm_${ver}_macos_universal\.dmg\$" "$dist/SHA256SUMS" || has_dmg=1
 while read -r sum file; do
   file=${file#\*}
   case $file in
     "rsshterm_${ver}_linux_"*.tar.gz) key=${file#"rsshterm_${ver}_linux_"}; key=linux-${key%.tar.gz} ;;
     "rsshterm_${ver}_linux_"*.AppImage) key=${file#"rsshterm_${ver}_linux_"}; key=linux-${key%.AppImage}-appimage ;;
-    "rsshterm_${ver}_macos_universal.zip") key=macos-universal ;;
+    "rsshterm_${ver}_macos_universal.dmg") key=macos-universal ;;
+    # Xcode Cloud's zip only when the release has no notarized DMG (one asset per key).
+    "rsshterm_${ver}_macos_universal.zip") [ "$has_dmg" = 0 ] || continue
+      key=macos-universal ;;
     *) continue ;;
   esac
   case $sum in *[!0-9a-f]*|'') echo "bad checksum for $file" >&2; exit 1 ;; esac

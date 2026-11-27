@@ -4,6 +4,7 @@
 #   2a. an rsshd release without the update key keeps desktop and its manifest signature; a changed unsigned one fails
 #   2. a "next desktop release" pipeline: fetch-release.sh takes rsshd back from the served site, the new site keeps it
 #   3. desktop/install.sh: apt path, tarball path, macOS path (uname shim), uninstall; a tampered checksum is refused
+#   4. attach-macos.sh adds a pinned DMG to the served release (everything else byte-identical); install.sh takes it
 # Fake packages (shell scripts) stand in for the real binaries, so this runs before the app exists.
 # Runs as root in a clean debian/ubuntu container, from the repo root. Usage: site-install.sh [rsshd-dist-dir]
 set -eu
@@ -190,4 +191,51 @@ sed -i "s/\"sha256\": \"[0-9a-f]\{4\}/\"sha256\": \"0000/" "$t/public2/desktop/l
 if sh "$root/desktop/install.sh" --tarball > "$t/tamper.log" 2>&1; then echo "FAIL: wrong checksum accepted" >&2; exit 1; fi
 grep -q 'checksum mismatch' "$t/tamper.log" && [ ! -e "$HOME/.local/opt/rsshterm" ]
 echo "install.sh tamper: refused OK"
+
+# 4. The notarized DMG added to the release Pages serves (desktop:macos-attach, no new tag): only the DMG, the lists,
+#    their signatures and latest.json(.sig) change; latest.json takes the DMG over the zip; a DMG git does not pin is
+#    refused, and so is a pin for another version.
+mkdir -p "$t/dmg-src/rSshTerm.app/Contents"; echo '<plist/>' > "$t/dmg-src/rSshTerm.app/Contents/Info.plist"
+tar -cf "$t/rsshterm_1.1.0_macos_universal.dmg" -C "$t/dmg-src" rSshTerm.app   # a stand-in image (hdiutil shim below)
+(cd "$t" && sha256sum rsshterm_1.1.0_macos_universal.dmg) > "$t/pin"
+before=$(curl -fsS "$site/desktop/releases/1.1.0/SHA256SUMS")
+export MACOS_DMG_PIN="$t/pin" MACOS_DMG_URL="file://$t/rsshterm_1.1.0_macos_universal.dmg"
+DESKTOP_UPDATE_SIGNING_KEY=$t/update.pem sh "$root/packaging/site/attach-macos.sh" "$t/attach/public" > "$t/attach.log" 2>&1 ||
+  { cat "$t/attach.log"; exit 1; }
+a=$t/attach/public/desktop/releases/1.1.0
+[ "$(grep -v '  rsshterm_1.1.0_macos_universal.dmg$' "$a/SHA256SUMS")" = "$before" ] || { echo "FAIL: other SHA256SUMS lines changed" >&2; exit 1; }
+grep -q "^$(cut -d' ' -f1 "$t/pin")  rsshterm_1.1.0_macos_universal.dmg\$" "$a/SHA256SUMS"
+grep -q '  rsshterm_macos_universal.dmg$' "$a/rsshterm_SHA256SUMS"
+for l in SHA256SUMS rsshterm_SHA256SUMS; do gpgv --keyring "$t/trusted.gpg" "$a/$l.asc" "$a/$l" 2>/dev/null; done
+(cd "$a" && sha256sum --quiet -c SHA256SUMS)
+jq -e '.assets["macos-universal"].url | endswith("/rsshterm_1.1.0_macos_universal.dmg")' "$t/attach/public/desktop/latest.json" >/dev/null
+sh "$uk" verify "$upub" "$t/attach/public/desktop/latest.json" "$t/attach/public/desktop/latest.json.sig"
+grep -q '^DESKTOP_VERSION=1.1.0$' "$t/attach/desktop.env"
+[ "$(cat "$t/attach/public/releases/latest/VERSION")" = "$rver" ]
+echo "stranger" > "$t/other.dmg"; (cd "$t" && printf '%s  rsshterm_1.1.0_macos_universal.dmg\n' "$(sha256sum other.dmg | cut -d' ' -f1)") > "$t/pin-bad"
+if MACOS_DMG_PIN="$t/pin-bad" DESKTOP_UPDATE_SIGNING_KEY=$t/update.pem sh "$root/packaging/site/attach-macos.sh" "$t/attach-bad/public" 2>/dev/null; then
+  echo "FAIL: a DMG git does not pin was attached" >&2; exit 1; fi
+sed 's/1\.1\.0/1.0.9/' "$t/pin" > "$t/pin-old"
+if MACOS_DMG_PIN="$t/pin-old" DESKTOP_UPDATE_SIGNING_KEY=$t/update.pem sh "$root/packaging/site/attach-macos.sh" "$t/attach-old/public" 2>/dev/null; then
+  echo "FAIL: a pin for another version was attached" >&2; exit 1; fi
+if DESKTOP_UPDATE_SIGNING_KEY='' sh "$root/packaging/site/attach-macos.sh" "$t/attach-unsigned/public" 2>/dev/null; then
+  echo "FAIL: attached with an unsigned latest.json" >&2; exit 1; fi
+echo "DMG attached to the served release: OK"
+
+# install.sh on macOS from the DMG (hdiutil/ditto shims: the stand-in image is a tar).
+serve "$t/attach/public"
+cat > "$t/shim/hdiutil" <<'SHIM'
+#!/bin/sh
+case $1 in
+  attach) for a; do m=$p; p=$a; [ "$m" = -mountpoint ] && mp=$a; done; mkdir -p "$mp"; exec tar -xf "$p" -C "$mp" ;;
+  detach) exit 0 ;;
+esac
+exit 1
+SHIM
+# shellcheck disable=SC2016 # the shim reads its own $1 $2
+printf '#!/bin/sh\nexec cp -R "$1" "$2"\n' > "$t/shim/ditto"; chmod 755 "$t/shim/hdiutil" "$t/shim/ditto"
+PATH=$t/shim:$PATH sh "$root/desktop/install.sh" > "$t/mac-dmg.log" 2>&1 || { cat "$t/mac-dmg.log"; exit 1; }
+grep -q 'rsshterm_1.1.0_macos_universal.dmg' "$t/mac-dmg.log" && [ -f /Applications/rSshTerm.app/Contents/Info.plist ]
+PATH=$t/shim:$PATH sh "$root/desktop/install.sh" --uninstall >/dev/null
+echo "install.sh macOS from the DMG (shim): OK"
 echo "site-install: OK on $PRETTY_NAME"

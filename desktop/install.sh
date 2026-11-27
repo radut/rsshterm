@@ -5,7 +5,7 @@
 #   `apt-get install rsshterm` with sudo, so updates come with apt.
 # Other Linux: the tarball from latest.json, checked against its sha256, into ~/.local/opt/rsshterm (no root).
 # --appimage: the AppImage (GTK 4 bundled; glibc >= 2.39) to ~/.local/bin/rsshterm.AppImage; it updates itself.
-# macOS: the notarized app (zip) from latest.json, checked against its sha256, into /Applications (or ~/Applications).
+# macOS: the notarized app (DMG or zip) from latest.json, checked against its sha256, into /Applications (or ~/Applications).
 #
 #   sh install.sh [--tarball|--appimage] [--uninstall]   RSSHTERM_BASE_URL: another site (tests, mirrors)
 set -eu
@@ -137,10 +137,18 @@ install_appimage() {
 }
 
 install_mac() {
-  download macos-universal rsshterm.zip
+  # The release carries a notarized DMG (or, from Xcode Cloud, a zip): the file name follows latest.json's URL.
+  a=$(asset macos-universal) || exit 1
+  case ${a% *} in *.dmg) f=rsshterm.dmg ;; *) f=rsshterm.zip ;; esac
+  download macos-universal "$f"
   mkdir "$tmp/x"
-  if command -v ditto >/dev/null 2>&1; then ditto -x -k "$tmp/rsshterm.zip" "$tmp/x"; else unzip -q "$tmp/rsshterm.zip" -d "$tmp/x"; fi
-  [ -d "$tmp/x/$APP" ] || die "the zip has no $APP"
+  if [ "$f" = rsshterm.dmg ]; then
+    mkdir "$tmp/mnt"
+    hdiutil attach -quiet -nobrowse -readonly -noautoopen -mountpoint "$tmp/mnt" "$tmp/$f" || die "cannot open the disk image"
+    [ -d "$tmp/mnt/$APP" ] || { hdiutil detach -quiet -force "$tmp/mnt"; die "the disk image has no $APP"; }
+    ditto "$tmp/mnt/$APP" "$tmp/x/$APP"; hdiutil detach -quiet -force "$tmp/mnt" || true
+  elif command -v ditto >/dev/null 2>&1; then ditto -x -k "$tmp/$f" "$tmp/x"; else unzip -q "$tmp/$f" -d "$tmp/x"; fi
+  [ -d "$tmp/x/$APP" ] || die "the download has no $APP"
   dest=/Applications; [ -w "$dest" ] || dest=$HOME/Applications
   mkdir -p "$dest"; rm -rf "${dest:?}/$APP"; cp -R "$tmp/x/$APP" "$dest/"
   say "installed $dest/$APP (notarized; updates from the app)"
