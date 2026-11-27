@@ -167,10 +167,12 @@ Coming soon · iOS &amp; iPadOS 18+
 
 Type once, run it on every server. <kbd>⌘⇧I</kbd> / <kbd>Ctrl+Shift+I</kbd> sends what you type to every pane,
 <kbd>⌘⌥I</kbd> to this tab's panes, and <kbd>⌘⌥⇧I</kbd> / <kbd>Ctrl+Shift+Alt+I</kbd> opens the picker: presets (this tab,
-all tabs of the window, visible panes, all windows) or the exact panes you tick, filtered by name or host. Receiving
-panes get a red-orange striped background (as in iTerm2) and the title says "broadcasting input" until you stop.
+all tabs of the window, visible panes, all windows) or the exact panes you tick, each named like its tab (title,
+user@host · folder · program) and filtered on any of it. Every pane in the broadcast, the one you type in too, gets
+wide deep-red stripes that run on across the dividers (as in iTerm2) and a broadcast badge, and the title says
+"broadcasting input" until you stop.
 
-<img src="https://radut.github.io/rsshterm/screens/desktop-linux/broadcast.png" alt="Linux: one command typed once runs in every pane, striped background on the receiving panes">
+<img src="https://radut.github.io/rsshterm/screens/desktop-linux/broadcast.png" alt="Linux: one command typed once runs in every pane, striped background on every pane in the broadcast">
 
 <table><tr>
 <td width="50%"><img src="https://radut.github.io/rsshterm/screens/desktop-mac/broadcast-picker.png" alt="macOS: the broadcast picker with presets and pane checkboxes"></td>
