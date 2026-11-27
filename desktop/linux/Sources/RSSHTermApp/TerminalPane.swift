@@ -300,6 +300,18 @@ final class TerminalPane {
     func paste() { vte_terminal_paste_clipboard(terminal) }
 
     /// The visible screen and scrollback as text (the smoke test reads it back).
+    /// The whole buffer: scrollback history and the screen (`text()` is the screen only).
+    func history() -> String {
+        guard let adjustment = gtk_scrollable_get_vadjustment(cast(widget)) else { return text() }
+        let first = Int(gtk_adjustment_get_lower(adjustment)), end = Int(gtk_adjustment_get_upper(adjustment))
+        var length: gsize = 0
+        guard let raw = vte_terminal_get_text_range_format(terminal, VTE_FORMAT_TEXT, first, 0, end,
+                                                           Int(vte_terminal_get_column_count(terminal)), &length)
+        else { return text() }
+        defer { g_free(raw) }
+        return String(cString: raw)
+    }
+
     func text() -> String {
         guard let raw = vte_terminal_get_text_format(terminal, VTE_FORMAT_TEXT) else { return "" }
         defer { g_free(raw) }

@@ -26,7 +26,7 @@ docker run -d --rm --name "$VNC" --network "$NET" --network-alias screen.example
 docker run -d --rm --name "$RDP" --hostname lab-rdp --network "$NET" --network-alias rdp.example.org -e RDP_PASSWORD="$RDP_PW" \
     rsshrd-it-xrdp >/dev/null || exit 1
 
-docker run --rm --network "$NET" --hostname workstation -v "$REPO:/src" -v "${BUILD_VOLUME:-rsshterm-linux-build}":/build \
+docker run --rm --network "$NET" --hostname "${SMOKE_HOSTNAME:-workstation}" -v "$REPO:/src" -v "${BUILD_VOLUME:-rsshterm-linux-build}":/build \
     -w /src/desktop/linux -e SCRATCH=/build -e SHOTS=/src/docs/screens/desktop-linux \
     -e OWNER="$(id -u):$(id -g)" -e VNC_PASSWORD="$PW" -e RDP_PASSWORD="$RDP_PW" rsshterm-linux \
     sh -c 'packaging/validate.sh && swift test --scratch-path /build && scripts/smoke-test.sh'

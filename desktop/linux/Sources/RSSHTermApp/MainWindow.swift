@@ -734,6 +734,7 @@ final class MainWindow {
             "windowTitle": string(gtk_window_get_title(cast(window))),
             "screens": screens.values.map(\.state),
             "focusedText": focusedPane?.text() ?? "",
+            "focusedHistory": focusedPane?.history() ?? "",
             "loginBars": loginBars,
             "texts": model.selectedTab.paneIDs.map { panes[$0]?.text() ?? "" },
             "id": model.id.uuidString,

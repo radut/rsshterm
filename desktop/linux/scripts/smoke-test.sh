@@ -405,11 +405,14 @@ start_app
 wait_for "one local tab" '"panes":\[1\]'
 keys ctrl+shift+e
 wait_for "split the tab" '"panes":\[2\]'
+# A prompt that never wraps: bash redraws a wrapped prompt after a resize (SIGWINCH) over the line above it, which
+# would eat the output the check looks for whenever the host name is long (CI runners).
+typeline "PS1='\$ '"
 typeline 'echo before-$((3*3))'
 wait_for "the split pane printed before-9" '"focusedText":"[^"]*before-9\\n'
 keys ctrl+shift+alt+t
 wait_for "Ctrl+Shift+Alt+T moved the pane into a tab of its own" '"panes":\[1,1\]'
-wait_for "the moved pane kept its scrollback" '"focusedText":"[^"]*before-9\\n'
+wait_for "the moved pane kept its scrollback (history + screen)" '"focusedHistory":"[^"]*\\nbefore-9\\n'
 typeline 'echo moved-$((40+2))'
 wait_for "the moved pane's shell answers" '"focusedText":"[^"]*\\nmoved-42\\n'
 shot moved-pane
@@ -422,7 +425,7 @@ wait_for "Ctrl+Shift+Alt+D moved the tab to a new window" '"windowCount":2'
 xdotool search --sync --onlyvisible --name '^mover' windowfocus >/dev/null 2>&1 || true
 sleep 0.5
 typeline 'echo window-$((40+2))'
-wait_for "the tab's shell answers in its new window" '"focusedText":"[^"]*before-9[^"]*\\nwindow-42\\n'
+wait_for "the tab's shell answers in its new window" '"focusedHistory":"[^"]*\\nbefore-9\\n[^"]*\\nwindow-42\\n'
 shot moved-window '^mover'
 action merge-all-windows
 wait_for "Merge All Windows: one window with both tabs" '"windowCount":1'
