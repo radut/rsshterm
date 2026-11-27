@@ -76,17 +76,18 @@ jq -e --arg a "linux-$arch" --arg s "$want" --arg u "$site/desktop/releases/1.0.
 grep -q '^Package: rsshd$' "$t/public/apt/dists/stable/main/binary-$arch/Packages"
 grep -q '^Package: rsshterm$' "$t/public/apt/dists/stable/main/binary-$arch/Packages"
 sh "$uk" verify "$upub" "$t/public/desktop/latest.json" "$t/public/desktop/latest.json.sig"
-# The version-less lists (the GitHub release's stable names): signed, and each line is a versioned file renamed.
+# Signed lists of versioned names only: no version-less <name>_SHA256SUMS copies anywhere on the site.
 gpg --batch --quiet --dearmor --output "$t/trusted.gpg" "$t/public.asc"
-for l in "releases/$rver/rsshd_SHA256SUMS" desktop/releases/1.0.0/rsshterm_SHA256SUMS; do
+for l in "releases/$rver/SHA256SUMS" desktop/releases/1.0.0/SHA256SUMS; do
   gpgv --keyring "$t/trusted.gpg" "$t/public/$l.asc" "$t/public/$l" 2>/dev/null || { echo "FAIL: $l.asc" >&2; exit 1; }
 done
-grep -q "  rsshterm_linux_$arch.AppImage\$" "$t/public/desktop/releases/1.0.0/rsshterm_SHA256SUMS"
-grep -q "  rsshd_linux_amd64.tar.gz\$" "$t/public/releases/$rver/rsshd_SHA256SUMS"
-mkdir "$t/plain"; cp "$t/d1/rsshterm_1.0.0_${arch}.deb" "$t/plain/rsshterm_${arch}.deb"
-(cd "$t/plain" && cp "$t/public/desktop/releases/1.0.0/rsshterm_SHA256SUMS" . && sha256sum --ignore-missing -c rsshterm_SHA256SUMS >/dev/null)
-DRY_RUN=1 sh "$root/packaging/github/publish-release.sh" desktop 1.0.0 "$t/public" 2>&1 |
-  grep -q "assets?name=rsshd_linux_amd64.tar.gz" || { echo "FAIL: GitHub dry run" >&2; exit 1; }
+if find "$t/public" -name '*_SHA256SUMS*' | grep .; then echo "FAIL: version-less lists on the site" >&2; exit 1; fi
+DRY_RUN=1 sh "$root/packaging/github/publish-release.sh" desktop 1.0.0 "$t/public" > "$t/gh-dry.log" 2>&1 ||
+  { cat "$t/gh-dry.log"; exit 1; }
+grep -q "assets?name=rsshterm_1.0.0_linux_$arch.AppImage" "$t/gh-dry.log" || { echo "FAIL: GitHub dry run" >&2; exit 1; }
+if grep -E "assets\?name=(rsshd_|rsshterm_(linux|amd64|arm64|macos|SHA256SUMS))" "$t/gh-dry.log"; then
+  echo "FAIL: GitHub dry run uploads a version-less or rsshd file to the desktop release" >&2; exit 1
+fi
 # Without PRODUCT_PAGE the root is the downloads landing, which also stays at /rsshd.html.
 if ! grep -q 'rSshTerm downloads' "$t/public/rsshd.html" || ! cmp -s "$t/public/rsshd.html" "$t/public/index.html"; then
   echo "FAIL: rsshd.html / index.html landing" >&2; exit 1
@@ -205,8 +206,7 @@ DESKTOP_UPDATE_SIGNING_KEY=$t/update.pem sh "$root/packaging/site/attach-macos.s
 a=$t/attach/public/desktop/releases/1.1.0
 [ "$(grep -v '  rsshterm_1.1.0_macos_universal.dmg$' "$a/SHA256SUMS")" = "$before" ] || { echo "FAIL: other SHA256SUMS lines changed" >&2; exit 1; }
 grep -q "^$(cut -d' ' -f1 "$t/pin")  rsshterm_1.1.0_macos_universal.dmg\$" "$a/SHA256SUMS"
-grep -q '  rsshterm_macos_universal.dmg$' "$a/rsshterm_SHA256SUMS"
-for l in SHA256SUMS rsshterm_SHA256SUMS; do gpgv --keyring "$t/trusted.gpg" "$a/$l.asc" "$a/$l" 2>/dev/null; done
+gpgv --keyring "$t/trusted.gpg" "$a/SHA256SUMS.asc" "$a/SHA256SUMS" 2>/dev/null
 (cd "$a" && sha256sum --quiet -c SHA256SUMS)
 jq -e '.assets["macos-universal"].url | endswith("/rsshterm_1.1.0_macos_universal.dmg")' "$t/attach/public/desktop/latest.json" >/dev/null
 sh "$uk" verify "$upub" "$t/attach/public/desktop/latest.json" "$t/attach/public/desktop/latest.json.sig"

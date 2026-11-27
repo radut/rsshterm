@@ -83,14 +83,16 @@ final class PreferencesDialog {
         }
 
         let indicatorRow = adw_switch_row_new()!
-        adw_preferences_row_set_title(cast(indicatorRow), "Striped Background on Receiving Panes")
-        adw_action_row_set_subtitle(cast(indicatorRow), "Diagonal red-orange stripes over every pane that receives broadcast input.")
+        adw_preferences_row_set_title(cast(indicatorRow), "Striped Background on Panes in the Broadcast")
+        adw_action_row_set_subtitle(cast(indicatorRow), "Wide deep-red stripes over every pane in the broadcast, the one you type in too.")
         adw_switch_row_set_active(cast(indicatorRow), app.settings.broadcastIndicator ? 1 : 0)
         adw_preferences_group_add(cast(session), indicatorRow)
         onNotify(indicatorRow, "active") {
             app.settings.broadcastIndicator = adw_switch_row_get_active(cast(indicatorRow)) != 0
             app.settingsChanged()
         }
+
+        adw_preferences_page_add(cast(page), cast(DefaultTerminalGroup(app: app).group))
 
         let updates = adw_preferences_group_new()!
         adw_preferences_group_set_title(cast(updates), "Updates")

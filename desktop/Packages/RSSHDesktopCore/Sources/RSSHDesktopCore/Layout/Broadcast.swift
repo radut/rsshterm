@@ -15,7 +15,7 @@ public enum BroadcastMode: String, Codable, Sendable {
 }
 
 /// The broadcast mode and the hand-picked panes. Pure value: the app asks `targets(for:)` on each keystroke or paste
-/// and draws the receiving-pane indicator from `isReceiving`.
+/// and stripes every pane in the broadcast from `isReceiving`.
 public struct BroadcastState: Codable, Equatable, Sendable {
     public private(set) var mode: BroadcastMode
     public private(set) var manual: Set<PaneID>
@@ -85,17 +85,29 @@ public struct BroadcastState: Codable, Equatable, Sendable {
         return [source] + others.filter { $0 != source }
     }
 
-    /// Whether `pane` gets the input typed in the focused pane while it is not the focused pane itself (the striped
-    /// indicator and badge).
+    /// Whether `pane` is in the broadcast: input typed in the focused pane reaches it, the focused pane itself
+    /// included, and that input reaches more than one pane (the striped background and badge, as in iTerm2 and
+    /// Termius). Current only, or a broadcast that reaches one pane: nothing. Without a focused pane, a hand-picked
+    /// or visible set of two or more stands in for the reach.
     public func isReceiving(_ pane: PaneID, windows: [Window], visible: Set<PaneID>, focused: PaneID? = nil) -> Bool {
-        switch mode {
-        case .currentOnly: return false
-        case .manual: return manual.contains(pane)
-        case .visible: return visible.contains(pane)
-        case .allTabs, .currentTab:
-            guard let focused else { return false }
-            return targets(for: focused, windows: windows, visible: visible).dropFirst().contains(pane)
+        if mode == .currentOnly { return false }
+        guard let focused else {
+            let all = windows.flatMap { $0.tabs.flatMap(\.paneIDs) }
+            let set: [PaneID] = switch mode {
+            case .manual: all.filter(manual.contains)
+            case .visible: all.filter(visible.contains)
+            default: []
+            }
+            return set.count > 1 && set.contains(pane)
         }
+        let reach = targets(for: focused, windows: windows, visible: visible)
+        return reach.count > 1 && reach.contains(pane)
+    }
+
+    /// A badge click on `pane`: on the `source` pane (the one typed in) it stops broadcasting, elsewhere it takes
+    /// that pane out (`removing(_:reached:)`).
+    public func removing(_ pane: PaneID, reached: [PaneID], source: PaneID?) -> BroadcastState {
+        pane == source ? BroadcastState() : removing(pane, reached: reached)
     }
 }
 

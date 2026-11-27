@@ -1,5 +1,8 @@
 # rSshTerm desktop (Linux and macOS)
 
+Both open as a terminal first (a local shell at launch, servers and the vault on demand) and can be the default
+terminal: `docs/desktop/terminal-first.md`.
+
 `Packages/RSSHDesktopCore` is the platform-neutral core both desktop apps build on; it shares models, the vault and
 the agent protocol with the iOS app through `apple/Packages/RSSHKit`. No UI toolkit: `swift test` runs on Linux
 (`make test-desktop-linux`, in `swift:6.4-noble`) and on macOS 15.

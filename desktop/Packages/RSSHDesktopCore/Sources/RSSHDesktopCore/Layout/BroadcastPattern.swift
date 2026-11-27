@@ -1,60 +1,87 @@
 import Foundation
 
-/// The look of a pane that receives broadcast input, shared by the macOS and Linux apps: a red-orange diagonal hatch
-/// over the whole pane (behind the badge, through the text, like iTerm2's broadcast background), plus a thin border.
-/// Lengths are in points (macOS) or CSS pixels (GTK), measured across the stripes.
+/// The look of a pane in the broadcast, shared by the macOS and Linux apps, after iTerm2: wide diagonal bands ("/",
+/// 45 degrees) of deep red with equal gaps, about 2.75 text lines across, over the whole pane, no outline.
+///
+/// The bands are one sheet behind the whole window: each pane draws the part its frame shows, so they run on across
+/// the dividers. Lengths are points (macOS) or pixels (GTK); positions are window coordinates.
 public struct BroadcastPattern: Equatable, Sendable {
-    /// The stripe colour (0...1 sRGB).
-    public let red: Double, green: Double, blue: Double
-    /// Width of one stripe, across the stripe.
-    public let stripeWidth: Double
-    /// Stripe plus gap, across the stripes.
-    public let period: Double
-    /// Stripes run bottom-left to top-right ("/") at this angle from the horizontal.
+    /// A colour painted at `opacity` over the terminal (0...1 sRGB).
+    public struct Tone: Equatable, Sendable {
+        public let red: Double, green: Double, blue: Double, opacity: Double
+
+        public init(red: Double, green: Double, blue: Double, opacity: Double) {
+            self.red = red
+            self.green = green
+            self.blue = blue
+            self.opacity = opacity
+        }
+
+        /// The colour it shows over an opaque background.
+        public func over(red r: Double, green g: Double, blue b: Double) -> (red: Double, green: Double, blue: Double) {
+            (red * opacity + r * (1 - opacity), green * opacity + g * (1 - opacity), blue * opacity + b * (1 - opacity))
+        }
+    }
+
+    /// A band's centre line in the pane's own coordinates (it runs past the pane: the caller clips to the pane).
+    public struct Segment: Equatable, Sendable {
+        public let x0: Double, y0: Double, x1: Double, y1: Double
+    }
+
+    /// Band width across the band, in text lines.
+    public let bandLines: Double
+    /// Narrowest band, whatever the font.
+    public let minimumBand: Double
+    /// Bands run bottom-left to top-right ("/") at this angle from the horizontal.
     public let angleDegrees: Double
-    /// Stripe opacity on a dark terminal background and on a light one (a light background needs less to show).
-    public let darkOpacity: Double, lightOpacity: Double
-    /// The border around the pane.
-    public let borderWidth: Double, borderOpacity: Double
+    /// Over a dark terminal background, and over a light one.
+    public let dark: Tone, light: Tone
 
+    /// Over black: about #661414 (deep red, white text stays readable). Over white: about #FFE5E5.
     public static let standard = BroadcastPattern(
-        red: 0.89, green: 0.25, blue: 0.13, stripeWidth: 10, period: 20, angleDegrees: 45,
-        darkOpacity: 0.25, lightOpacity: 0.16, borderWidth: 2, borderOpacity: 0.85)
+        bandLines: 2.75, minimumBand: 8, angleDegrees: 45,
+        dark: Tone(red: 1, green: 0.2, blue: 0.2, opacity: 0.4),
+        light: Tone(red: 1, green: 0.2, blue: 0.2, opacity: 0.13))
 
-    public init(red: Double, green: Double, blue: Double, stripeWidth: Double, period: Double, angleDegrees: Double,
-                darkOpacity: Double, lightOpacity: Double, borderWidth: Double, borderOpacity: Double) {
-        self.red = red
-        self.green = green
-        self.blue = blue
-        self.stripeWidth = stripeWidth
-        self.period = period
+    public init(bandLines: Double, minimumBand: Double, angleDegrees: Double, dark: Tone, light: Tone) {
+        self.bandLines = bandLines
+        self.minimumBand = minimumBand
         self.angleDegrees = angleDegrees
-        self.darkOpacity = darkOpacity
-        self.lightOpacity = lightOpacity
-        self.borderWidth = borderWidth
-        self.borderOpacity = borderOpacity
+        self.dark = dark
+        self.light = light
     }
 
-    /// Stripe opacity for a terminal background.
-    public func opacity(darkBackground: Bool) -> Double { darkBackground ? darkOpacity : lightOpacity }
+    public func tone(darkBackground: Bool) -> Tone { darkBackground ? dark : light }
 
-    /// Horizontal distance between two stripes (where they cross a horizontal line).
-    public var horizontalStep: Double { period / sin(angleDegrees * .pi / 180) }
+    /// Width of one band for a terminal font whose line is `lineHeight` tall.
+    public func stripeWidth(lineHeight: Double) -> Double { max(minimumBand, bandLines * lineHeight) }
 
-    /// "rgba(r,g,b,a)" for GTK CSS, 0...255 channels.
-    public func cssColor(opacity: Double) -> String {
-        func c(_ v: Double) -> Int { Int((v * 255).rounded()) }
-        return "rgba(\(c(red)),\(c(green)),\(c(blue)),\(Self.format(opacity)))"
-    }
+    /// Band plus gap (the gap is as wide as the band).
+    public func period(lineHeight: Double) -> Double { 2 * stripeWidth(lineHeight: lineHeight) }
 
-    /// The GTK CSS rule painting the hatch and border on `selector` for a dark or light terminal background.
-    /// CSS gradient angles point along the gradient line, so "/" stripes at `angleDegrees` take 90 + angleDegrees.
-    public func css(selector: String, darkBackground: Bool) -> String {
-        let stripe = cssColor(opacity: opacity(darkBackground: darkBackground))
-        let w = Self.format(stripeWidth), p = Self.format(period)
-        return "\(selector) { border: \(Self.format(borderWidth))px solid \(cssColor(opacity: borderOpacity)); "
-            + "background-image: repeating-linear-gradient(\(Self.format(90 + angleDegrees))deg, "
-            + "\(stripe) 0px, \(stripe) \(w)px, transparent \(w)px, transparent \(p)px); }"
+    /// The bands' centre lines over a pane whose frame starts at `origin` (window coordinates) and is `width` by
+    /// `height`, in the pane's own coordinates. `yUp`: y grows upwards (AppKit); else downwards (GTK). Stroke each
+    /// with `stripeWidth(lineHeight:)` and clip to the pane.
+    public func stripes(origin: (x: Double, y: Double), width: Double, height: Double, lineHeight: Double,
+                        yUp: Bool) -> [Segment] {
+        guard width > 0, height > 0 else { return [] }
+        let angle = angleDegrees * .pi / 180, s = sin(angle), c = cos(angle)
+        let band = stripeWidth(lineHeight: lineHeight), period = 2 * band
+        // u: position across the bands, window coordinates. Lines of constant u run "/" in either y direction.
+        func u(_ x: Double, _ y: Double) -> Double { yUp ? x * s - y * c : x * s + y * c }
+        let corners = [(0.0, 0.0), (width, 0), (0, height), (width, height)].map { u($0.0 + origin.x, $0.1 + origin.y) }
+        let low = corners.min()!, high = corners.max()!
+        let reach = band // run the lines past the edges so the stroke covers the corners
+        let y0 = -reach, y1 = height + reach
+        var out: [Segment] = []
+        var k = ((low - band / 2) / period).rounded(.down) - 1
+        while k * period + band / 2 <= high + period {
+            let line = k * period + band / 2 - u(origin.x, origin.y) // the centre line in pane coordinates
+            func x(_ y: Double) -> Double { yUp ? (line + y * c) / s : (line - y * c) / s }
+            out.append(Segment(x0: x(y0), y0: y0, x1: x(y1), y1: y1))
+            k += 1
+        }
+        return out
     }
 
     /// Whether a "#rrggbb" (or "#rgb") background is dark: WCAG relative luminance under 0.4. Unparseable: dark
@@ -76,9 +103,5 @@ public struct BroadcastPattern: Equatable, Sendable {
         if s.count == 3 { s = s.map { "\($0)\($0)" }.joined() }
         guard s.count == 6, let v = UInt32(s, radix: 16) else { return nil }
         return (Double(v >> 16 & 0xff) / 255, Double(v >> 8 & 0xff) / 255, Double(v & 0xff) / 255)
-    }
-
-    static func format(_ v: Double) -> String {
-        v == v.rounded() ? String(Int(v)) : String(format: "%.2f", v)
     }
 }

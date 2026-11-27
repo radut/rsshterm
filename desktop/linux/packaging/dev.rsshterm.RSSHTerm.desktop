@@ -3,14 +3,20 @@ Type=Application
 Name=rSshTerm
 GenericName=Terminal
 Comment=Terminal tabs and splits with an encrypted SSH vault built in
-Exec=rsshterm
+Exec=rsshterm %U
+TryExec=rsshterm
 Icon=dev.rsshterm.RSSHTerm
 Terminal=false
 Categories=System;TerminalEmulator;GTK;
-Keywords=ssh;terminal;shell;vault;agent;console;
+Keywords=ssh;terminal;shell;vault;agent;console;command;prompt;
+MimeType=x-scheme-handler/ssh;
 StartupNotify=true
 StartupWMClass=dev.rsshterm.RSSHTerm
 DBusActivatable=false
+# xdg-terminal-exec (GNOME 46+, Files › Open in Terminal): how to pass a command and a folder.
+X-TerminalArgExec=-e
+X-TerminalArgDir=--working-directory=
+X-TerminalArgTitle=--title=
 Actions=new-window;
 
 [Desktop Action new-window]

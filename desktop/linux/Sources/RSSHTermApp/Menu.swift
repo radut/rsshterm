@@ -15,7 +15,7 @@ extension AppController {
         g_menu_append(main, "Rename Tab…", "app.rename-tab")
         g_menu_append(main, "Quick Connect…", "app.quick-connect")
         g_menu_append(main, "New Remote Desktop…", "app.new-remote-desktop")
-        g_menu_append(main, "Servers Sidebar (F9)", "app.toggle-sidebar")
+        g_menu_append(main, "Servers… (F9)", "app.toggle-sidebar")
         g_menu_append_section(menu, nil, cast(main))
 
         let broadcastMenu = g_menu_new()!
@@ -53,8 +53,8 @@ extension AppController {
 
     func addActions() {
         let actions: [(String, () -> Void)] = [
-            ("new-tab", { [unowned self] in activeWindow?.perform(.newTab) }),
-            ("new-window", { [unowned self] in openWindow() }),
+            ("new-tab", { [unowned self] in route(.newLocalTab) }),
+            ("new-window", { [unowned self] in route(.newLocalWindow) }),
             ("host-search", { [unowned self] in activeWindow?.perform(.hostSearch) }),
             ("jump", { [unowned self] in activeWindow?.perform(.jumpSwitcher) }),
             ("rename-tab", { [unowned self] in activeWindow?.perform(.renameTab) }),

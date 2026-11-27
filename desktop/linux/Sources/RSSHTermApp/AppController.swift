@@ -21,6 +21,16 @@ final class AppController {
     var keybindings = Keybindings.defaults(for: .linux)
 
     private(set) var vaultState = VaultState.loading
+    /// Something asked for the vault (Servers, a server, host search, a restored server pane): only then does the
+    /// master password dialog come up by itself. A plain launch opens a local shell and never asks.
+    private var vaultWanted = false
+    private var started = false
+    /// What to do once the vault opens (the request that needed it).
+    private var afterVaultOpens: [() -> Void] = []
+    /// The servers sidebar: hidden at launch (a terminal first), F9 or Servers… shows it.
+    var sidebarShown = false
+    /// The command line of the first launch (-e, --working-directory, ssh://), applied to the first window.
+    var launchArguments = TerminalArguments()
     var vault: Vault?
     private var session: VaultSession?
     private var needsMasterPassword = false
@@ -52,10 +62,12 @@ final class AppController {
     // MARK: Lifecycle
 
     func activate() {
-        guard windows.isEmpty else {
-            windows.last?.present()
+        guard !started else {
+            // Started already (the servers or files window kept the app alive): bring a terminal up.
+            if windows.isEmpty { openFromArguments() } else { windows.last?.present() }
             return
         }
+        started = true
         MainActorPump.install()
         addActions()
         gtk_window_set_default_icon_name("dev.rsshterm.RSSHTerm")
@@ -98,8 +110,9 @@ final class AppController {
         }
     }
 
-    func openWindow(restoring: Window? = nil) {
-        let w = MainWindow(app: self, gtkApp: gtkApp, restoring: restoring)
+    func openWindow(restoring: Window? = nil, first: PaneContent? = nil, title: String? = nil) {
+        let w = MainWindow(app: self, gtkApp: gtkApp,
+                           restoring: restoring ?? first.map { Window(tabs: [Tab(title: title, pane: Pane(content: $0))]) })
         windows.append(w)
         w.present()
         if let warning = secretsWarningShown { w.toast(warning) }
@@ -154,10 +167,10 @@ final class AppController {
         activeWindow?.toast(text)
     }
 
-    /// The badge of `id` was clicked.
+    /// The badge of `id` was clicked: the pane typed in stops the broadcast, another pane leaves it.
     func stopBroadcast(to id: PaneID) {
         let reached = focusedPaneID.map { broadcastTargets(from: $0) } ?? []
-        setBroadcast(broadcast.removing(id, reached: reached))
+        setBroadcast(broadcast.removing(id, reached: reached, source: focusedPaneID))
     }
 
     /// Panes closed or moved: drop gone panes from the hand-picked set, redraw the indicators.
@@ -179,14 +192,9 @@ final class AppController {
             }
         }
         let presets = BroadcastPresets.presets(for: focused, windows: allModels, visible: visiblePanes, hosts: hosts, groups: groups)
-        let rows: [(PaneID, String, String)] = allModels.enumerated().flatMap { wi, model in
-            model.tabs.enumerated().flatMap { ti, tab in
-                tab.panes.map { p in
-                    (p.id, pane(p.id)?.title ?? "Terminal",
-                     (windows.count > 1 ? "Window \(wi + 1) · " : "") + "Tab \(ti + 1)" + (hosts[p.id].map { " · \($0)" } ?? ""))
-                }
-            }
-        }
+        var states: [PaneID: PaneTitleState] = [:]
+        for id in allModels.flatMap({ $0.tabs.flatMap(\.paneIDs) }) { states[id] = pane(id)?.titleState }
+        let rows = titleContext.describePanes(windows: allModels, states: states, current: focused)
         let current: Set<PaneID> = broadcast.mode == .currentOnly ? [] : Set(broadcastTargets(from: focused))
         BroadcastPicker(presets: presets, panes: rows, checked: current, parent: window.window) { [unowned self] chosen in
             setBroadcast(broadcast.broadcasting(to: chosen))
@@ -218,11 +226,8 @@ final class AppController {
 
     func installCSS() {
         let provider = gtk_css_provider_new()
-        let hatch = BroadcastPattern.standard
         gtk_css_provider_load_from_string(provider, """
-            \(hatch.css(selector: ".broadcast-hatch.dark-bg", darkBackground: true))
-            \(hatch.css(selector: ".broadcast-hatch.light-bg", darkBackground: false))
-            .broadcast-badge { color: #e01b24; }
+            .broadcast-badge { color: #ff6b6b; min-width: 0; min-height: 0; padding: 3px 6px; border-radius: 7px; }
             .tab-strip .tab-item { padding: 2px 8px; border-radius: 8px; }
             .tab-strip .tab-item.selected-tab { background-color: alpha(currentColor, 0.12); }
             .file-pane { border: 2px solid transparent; border-radius: 6px; }
@@ -285,11 +290,90 @@ final class AppController {
         }
     }
 
+    /// A terminal first (docs/desktop/terminal-first.md): the restored windows or one local shell; a command line
+    /// (-e, --working-directory) opens just that.
     private func restoreOrOpen() {
-        if settings.restoreSession, let session = SessionStore.load(from: sessionURL) {
-            for window in session.windows { openWindow(restoring: window) }
+        if launchArguments.localContent != nil {
+            openFromArguments()
         } else {
-            openWindow()
+            let plan = LaunchPlan.make(restoreSession: settings.restoreSession,
+                                       saved: settings.restoreSession ? SessionStore.load(from: sessionURL) : nil)
+            for window in plan.windows { openWindow(restoring: window) }
+            vaultWanted = plan.needsVault
+        }
+        if let url = launchArguments.url { openSSHURL(url) }
+        launchArguments = TerminalArguments()
+    }
+
+    /// A window for the command line's tab (-e, --working-directory, -T), else a local shell.
+    private func openFromArguments() {
+        openWindow(first: launchArguments.localContent ?? .localShell(), title: launchArguments.title)
+        if let url = launchArguments.url { openSSHURL(url) }
+        launchArguments = TerminalArguments()
+    }
+
+    /// Ctrl+Shift+T / Ctrl+Shift+N / a server, from anywhere (the menu, D-Bus, another instance): the active window
+    /// as a tab, or a new window when there is none.
+    func route(_ request: TerminalRequest, title: String? = nil) {
+        let front = activeWindow.map { [ObjectIdentifier($0)] } ?? []
+        switch TerminalRouting.target(for: request, frontToBack: front) {
+        case .tab:
+            guard let w = activeWindow else { return }
+            if request == .newLocalTab { w.perform(.newTab) } else { w.openTab(TerminalRouting.content(of: request), title: title) }
+            w.present()
+        case .newWindow:
+            openWindow(first: TerminalRouting.content(of: request), title: title)
+        }
+    }
+
+    /// Another `rsshterm …` while this one runs (GApplication forwards its command line here): -e and
+    /// --working-directory open a tab, ssh:// opens that server, no arguments brings a window up (a new one if none).
+    func commandLine(_ arguments: [String], directory: String?) -> Int32 {
+        var parsed: TerminalArguments
+        do { parsed = try TerminalArguments.parse(arguments) } catch {
+            fputs("rsshterm: \(error.localizedDescription)\nusage: rsshterm [-e command [args…]] [--working-directory DIR] [-T title] [ssh://user@host:port]\n", stderr)
+            return 2
+        }
+        // `-e cmd` runs where the caller is, as GNOME Terminal and xterm do.
+        if parsed.command != nil, parsed.directory == nil { parsed.directory = directory }
+        guard !windows.isEmpty else {
+            launchArguments = parsed
+            activate()
+            return 0
+        }
+        if let content = parsed.localContent {
+            route(.open(content), title: parsed.title)
+        } else if let url = parsed.url {
+            openSSHURL(url)
+        } else {
+            windows.last?.present()
+        }
+        return 0
+    }
+
+    /// ssh://: a saved server, Quick Connect, or ssh in a local tab (no user and no matching server).
+    func openSSHURL(_ url: SSHURL) {
+        if url.username == nil, vault == nil, case .command(let argv) = url.opening(in: []) {
+            return route(.open(.localShell(command: argv)))
+        }
+        whenVaultOpens { [unowned self] in
+            switch url.opening(in: vault?.servers ?? []) {
+            case .server(let id): route(.open(.ssh(serverID: id)))
+            case .quickConnect(let address): if let w = activeWindow { showQuickConnect(over: w, address: address) }
+            case .command(let argv): route(.open(.localShell(command: argv)))
+            }
+        }
+    }
+
+    /// Runs `action` with the vault open: now, or after the unlock this starts (master password, set up, keyring).
+    func whenVaultOpens(_ action: @escaping () -> Void) {
+        guard vaultState != .opened else { return action() }
+        afterVaultOpens.append(action)
+        vaultWanted = true
+        switch vaultState {
+        case .none: setUpVault()
+        case .locked: needsMasterPassword ? askMasterPassword() : reunlock()
+        case .loading, .opened: break
         }
     }
 
@@ -396,7 +480,7 @@ final class AppController {
             case .success(.needsMasterPassword):
                 needsMasterPassword = true
                 setVaultState(.locked)
-                askMasterPassword()
+                if vaultWanted { askMasterPassword() }
             case .success(.opened(let v)):
                 activateVault(v)
             case .failure(let error):
@@ -412,6 +496,7 @@ final class AppController {
     }
 
     func bannerAction(from window: MainWindow) {
+        vaultWanted = true
         switch vaultState {
         case .none: setUpVault()
         case .locked: needsMasterPassword ? askMasterPassword() : reunlock()
@@ -520,6 +605,9 @@ final class AppController {
             activeWindow?.toast("\(skipped.count) key(s) not offered to ssh: see Keys.")
         }
         offerInclude()
+        let pending = afterVaultOpens
+        afterVaultOpens = []
+        pending.forEach { $0() }
     }
 
     // MARK: Servers and files (RSSHDesktopCore models)
@@ -555,7 +643,7 @@ final class AppController {
     }
 
     func showCommander(at target: OpenHere.Target? = nil) {
-        guard let places else { return activeWindow?.toast("Unlock the vault to open the file manager.") ?? () }
+        guard let places else { return whenVaultOpens { [unowned self] in showCommander(at: target) } }
         let window = commanderWindow ?? CommanderWindow(app: self, places: places)
         commanderWindow = window
         window.present()
@@ -588,7 +676,11 @@ final class AppController {
     }
 
     func showQuickConnect(over window: MainWindow, address: QuickAddress? = nil) {
-        guard let document else { return window.toast("Unlock the vault first.") }
+        guard let document else {
+            return whenVaultOpens { [unowned self, weak window] in
+                if let window { showQuickConnect(over: window, address: address) }
+            }
+        }
         QuickConnectDialog(model: QuickConnectModel(document: document, address: address), window: window).present()
     }
 
@@ -748,8 +840,8 @@ final class AppController {
 
     func showHostSearch(over window: MainWindow) {
         guard let vault else {
-            window.toast(vaultState == .loading ? "Opening the vault…" : "Unlock the vault to search its servers.")
-            return
+            if vaultState == .loading { window.toast("Opening the vault…") }
+            return whenVaultOpens { [unowned self, weak window] in if let window { showHostSearch(over: window) } }
         }
         HostSearchDialog.present(servers: vault.servers, groups: vault.groups, desktops: vault.remoteDesktops, over: window)
     }
@@ -758,7 +850,7 @@ final class AppController {
 
     func showKeys() {
         guard let window = activeWindow else { return }
-        guard let vault else { return window.toast("Unlock the vault to see its keys.") }
+        guard let vault else { return whenVaultOpens { [unowned self] in showKeys() } }
         guard let document else { return }
         KeysDialog(app: self, model: CredentialsModel(document: document), parent: window.window).present()
     }

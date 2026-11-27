@@ -1,0 +1,9 @@
+#!/bin/sh
+# Removes rsshterm from the x-terminal-emulator choices (an upgrade keeps it).
+set -e
+
+if [ "$1" = remove ] || [ "$1" = deconfigure ]; then
+  update-alternatives --remove x-terminal-emulator /usr/bin/rsshterm
+fi
+
+exit 0

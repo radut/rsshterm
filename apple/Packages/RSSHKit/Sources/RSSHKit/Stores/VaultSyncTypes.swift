@@ -4,9 +4,24 @@ import Foundation
 /// agreed with the others. A store whose revision differs now was changed since (by this or another device).
 public struct SyncState: Codable, Hashable, Sendable {
     public var revisions: [String: String]
+    /// Stores that did not take the newest envelope (a write refused as a conflict, or failed) while other stores did:
+    /// they are behind the stores that hold it. If one of them is changed by another device before it catches up, that
+    /// device never saw the newest envelope, so the next sync reports a conflict instead of letting either overwrite
+    /// the other. Cleared for a store once it holds the envelope the others hold.
+    public var behind: Set<String>
 
-    public init(revisions: [String: String] = [:]) {
+    public init(revisions: [String: String] = [:], behind: Set<String> = []) {
         self.revisions = revisions
+        self.behind = behind
+    }
+
+    private enum CodingKeys: String, CodingKey { case revisions, behind }
+
+    /// A state saved before `behind` existed has none.
+    public init(from decoder: any Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        revisions = try c.decode([String: String].self, forKey: .revisions)
+        behind = try c.decodeIfPresent(Set<String>.self, forKey: .behind) ?? []
     }
 }
 

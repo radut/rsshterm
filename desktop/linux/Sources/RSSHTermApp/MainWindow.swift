@@ -64,7 +64,7 @@ final class MainWindow {
         adw_header_bar_pack_start(cast(header), iconButton("list-add-symbolic", tooltip: "New Tab (Ctrl+Shift+T)") { [unowned self] in
             perform(.newTab)
         })
-        adw_header_bar_pack_start(cast(header), iconButton("sidebar-show-symbolic", tooltip: "Servers (F9)") { [unowned self] in
+        adw_header_bar_pack_start(cast(header), iconButton("sidebar-show-symbolic", tooltip: "Servers… (F9)") { [unowned self] in
             toggleSidebar()
         })
         adw_header_bar_pack_start(cast(header), iconButton("system-search-symbolic", tooltip: "Search Hosts (Ctrl+Shift+K)") { [unowned self] in
@@ -116,7 +116,7 @@ final class MainWindow {
         sidebar = s
         gtk_paned_set_start_child(cast(split), s.widget)
         gtk_paned_set_position(cast(split), 280)
-        gtk_widget_set_visible(s.widget, app.settings.showSidebar ? 1 : 0)
+        gtk_widget_set_visible(s.widget, app.sidebarShown ? 1 : 0)
     }
 
     func newServer() { sidebar?.newServer(inGroup: nil) }
@@ -132,12 +132,23 @@ final class MainWindow {
         gtk_paned_set_start_child(cast(split), nil)
     }
 
+    /// F9 / Servers…: the servers sidebar (the vault opens first when it is locked).
     func toggleSidebar() {
-        guard let sidebar else { return toast("Unlock the vault to see its servers.") }
-        let show = gtk_widget_get_visible(sidebar.widget) == 0
-        gtk_widget_set_visible(sidebar.widget, show ? 1 : 0)
-        app.settings.showSidebar = show
-        app.saveSettings()
+        guard let sidebar else { return app.whenVaultOpens { [weak self] in self?.setSidebar(visible: true) } }
+        setSidebar(visible: gtk_widget_get_visible(sidebar.widget) == 0)
+    }
+
+    func setSidebar(visible: Bool) {
+        guard let sidebar else { return }
+        gtk_widget_set_visible(sidebar.widget, visible ? 1 : 0)
+        app.sidebarShown = visible
+        present()
+    }
+
+    /// A new tab running `content` (a server, a command, a shell in a folder).
+    func openTab(_ content: PaneContent, title: String? = nil) {
+        guard let model else { return }
+        setModel(model.addingTab(Tab(title: title, pane: Pane(content: content))))
     }
 
     var sidebarWidget: Widget? { sidebar?.widget }
@@ -151,7 +162,7 @@ final class MainWindow {
         guard let model else { return }
         switch action {
         case .hostSearch, .commandPalette: app.showHostSearch(over: self)
-        case .newWindow: app.openWindow()
+        case .newWindow: app.route(.newLocalWindow)
         case .jumpSwitcher: app.showJumpSwitcher(over: self)
         case .renameTab: renameSelectedTab()
         case .broadcastCurrentOnly, .broadcastAllTabs, .broadcastCurrentTab, .broadcastVisible, .toggleBroadcastSession:
@@ -251,7 +262,8 @@ final class MainWindow {
         guard let model else { return }
         let focused = app.activeWindow === self ? model.selectedTab.focused : app.focusedPaneID
         for (id, pane) in panes {
-            pane.setReceiving(app.isReceiving(id, focused: focused), indicator: app.settings.broadcastIndicator)
+            pane.setReceiving(app.isReceiving(id, focused: focused), source: id == focused,
+                              indicator: app.settings.broadcastIndicator)
         }
         updateTitles()
     }
@@ -637,15 +649,28 @@ final class MainWindow {
         for pane in panes.values { pane.apply(app.settings, dark: app.isDark) }
     }
 
+    /// Every pane on screen whose stripes show has them filling exactly its own allocation, at its own place in
+    /// the window (the smoke test).
+    var hatchesFit: Bool {
+        guard let model else { return true }
+        return model.selectedTab.visibleFrames.keys.allSatisfy { id in
+            guard let g = panes[id]?.hatchGeometry, g.visible else { return true }
+            return g.width == g.paneWidth && g.height == g.paneHeight
+        }
+    }
+
     /// What the smoke test reads: tabs, panes per tab, the focused pane's text.
     func snapshot() -> [String: Any] {
         guard let model else { return ["tabs": 0] }
         return [
             "tabs": model.tabs.count,
             "selected": model.selectedIndex,
+            "sidebarVisible": sidebar.map { gtk_widget_get_visible($0.widget) != 0 } ?? false,
             "panes": model.tabs.map(\.panes.count),
             "broadcast": "\(app.broadcast.mode)",
             "receiving": model.tabs.flatMap(\.paneIDs).filter { app.isReceiving($0, focused: model.selectedTab.focused) }.count,
+            "everyPaneStriped": model.tabs.flatMap(\.paneIDs).allSatisfy { app.isReceiving($0, focused: model.selectedTab.focused) },
+            "hatchesFit": hatchesFit,
             "focusedTitle": focusedPane?.title ?? "",
             "tabTitles": tabLabels.map(\.title),
             "tabSubtitles": tabLabels.map(\.subtitle),

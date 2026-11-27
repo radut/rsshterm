@@ -22,7 +22,7 @@ public struct AppSettings: Codable, Equatable, Sendable {
     public var lastUpdateCheck: Date?
     /// Reopen the windows, tabs and splits of the last run (local shells in their last directory).
     public var restoreSession = true
-    /// Striped frame around panes that get broadcast input (the badge shows either way).
+    /// Striped background on every pane in the broadcast, the one typed in too (the badge shows either way).
     public var broadcastIndicator = true
     /// The server sidebar is shown (F9 toggles).
     public var showSidebar = true

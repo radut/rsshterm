@@ -32,13 +32,14 @@ final class TerminalPane {
     /// What goes into the split tree: a GtkOverlay with the terminal and the broadcast badge.
     let container: Widget
     private let badge: Widget
-    /// The broadcast hatch over the whole terminal (an overlay child that never takes clicks).
+    /// The broadcast stripes over the whole terminal: a drawing area (an overlay child that never takes clicks)
+    /// filling the pane, clipped to it, its bands anchored to the window so they run on across dividers.
     private let hatch: Widget
     /// The terminal background is dark (the hatch uses the stronger opacity).
     private var darkBackground = true
     /// Right click on the terminal (x, y in the terminal).
     var onContextMenu: ((Double, Double) -> Void)?
-    /// Clicking the badge takes this pane out of the broadcast.
+    /// Clicking the badge takes this pane out of the broadcast (on the pane typed in: stops broadcasting).
     var onBadgeClicked: (() -> Void)?
     /// While true, `commit` does not broadcast (input this pane got from a broadcast or a broadcast paste).
     var suppressBroadcast = false
@@ -55,8 +56,8 @@ final class TerminalPane {
         g_object_ref_sink(widget.gptr)
         container = gtk_overlay_new()
         g_object_ref_sink(container.gptr)
-        badge = gtk_button_new_from_icon_name("network-transmit-receive-symbolic")
-        hatch = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0)
+        badge = gtk_button_new_from_icon_name(ConnectIcons.broadcastIconName)
+        hatch = gtk_drawing_area_new()
         switch plan {
         case .success(let p)?: title = p.title
         case .failure?: title = "Error"
@@ -67,20 +68,23 @@ final class TerminalPane {
         gtk_overlay_set_child(cast(container), widget)
         gtk_widget_set_can_target(hatch, 0)
         gtk_widget_set_can_focus(hatch, 0)
-        gtk_widget_add_css_class(hatch, "broadcast-hatch")
+        gtk_widget_set_hexpand(hatch, 1)
+        gtk_widget_set_vexpand(hatch, 1)
+        gtk_widget_set_overflow(hatch, GTK_OVERFLOW_HIDDEN)
         gtk_widget_set_visible(hatch, 0)
         gtk_overlay_add_overlay(cast(container), hatch)
         gtk_widget_set_halign(badge, GTK_ALIGN_END)
         gtk_widget_set_valign(badge, GTK_ALIGN_START)
         gtk_widget_set_margin_top(badge, 6)
         gtk_widget_set_margin_end(badge, 6)
-        gtk_widget_set_tooltip_text(badge, "Receiving broadcast input: click to stop for this pane")
-        for c in ["broadcast-badge", "circular", "osd"] { gtk_widget_add_css_class(badge, c) }
+        gtk_widget_set_tooltip_text(badge, Self.badgeTip(source: false))
+        for c in ["broadcast-badge", "osd"] { gtk_widget_add_css_class(badge, c) }
         gtk_widget_set_visible(badge, 0)
         gtk_overlay_add_overlay(cast(container), badge)
         vte_terminal_set_mouse_autohide(terminal, 1)
         vte_terminal_set_bold_is_bright(terminal, 1)
         apply(settings, dark: dark)
+        setDrawFunc(hatch) { [weak self] cr, w, h in self?.drawHatch(cr, width: Double(w), height: Double(h)) }
 
         onInt(widget, "child-exited") { [weak self] status in
             guard let self else { return }
@@ -148,17 +152,52 @@ final class TerminalPane {
         g_object_unref(container.gptr)
     }
 
-    /// The striped background (`BroadcastPattern` over the whole terminal) and badge of a pane that gets broadcast
-    /// input (`indicator` off: the badge only).
-    func setReceiving(_ receiving: Bool, indicator: Bool) {
+    /// The striped background and badge of a pane in the broadcast (`indicator` off: the badge only). `source`:
+    /// the pane typed in, whose badge stops broadcasting.
+    func setReceiving(_ receiving: Bool, source: Bool = false, indicator: Bool) {
         gtk_widget_set_visible(badge, receiving ? 1 : 0)
+        gtk_widget_set_tooltip_text(badge, Self.badgeTip(source: source))
         gtk_widget_set_visible(hatch, receiving && indicator ? 1 : 0)
-        updateHatchTone()
+        gtk_widget_queue_draw(hatch) // the pane may have moved in the window: the bands' phase follows
     }
 
-    private func updateHatchTone() {
-        gtk_widget_remove_css_class(hatch, darkBackground ? "light-bg" : "dark-bg")
-        gtk_widget_add_css_class(hatch, darkBackground ? "dark-bg" : "light-bg")
+    static func badgeTip(source: Bool) -> String {
+        source ? "Broadcasting from this pane: click to stop broadcasting"
+            : "In the broadcast: click to stop sending to this pane"
+    }
+
+    /// Where the stripes are and how big (the smoke test checks they fill the pane): the hatch's allocation, its
+    /// origin in the window, and the pane's size.
+    var hatchGeometry: (visible: Bool, x: Double, y: Double, width: Int32, height: Int32, paneWidth: Int32, paneHeight: Int32) {
+        let origin = windowOrigin(of: hatch)
+        return (gtk_widget_get_visible(hatch) != 0, origin.x, origin.y, gtk_widget_get_width(hatch),
+                gtk_widget_get_height(hatch), gtk_widget_get_width(container), gtk_widget_get_height(container))
+    }
+
+    private func windowOrigin(of w: Widget) -> (x: Double, y: Double) {
+        guard let root = gtk_widget_get_root(w) else { return (0, 0) }
+        var from = graphene_point_t(x: 0, y: 0), to = graphene_point_t(x: 0, y: 0)
+        guard gtk_widget_compute_point(w, cast(root), &from, &to) != 0 else { return (0, 0) }
+        return (Double(to.x), Double(to.y))
+    }
+
+    /// The bands over this pane: `BroadcastPattern` in the hatch's own allocation, phase from its place in the
+    /// window, band width from the font's line height.
+    private func drawHatch(_ cr: OpaquePointer?, width: Double, height: Double) {
+        guard let cr else { return }
+        let look = BroadcastPattern.standard
+        let tone = look.tone(darkBackground: darkBackground)
+        let line = Double(vte_terminal_get_char_height(terminal))
+        let origin = windowOrigin(of: hatch)
+        cairo_rectangle(cr, 0, 0, width, height)
+        cairo_clip(cr)
+        cairo_set_source_rgba(cr, tone.red, tone.green, tone.blue, tone.opacity)
+        cairo_set_line_width(cr, look.stripeWidth(lineHeight: line))
+        for seg in look.stripes(origin: origin, width: width, height: height, lineHeight: line, yUp: false) {
+            cairo_move_to(cr, seg.x0, seg.y0)
+            cairo_line_to(cr, seg.x1, seg.y1)
+        }
+        cairo_stroke(cr)
     }
 
     /// Font, scrollback and colours from the settings: the server's theme, else the black default theme, else (style
@@ -176,14 +215,14 @@ final class TerminalPane {
             _ = gdk_rgba_parse(&bg, dark ? "#1e1f22" : "#fbfbfb")
             vte_terminal_set_colors(terminal, &fg, &bg, nil, 0)
             darkBackground = dark
-            updateHatchTone()
+            gtk_widget_queue_draw(hatch)
             return
         }
         // The server's theme: its 16 ANSI colours, foreground, background, cursor.
         _ = gdk_rgba_parse(&fg, scheme.foreground)
         _ = gdk_rgba_parse(&bg, scheme.background)
         darkBackground = BroadcastPattern.isDark(hex: scheme.background)
-        updateHatchTone()
+        gtk_widget_queue_draw(hatch)
         var palette = scheme.ansi.prefix(16).map { hex -> GdkRGBA in
             var c = GdkRGBA()
             _ = gdk_rgba_parse(&c, hex)

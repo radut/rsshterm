@@ -7,14 +7,19 @@ public struct VaultConfig: Codable, Hashable, Sendable {
     /// "Sync with iCloud Keychain": the vault key is also wrapped by a key in iCloud Keychain, so the user's other
     /// Apple devices can open the vault. On unless the user turned it off.
     public var iCloudKeychain: Bool
+    /// "Show servers before unlocking": the list's names, addresses, ports, users and folders are kept on this device
+    /// (`ServerListCache`, sealed with a device-only key) and drawn at launch before Face ID; secrets still need the
+    /// unlock. On unless the user turned it off.
+    public var showServersBeforeUnlock: Bool
 
-    public init(faceIDLock: Bool = true, iCloudKeychain: Bool = true) {
+    public init(faceIDLock: Bool = true, iCloudKeychain: Bool = true, showServersBeforeUnlock: Bool = true) {
         self.faceIDLock = faceIDLock
         self.iCloudKeychain = iCloudKeychain
+        self.showServersBeforeUnlock = showServersBeforeUnlock
     }
 
     private enum CodingKeys: String, CodingKey {
-        case faceIDLock, iCloudKeychain
+        case faceIDLock, iCloudKeychain, showServersBeforeUnlock
     }
 
     /// Missing keys take their defaults, so settings saved by an older build still load; the retired cloud KMS and
@@ -22,7 +27,8 @@ public struct VaultConfig: Codable, Hashable, Sendable {
     public init(from decoder: Decoder) throws {
         let c = try decoder.container(keyedBy: CodingKeys.self)
         self.init(faceIDLock: try c.decodeIfPresent(Bool.self, forKey: .faceIDLock) ?? true,
-                  iCloudKeychain: try c.decodeIfPresent(Bool.self, forKey: .iCloudKeychain) ?? true)
+                  iCloudKeychain: try c.decodeIfPresent(Bool.self, forKey: .iCloudKeychain) ?? true,
+                  showServersBeforeUnlock: try c.decodeIfPresent(Bool.self, forKey: .showServersBeforeUnlock) ?? true)
     }
 
     /// Shown when the Keychain refuses even this device's key, so no vault can be made.

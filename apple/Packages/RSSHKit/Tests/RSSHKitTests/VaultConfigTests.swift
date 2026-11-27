@@ -16,6 +16,14 @@ import Testing
         #expect(old == VaultConfig(faceIDLock: false, iCloudKeychain: true))
     }
 
+    @Test func showServersBeforeUnlockIsOnByDefaultAndKeptWhenOff() throws {
+        #expect(VaultConfig().showServersBeforeUnlock)
+        let old = try JSONDecoder().decode(VaultConfig.self, from: Data(#"{"faceIDLock":true}"#.utf8))
+        #expect(old.showServersBeforeUnlock)
+        let off = VaultConfig(showServersBeforeUnlock: false)
+        #expect(try JSONDecoder().decode(VaultConfig.self, from: JSONEncoder().encode(off)) == off)
+    }
+
     @Test func persistsInUserDefaults() throws {
         let suite = "rssh.tests.\(UUID().uuidString)"
         let defaults = try #require(UserDefaults(suiteName: suite))

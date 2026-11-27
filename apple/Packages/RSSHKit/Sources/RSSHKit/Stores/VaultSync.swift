@@ -7,6 +7,12 @@ import Foundation
 /// stores disagree, that is a conflict: nothing is written and the caller lets the user pick (`resolve`). Otherwise
 /// the newest changed envelope (or, with no change, the newest of all) wins and is written, with `ifMatch`, to every
 /// store that holds something else. A failing store is reported and skipped; the others still sync.
+///
+/// Two rules keep one device's edit from being written over by another device's (a lost update):
+/// - a store that missed a write the others took (`SyncState.behind`) and was changed meanwhile was written by a
+///   device that never saw that write: a conflict with the stores holding it;
+/// - the winner never replaces an envelope with the same or a higher vault revision and other contents (two devices
+///   saved from the same base): a conflict too.
 public enum VaultSync {
     public static func sync(_ stores: [any VaultStore], state: SyncState) async -> SyncReport {
         let snapshots = await loadAll(stores)
@@ -19,8 +25,24 @@ public enum VaultSync {
         if Set(changed.map(\.data)).count > 1 {
             return conflictReport(stores, snapshots, changed: changed, state: state)
         }
+        // The stores that took the last write while others missed it, and still hold it.
+        let holders = state.behind.isEmpty ? [] : present.filter { candidate in
+            !state.behind.contains(candidate.storeID) && !changed.contains { $0.storeID == candidate.storeID }
+        }
+        if let edit = holders.first {
+            let overwritten = changed.filter { state.behind.contains($0.storeID) && $0.data != edit.data }
+            if !overwritten.isEmpty {
+                return conflictReport(stores, snapshots, changed: inStoreOrder(holders + overwritten, stores), state: state)
+            }
+        }
         // max(by:) keeps the first of equals, so ties go to the earlier store.
-        let winner = (changed.isEmpty ? present : changed).max { ($0.updatedAt ?? .distantPast) < ($1.updatedAt ?? .distantPast) }!
+        let winner = changed.isEmpty
+            ? (holders.first ?? present.max { ($0.updatedAt ?? .distantPast) < ($1.updatedAt ?? .distantPast) }!)
+            : changed.max { ($0.updatedAt ?? .distantPast) < ($1.updatedAt ?? .distantPast) }!
+        let diverged = present.filter { isDiverged($0, from: winner) }
+        if !diverged.isEmpty {
+            return conflictReport(stores, snapshots, changed: inStoreOrder([winner] + diverged, stores), state: state)
+        }
         var next = state
         var results: [StoreSyncResult] = []
         for (store, snapshot) in zip(stores, snapshots) {
@@ -28,7 +50,36 @@ public enum VaultSync {
             if let revision = result.revision { next.revisions[store.id] = revision }
             results.append(result)
         }
+        next.behind = missed(results)
         return SyncReport(winner: winner, results: results, conflict: nil, state: next)
+    }
+
+    /// Whether `other` holds another device's save that `winner` was not built on: other contents with the same or a
+    /// higher vault revision. Envelopes without a revision (before it existed) are never judged this way.
+    static func isDiverged(_ other: SyncCandidate, from winner: SyncCandidate) -> Bool {
+        guard other.data != winner.data, let theirs = vaultRevision(other.data),
+              let ours = vaultRevision(winner.data) else { return false }
+        return theirs >= ours
+    }
+
+    static func vaultRevision(_ data: Data) -> UInt64? {
+        (try? JSONDecoder().decode(VaultEnvelope.self, from: data))?.revision
+    }
+
+    /// Stores that did not end up holding what was written: they are behind the others.
+    private static func missed(_ results: [StoreSyncResult]) -> Set<String> {
+        let wrote = results.contains { $0.status == .updated || $0.status == .upToDate }
+        guard wrote else { return [] }
+        return Set(results.filter { result in
+            switch result.status {
+            case .conflicted, .failed: true
+            case .empty, .upToDate, .updated, .pending: false
+            }
+        }.map(\.storeID))
+    }
+
+    private static func inStoreOrder(_ candidates: [SyncCandidate], _ stores: [any VaultStore]) -> [SyncCandidate] {
+        stores.compactMap { store in candidates.first { $0.storeID == store.id } }
     }
 
     /// Writes new envelope bytes (a local edit) to every store, each guarded by its revision in `state`.
@@ -48,6 +99,8 @@ public enum VaultSync {
             if let revision = result.revision { report.state.revisions[store.id] = revision }
             if let conflict { report.conflict = conflict }
         }
+        // Nothing written anywhere: no store is ahead of another because of this edit.
+        if report.results.contains(where: { $0.status == .updated }) { report.state.behind = missed(report.results) }
         return report
     }
 
@@ -60,6 +113,7 @@ public enum VaultSync {
                                in stores: [any VaultStore]) async -> SyncReport {
         var report = await write(candidate.data, to: stores, state: SyncState(revisions: conflict.currentRevisions),
                                  holder: candidate.storeID)
+        report.state.behind = missed(report.results)
         report.winner = candidate
         return report
     }

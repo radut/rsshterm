@@ -400,3 +400,19 @@ func onKeyReleased(_ controller: (any GPtr)?, _ handler: @escaping KeyUpHandler)
     }
     return connect(controller, "key-released", unsafeBitCast(cb, to: GCallback.self), retained(handler))
 }
+
+// MARK: - Drawing
+
+typealias DrawHandler = @MainActor (OpaquePointer?, Int32, Int32) -> Void
+
+/// GtkDrawingArea's draw function (cairo_t, width, height); the closure is released with the area.
+func setDrawFunc(_ area: Widget, _ handler: @escaping DrawHandler) {
+    let cb: @convention(c) (UnsafeMutablePointer<GtkDrawingArea>?, OpaquePointer?, Int32, Int32, gpointer?) -> Void = {
+        _, cr, w, h, data in onGTK { (unbox(data) as DrawHandler)(cr, w, h) }
+    }
+    let release: GDestroyNotify = { data in
+        guard let data else { return }
+        Unmanaged<AnyObject>.fromOpaque(data).release()
+    }
+    gtk_drawing_area_set_draw_func(cast(area), cb, retained(handler), release)
+}

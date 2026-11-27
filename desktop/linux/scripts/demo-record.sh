@@ -3,6 +3,7 @@
 # Demo data only: a vault with example.com servers; web1.example.com is this container's own sshd (/etc/hosts).
 # Clips (MP4, cropped to the window) and stills go to $OUT (default ./out/demo):
 #   splits     Ctrl+Shift+E / Ctrl+Shift+O splits, Alt+arrows, broadcast input on and off (Ctrl+Shift+I)
+#   stills     broadcast-side / -stacked / -2x2: every pane in the broadcast striped, bands running on across dividers
 #   search     Ctrl+Shift+K host search -> an SSH tab that logs in with the vault key through the built-in agent
 #   jump       Ctrl+1..9 between tabs, Ctrl+Shift+J jump switcher
 set -eu
@@ -125,7 +126,7 @@ keys alt+Left
 keys ctrl+shift+i
 wait_for "broadcast on" '"broadcast":"allTabs"'
 typeline 'echo typed once, runs in every pane'
-sleep 2   # the striped background on the receiving panes stays on screen a moment
+sleep 2   # the stripes on every pane in the broadcast stay on screen a moment
 still splits-broadcast
 keys ctrl+shift+i
 wait_for "broadcast off" '"broadcast":"currentOnly"'
@@ -162,6 +163,37 @@ keys Return
 wait_for "jumped" '"selected":1'
 sleep 0.8
 stop jump
+
+echo "== stills: every pane in the broadcast striped, side by side, stacked and 2x2"
+layout_still() { # <name>: broadcast on, type once, still, broadcast off
+    keys ctrl+shift+i
+    wait_for "broadcast on ($1)" '"broadcast":"allTabs"'
+    wait_for "every pane striped ($1)" '"everyPaneStriped":true'
+    wait_for "stripes fill each pane ($1)" '"hatchesFit":true'
+    typeline 'echo typed once, runs in every pane'
+    sleep 1.5
+    still "$1"
+    keys ctrl+shift+i
+    wait_for "broadcast off ($1)" '"broadcast":"currentOnly"'
+}
+keys ctrl+3
+wait_for "tab 3" '"selected":2'
+keys ctrl+shift+e
+wait_for "side by side" '"panes":\[3,1,2\]'
+layout_still broadcast-side
+keys ctrl+shift+t
+wait_for "fourth tab" '"tabs":4'
+keys ctrl+shift+o
+wait_for "stacked" '"panes":\[3,1,2,2\]'
+layout_still broadcast-stacked
+keys ctrl+shift+t
+wait_for "fifth tab" '"tabs":5'
+keys ctrl+shift+e
+keys ctrl+shift+o
+keys alt+Left
+keys ctrl+shift+o
+wait_for "2x2" '"panes":\[3,1,2,2,4\]'
+layout_still broadcast-2x2
 
 kill "$APP" 2>/dev/null; wait "$APP" 2>/dev/null || true
 kill "$XVFB" 2>/dev/null || true

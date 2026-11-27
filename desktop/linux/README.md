@@ -51,8 +51,10 @@ apt), `xdg-utils` (Google sign-in opens the browser).
 - Broadcast input (core `BroadcastState`): Ctrl+Shift+I toggles all panes of the window's tabs; Ctrl+Shift+Alt+I
   opens the picker (presets: this tab, all tabs, visible, all windows, same host, same server group; checkboxes,
   filter, Enter starts); Main Menu › Broadcast Input has every mode (current only, current tab, visible, toggle
-  this session). Typing and paste reach every target (a multi-line paste into several panes asks first); receiving
-  panes get red stripes (Preferences can hide them) and a badge that takes the pane out.
+  this session). Typing and paste reach every target (a multi-line paste into several panes asks first); every pane
+  in the broadcast, the one typed in too, gets wide deep-red stripes drawn with cairo, anchored to the window so they
+  run on across dividers (Preferences can hide them), and a broadcast badge: on another pane it takes that pane out,
+  on the pane typed in it stops broadcasting. The picker groups panes by window and tab, named like their tabs.
 - Session restore (Preferences, on by default): windows, tabs, splits and their sizes, manual tab titles, SSH panes
   and each local shell's directory (OSC 7, else /proc/<pid>/cwd) in `$XDG_STATE_HOME/rssh/session.json`, saved a
   second after a layout change, every 5 s and on quit/SIGTERM; SSH panes restored before the vault opens wait for it. Ctrl+Shift+C/V copy/paste. Ctrl+Shift+R renames the tab (empty = automatic title; also in the tab

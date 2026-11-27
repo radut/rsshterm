@@ -1,0 +1,10 @@
+#!/bin/sh
+# Offers rsshterm as an x-terminal-emulator (Debian's system-wide terminal), below GNOME Terminal and Konsole (40),
+# so installing it never takes that choice over: `sudo update-alternatives --config x-terminal-emulator` picks it.
+set -e
+
+if [ "$1" = configure ]; then
+  update-alternatives --install /usr/bin/x-terminal-emulator x-terminal-emulator /usr/bin/rsshterm 30
+fi
+
+exit 0

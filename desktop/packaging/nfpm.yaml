@@ -60,3 +60,7 @@ contents:
   - src: desktop/packaging/THIRD_PARTY_NOTICES
     dst: /usr/share/doc/rsshterm/THIRD_PARTY_NOTICES
     file_info: { mode: 0644 }
+# x-terminal-emulator alternative (priority 30, below GNOME Terminal): added on configure, removed on remove.
+scripts:
+  postinstall: desktop/packaging/deb/postinst
+  preremove: desktop/packaging/deb/prerm

@@ -32,6 +32,17 @@ public enum ConnectIcons {
         return "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"#2e3436\">\(body)</svg>\n"
     }
 
+    /// The broadcast badge: a dot with radio waves on both sides (SF Symbol dot.radiowaves.left.and.right).
+    public static let broadcastIconName = "rssh-broadcast-symbolic"
+
+    public static let broadcastSVG = """
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none" \
+        stroke="#2e3436" stroke-width="1.5" stroke-linecap="round"><circle cx="8" cy="8" r="1.75" fill="#2e3436" \
+        stroke="none"/><path d="M5.2 5.2a4 4 0 0 0 0 5.6M10.8 5.2a4 4 0 0 1 0 5.6M3 3a7.1 7.1 0 0 0 0 10M13 3a7.1 7.1 0 0 1 \
+        0 10"/></svg>
+
+        """
+
     /// Writes the icons under `root` (hicolor/scalable/actions/<name>.svg) and returns `root` for
     /// gtk_icon_theme_add_search_path. Rewrites a file only when its content differs.
     @discardableResult
@@ -43,6 +54,8 @@ public enum ConnectIcons {
             let data = Data(svg(for: service).utf8)
             if (try? Data(contentsOf: file)) != data { try data.write(to: file, options: .atomic) }
         }
+        let badge = dir.appendingPathComponent("\(broadcastIconName).svg"), data = Data(broadcastSVG.utf8)
+        if (try? Data(contentsOf: badge)) != data { try data.write(to: badge, options: .atomic) }
         return root
     }
 

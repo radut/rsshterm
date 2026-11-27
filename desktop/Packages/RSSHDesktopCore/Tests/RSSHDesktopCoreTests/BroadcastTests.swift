@@ -53,6 +53,49 @@ import Testing
         #expect(state.mode == .currentOnly)
     }
 
+    /// Every pane the input reaches is striped, the one typed in included (iTerm2, Termius); nothing when the input
+    /// reaches one pane only.
+    @Test func everyPaneInTheBroadcastIsStripedTheSourceIncluded() {
+        let (windows, p) = layout()
+        let tab = BroadcastState().applying(.broadcastCurrentTab, focused: p[0])
+        #expect(tab.isReceiving(p[0], windows: windows, visible: [], focused: p[0]))
+        #expect(tab.isReceiving(p[1], windows: windows, visible: [], focused: p[0]))
+        #expect(!tab.isReceiving(p[2], windows: windows, visible: [], focused: p[0]))
+        // Alone in its tab: one target, no stripes.
+        #expect(!tab.isReceiving(p[2], windows: windows, visible: [], focused: p[2]))
+        let all = BroadcastState().applying(.broadcastAllTabs, focused: p[0])
+        #expect([p[0], p[1], p[2]].allSatisfy { all.isReceiving($0, windows: windows, visible: [], focused: p[1]) })
+        #expect(!all.isReceiving(p[3], windows: windows, visible: [], focused: p[1]))
+        #expect(!all.isReceiving(p[3], windows: windows, visible: [], focused: p[3])) // window 2 has one pane
+        #expect(!BroadcastState().isReceiving(p[0], windows: windows, visible: Set(p), focused: p[0]))
+    }
+
+    @Test func manualAndVisibleStripeTheSourceEvenOutsideTheSet() {
+        let (windows, p) = layout()
+        let manual = BroadcastState().broadcasting(to: [p[1], p[3]])
+        // Typing in p0 (not picked): the input goes to p0, p1, p3, so all three are striped.
+        #expect([p[0], p[1], p[3]].allSatisfy { manual.isReceiving($0, windows: windows, visible: [], focused: p[0]) })
+        #expect(!manual.isReceiving(p[2], windows: windows, visible: [], focused: p[0]))
+        // One pane picked and typed in: it is the only target, no stripes.
+        let one = BroadcastState().broadcasting(to: [p[1]])
+        #expect(!one.isReceiving(p[1], windows: windows, visible: [], focused: p[1]))
+        #expect(one.isReceiving(p[1], windows: windows, visible: [], focused: p[0]))
+        let visible = BroadcastState().applying(.broadcastVisible, focused: p[0])
+        #expect(visible.isReceiving(p[2], windows: windows, visible: [p[0], p[1]], focused: p[2]))
+        #expect(visible.isReceiving(p[0], windows: windows, visible: [p[0], p[1]], focused: p[2]))
+        #expect(!visible.isReceiving(p[3], windows: windows, visible: [p[0], p[1]], focused: p[2]))
+    }
+
+    /// The source pane's badge stops the broadcast; another pane's badge takes that pane out.
+    @Test func theSourceBadgeStopsBroadcasting() {
+        let (windows, p) = layout()
+        let all = BroadcastState().applying(.broadcastAllTabs, focused: p[0])
+        let reached = all.targets(for: p[0], windows: windows, visible: [])
+        #expect(all.removing(p[0], reached: reached, source: p[0]) == BroadcastState())
+        let without1 = all.removing(p[1], reached: reached, source: p[0])
+        #expect(without1.mode == .manual && without1.manual == [p[0], p[2]])
+    }
+
     @Test func closedPanesDropOut() {
         let (windows, p) = layout()
         let state = BroadcastState().applying(.toggleBroadcastSession, focused: p[0])

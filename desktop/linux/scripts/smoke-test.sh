@@ -7,7 +7,10 @@
 #   4. Ctrl+Shift+K host search, Enter: an SSH tab runs `ssh web-prod-1` through the agent; a remote echo comes back;
 #   5. Keys and Preferences dialogs open (over D-Bus actions);
 #   6. a refused login (Old Login as admin): the bar offers another login, ubuntu + the vault key works, Save stores it;
-#   7. a new device (no device key): the master password prompt unlocks the vault.
+#   7. a new device (no device key): the master password prompt unlocks the vault (a restored SSH tab needs it);
+#   8. a terminal first: launch is one local shell answering `echo ok`, no sidebar and no prompt in front; F9
+#      (Servers…) shows the servers and, on a new device, asks for the master password first; `rsshterm -e …
+#      --working-directory DIR` opens a tab in the running window.
 # Screenshots go to $SHOTS (default ./out/screens). Exit 0 only when every step passed.
 set -eu
 cd "$(dirname "$0")/.."
@@ -149,7 +152,29 @@ start_app() {
 
 echo "== run 1: this device"
 start_app
+# A terminal first: one local shell tab at once, no servers sidebar, no dialog in front of it.
+wait_for "launch opened one tab" '"tabs":1'
+wait_for "with one pane" '"panes":\[1\]'
+wait_for "and no servers sidebar" '"sidebarVisible":false'
+typeline 'echo ok'
+wait_for "the launch tab answers echo ok" '"focusedText":"[^"]*\\nok\\n'
 wait_for "vault opened with the device key" '"vault":"opened"'
+wait_for "the servers sidebar stays hidden after the unlock" '"sidebarVisible":false'
+shot launch-terminal
+keys F9
+wait_for "F9 (Servers…) shows the servers sidebar" '"sidebarVisible":true'
+shot servers-sidebar
+keys F9
+wait_for "F9 hides it again" '"sidebarVisible":false'
+# A default terminal's command line, handed to the running instance (GApplication): -e, --working-directory.
+"$BIN" --working-directory /tmp -e sh -c 'echo cli-$((6*7)) in $(pwd); exec sh' >>"$W/app.log" 2>&1 ||
+    fail "rsshterm -e returned an error"
+wait_for "rsshterm -e opened a tab in the running window" '"tabs":2'
+wait_for "the command ran in --working-directory" '"focusedText":"[^"]*cli-42 in \\/tmp' 10
+"$BIN" --frobnicate >/dev/null 2>&1 && fail "an unknown argument was accepted"
+echo "ok: an unknown argument is refused"
+keys ctrl+shift+w
+wait_for "closed the command tab" '"tabs":1'
 grep -q 'Host web-prod-1' "$XDG_CONFIG_HOME/rssh/ssh_config" || fail "ssh_config has no web-prod-1"
 SSH_AUTH_SOCK="$XDG_RUNTIME_DIR/rssh/agent.sock" ssh-add -l | grep -q 'you@workstation' || fail "agent does not list the vault key"
 echo "ok: agent lists the vault key"
@@ -284,6 +309,8 @@ typeline 'echo bc-$((6*7))'
 # focusedText + both entries of "texts": three outputs when the other pane got the input too
 i=0; while [ "$(grep -o 'bc-42\\n' "$STATE" | wc -l)" -lt 3 ]; do i=$((i+1)); [ $i -gt 100 ] && fail "broadcast did not reach the other pane"; sleep 0.1; done
 echo "ok: both panes of the split got the broadcast"
+wait_for "every pane in the broadcast is striped, the one typed in too" '"everyPaneStriped":true'
+wait_for "each pane's stripes fill exactly its own allocation" '"hatchesFit":true'
 shot broadcast
 keys ctrl+shift+alt+i
 shot broadcast-picker
@@ -353,5 +380,19 @@ echo "== run 3: the new device opens with its own key"
 start_app
 wait_for "opened without a password" '"vault":"opened"'
 kill "$APP"; wait "$APP" 2>/dev/null || true
+
+echo "== run 4: a new device, nothing to restore: a shell at once, the vault asked for only on demand"
+rm -rf "$XDG_DATA_HOME/rssh/secrets" "$XDG_STATE_HOME/rssh/session.json"
+start_app
+wait_for "vault waits locked, no prompt" '"vault":"locked"'
+typeline 'echo first-$((40+2))'
+wait_for "the shell has the keyboard (no password dialog in front)" '"focusedText":"[^"]*\\nfirst-42\\n'
+keys F9
+sleep 1
+xdotool type --delay 30 "$PASSWORD"
+keys Return
+wait_for "Servers… asked for the master password and opened the vault" '"vault":"opened"' 30
+wait_for "then showed the servers sidebar" '"sidebarVisible":true'
+kill "$APP"; wait "$APP" 2>/dev/null || true
 kill "$XVFB" 2>/dev/null || true
-echo "PASS: rsshterm tabs, split, local and SSH terminals, host search, jump, rename, broadcast, keys, preferences, unlock, session restore"
+echo "PASS: rsshterm opens as a terminal (local shell, no prompt, Servers… on demand, -e / --working-directory), tabs, split, local and SSH terminals, host search, jump, rename, broadcast, keys, preferences, unlock, session restore"

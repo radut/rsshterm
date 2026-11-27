@@ -1,9 +1,11 @@
 // Ctrl+Shift+Alt+I: choose the panes that get broadcast input. Presets at the top tick a set of panes, the list
-// below has every open pane with a checkbox, the entry filters it; Enter starts broadcasting to the ticked panes,
-// Esc cancels.
+// below has every open pane with a checkbox, grouped by window and tab, each row named like its tab (title, then
+// user@host · folder · program, the kind icon, "pane N" and "this pane"); the entry filters on any of these. Enter
+// starts broadcasting to the ticked panes, Esc cancels.
 import CGtk
 import Foundation
 import RSSHDesktopCore
+import RSSHKit
 
 @MainActor
 final class BroadcastPicker {
@@ -11,11 +13,12 @@ final class BroadcastPicker {
     private let entry: Widget
     private let parent: Widget
     private var checks: [(PaneID, Widget, Widget)] = [] // pane, check button, row
-    private let rows: [(PaneID, String, String)]
+    private var headers: [(String, Widget)] = [] // "Window 1 › Tab 2", its header row
+    private let rows: [PaneDescription]
     private let done: (Set<PaneID>) -> Void
     private var keepAlive: BroadcastPicker?
 
-    init(presets: [BroadcastPreset], panes: [(PaneID, String, String)], checked: Set<PaneID>, parent: Widget,
+    init(presets: [BroadcastPreset], panes: [PaneDescription], checked: Set<PaneID>, parent: Widget,
          done: @escaping (Set<PaneID>) -> Void) {
         self.parent = parent
         self.rows = panes
@@ -42,17 +45,37 @@ final class BroadcastPicker {
         let list = gtk_list_box_new()!
         gtk_list_box_set_selection_mode(cast(list), GTK_SELECTION_NONE)
         gtk_widget_add_css_class(list, "boxed-list")
-        for (id, title, subtitle) in panes {
+        let windows = Set(panes.map(\.window)).count
+        for pane in panes {
+            let group = Self.group(pane, windows: windows)
+            if headers.last?.0 != group {
+                let label = gtk_label_new(group)!
+                gtk_widget_set_halign(label, GTK_ALIGN_START)
+                for c in ["heading", "dim-label"] { gtk_widget_add_css_class(label, c) }
+                for side in [gtk_widget_set_margin_top, gtk_widget_set_margin_bottom, gtk_widget_set_margin_start] {
+                    side(label, 6)
+                }
+                let header = gtk_list_box_row_new()!
+                gtk_list_box_row_set_child(cast(header), label)
+                gtk_list_box_row_set_activatable(cast(header), 0)
+                gtk_list_box_row_set_selectable(cast(header), 0)
+                gtk_list_box_append(cast(list), header)
+                headers.append((group, header))
+            }
             let row = adw_action_row_new()!
             adw_preferences_row_set_use_markup(cast(row), 0)
-            adw_preferences_row_set_title(cast(row), title)
-            adw_action_row_set_subtitle(cast(row), subtitle)
+            adw_preferences_row_set_title(cast(row), pane.title)
+            adw_action_row_set_subtitle(cast(row), pane.subtitle)
             let check = gtk_check_button_new()!
-            gtk_check_button_set_active(cast(check), checked.contains(id) ? 1 : 0)
+            gtk_check_button_set_active(cast(check), checked.contains(pane.id) ? 1 : 0)
             adw_action_row_add_prefix(cast(row), check)
+            adw_action_row_add_prefix(cast(row), gtk_image_new_from_icon_name(Self.icon(pane.kind)))
+            let place = gtk_label_new(pane.isCurrent ? "pane \(pane.pane) · this pane" : "pane \(pane.pane)")!
+            gtk_widget_add_css_class(place, pane.isCurrent ? "accent" : "dim-label")
+            adw_action_row_add_suffix(cast(row), place)
             adw_action_row_set_activatable_widget(cast(row), check)
             gtk_list_box_append(cast(list), row)
-            checks.append((id, check, row))
+            checks.append((pane.id, check, row))
         }
         let scroller = gtk_scrolled_window_new()!
         gtk_scrolled_window_set_child(cast(scroller), list)
@@ -91,12 +114,29 @@ final class BroadcastPicker {
         gtk_widget_grab_focus(entry)
     }
 
-    private func filter() {
-        let words = entryText(entry).lowercased().split(separator: " ")
-        for (i, (_, _, row)) in checks.enumerated() {
-            let text = "\(rows[i].1) \(rows[i].2)".lowercased()
-            gtk_widget_set_visible(row, words.allSatisfy { text.contains($0) } ? 1 : 0)
+    /// The header a row sits under: "Window 2 › Tab 1", or "Tab 1" with one window.
+    static func group(_ pane: PaneDescription, windows: Int) -> String {
+        windows > 1 ? "Window \(pane.window) › Tab \(pane.tab)" : "Tab \(pane.tab)"
+    }
+
+    static func icon(_ kind: PaneDescription.Kind) -> String {
+        switch kind {
+        case .localShell: "utilities-terminal-symbolic"
+        case .ssh: ConnectService.ssh.iconName
+        case .remoteDesktop: ConnectService.rdp.iconName
         }
+    }
+
+    private func filter() {
+        let words = entryText(entry).split(separator: " ").map(String.init)
+        let windows = Set(rows.map(\.window)).count
+        var shownGroups: Set<String> = []
+        for (i, (_, _, row)) in checks.enumerated() {
+            let shown = rows[i].matches(words)
+            if shown { shownGroups.insert(Self.group(rows[i], windows: windows)) }
+            gtk_widget_set_visible(row, shown ? 1 : 0)
+        }
+        for (group, header) in headers { gtk_widget_set_visible(header, shownGroups.contains(group) ? 1 : 0) }
     }
 
     private func finish() {
