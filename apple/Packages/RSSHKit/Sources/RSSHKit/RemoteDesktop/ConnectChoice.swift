@@ -73,6 +73,9 @@ public struct ConnectChoice: Hashable, Identifiable, Sendable {
 
     /// What opening it does.
     public var opening: ServerOpening { screenID.map(ServerOpening.screen) ?? .ssh }
+
+    /// Its line in a server's menu: "Connect" for SSH, "Open RDP", "Open VNC", "Open Screen Sharing".
+    public var menuTitle: String { service == .ssh ? "Connect" : "Open \(service.label)" }
 }
 
 extension Vault {
@@ -81,6 +84,18 @@ extension Vault {
     public func connectChoices(for server: Server) -> [ConnectChoice] {
         let ssh = server.sshEnabled ? [ConnectChoice(service: .ssh)] : []
         return ssh + services(of: server.id).map { ConnectChoice(service: ConnectService(ScreenService($0.kind)), screenID: $0.id) }
+    }
+
+    /// A server editor's Open As set after `edited` (as it was) changed in its own editor: its old service out, its
+    /// saved service (a new Kind) in, nothing when it was deleted. Without this the server's Save would delete the
+    /// edited screen and add a new one of the old service.
+    public func screens(_ current: Set<ScreenService>, afterEditing edited: RemoteDesktop) -> Set<ScreenService> {
+        var next = current
+        next.remove(ScreenService(edited.kind))
+        if let saved = remoteDesktops.first(where: { $0.id == edited.id }), saved.serverID != nil {
+            next.insert(ScreenService(saved.kind))
+        }
+        return next
     }
 
     /// True when opening the server should ask how (two or more services).

@@ -15,6 +15,18 @@ import Testing
         #expect(RemoteDesktop(name: "x", kind: kind, host: "h").port == port)
     }
 
+    @Test func switchingTheKindSwitchesADefaultPortButNotATypedOne() {
+        // A default port follows the kind (the owner saw RDP with 5900 left in place).
+        #expect(RemoteDesktop.Kind.port("5900", switching: .vnc, to: .rdp, typed: false) == "3389")
+        #expect(RemoteDesktop.Kind.port("5900", switching: .appleScreenSharing, to: .rdp, typed: false) == "3389")
+        #expect(RemoteDesktop.Kind.port("3389", switching: .rdp, to: .vnc, typed: false) == "5900")
+        #expect(RemoteDesktop.Kind.port("3389", switching: .vnc, to: .rdp, typed: false) == "3389")
+        #expect(RemoteDesktop.Kind.port(" ", switching: .vnc, to: .rdp, typed: false) == "3389")
+        // A port the user typed, now or saved before (not a default), stays.
+        #expect(RemoteDesktop.Kind.port("5900", switching: .vnc, to: .rdp, typed: true) == "5900")
+        #expect(RemoteDesktop.Kind.port("5901", switching: .vnc, to: .rdp, typed: false) == "5901")
+    }
+
     @Test func onlyAppleScreenSharingAndRDPAskForAUsername() {
         #expect(!RemoteDesktop.Kind.vnc.usesUsername)
         #expect(RemoteDesktop.Kind.appleScreenSharing.usesUsername)

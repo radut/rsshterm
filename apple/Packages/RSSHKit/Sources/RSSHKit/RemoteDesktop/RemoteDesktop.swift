@@ -12,6 +12,16 @@ public struct RemoteDesktop: Codable, Hashable, Identifiable, Sendable {
         case rdp
 
         public var defaultPort: Int { self == .rdp ? 3389 : 5900 }
+
+        /// The port field after the editor's Kind switches from `old` to `new`: the new kind's default, unless the
+        /// user typed a port in this editor (`typed`) or the field holds a port that is no kind's default.
+        public static func port(_ current: String, switching old: Kind, to new: Kind, typed: Bool) -> String {
+            let trimmed = current.trimmingCharacters(in: .whitespaces)
+            guard !typed else { return current }
+            if trimmed.isEmpty { return String(new.defaultPort) }
+            guard let port = Int(trimmed), allCases.contains(where: { $0.defaultPort == port }) else { return current }
+            return String(new.defaultPort)
+        }
         /// VNC passwords have no user; macOS and RDP log in with an account.
         public var usesUsername: Bool { self != .vnc }
 

@@ -100,7 +100,7 @@ struct RDPIntegrationTests {
 
     @Test func freeRDPKeepsNoCertificateStoreOfItsOwn() throws {
         // Every certificate is accepted for one session only (2): the vault pin is the only store.
-        let home = FileManager.default.homeDirectoryForCurrentUser
+        let home = URL(fileURLWithPath: NSHomeDirectory())
         let store = home.appendingPathComponent(".config/freerdp")
         let files = (FileManager.default.enumerator(atPath: store.path)?.allObjects as? [String]) ?? []
         #expect(files.filter { $0.contains("known_hosts") || $0.hasSuffix(".pem") }.isEmpty, "found \(files)")
