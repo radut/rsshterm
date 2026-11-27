@@ -157,6 +157,9 @@ Coming soon · iOS &amp; iPadOS 18+
 
 - Local terminal tabs (Cmd/Ctrl+1…9), vertical and horizontal splits, zoom, equalize, broadcast input to all panes
   or a picked set; the session (tabs, splits, folders, SSH panes) comes back after a restart.
+- Move tabs and panes like iTerm2 and Ghostty: drag a tab to another window or out of the window, drag a pane by
+  its grip onto another pane's edge, a tab or the tab bar; Move Pane to New Tab / Window / Tab, swap, merge all
+  windows, duplicate, tab colours. The shell, SSH connection or remote screen keeps running while it moves.
 - Host search opens a server in a tab or a split; the jump switcher finds any open shell or starts a new one.
 - The built-in SSH agent serves vault keys to every local shell, so plain `ssh web1` picks the right key.
 - Touch ID on the Mac before keys are shown; Secret Service on Linux.
@@ -310,6 +313,11 @@ Commander: <kbd>Tab</kbd> switches panes; <kbd>F3</kbd> view, <kbd>F4</kbd> edit
 | Broadcast input: all panes on / off | <kbd>⌘⇧I</kbd> | <kbd>Ctrl+Shift+I</kbd> |
 | Broadcast input: this tab only | <kbd>⌘⌥I</kbd> | menu |
 | Broadcast picker (presets, checkboxes) | <kbd>⌘⌥⇧I</kbd> | <kbd>Ctrl+Shift+Alt+I</kbd> |
+| Move pane to a new tab / new window | <kbd>⌘⌥⇧T</kbd> / <kbd>⌘⌥⇧N</kbd> | <kbd>Ctrl+Shift+Alt+T</kbd> / <kbd>Ctrl+Shift+Alt+N</kbd> |
+| Move tab to a new window | <kbd>⌘⌥N</kbd> | <kbd>Ctrl+Shift+Alt+D</kbd> |
+| Move pane… (pick a place: arrows + ↩, click) | <kbd>⌘⌥⇧M</kbd> | <kbd>Ctrl+Shift+Alt+M</kbd> |
+| Swap pane with its neighbour | <kbd>⌘⌥⇧←↑↓→</kbd> | <kbd>Alt+Shift+←↑↓→</kbd> |
+| Duplicate tab | <kbd>⌘⌥T</kbd> | menu |
 | Copy / paste | <kbd>⌘C</kbd> / <kbd>⌘V</kbd> | <kbd>Ctrl+Shift+C</kbd> / <kbd>Ctrl+Shift+V</kbd> |
 
 The bindings come from one table in the shared desktop core, so both apps stay in step.
