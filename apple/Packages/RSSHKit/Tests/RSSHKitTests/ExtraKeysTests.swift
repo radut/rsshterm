@@ -36,7 +36,7 @@ import Testing
 @Suite struct ExtraKeyLayoutTests {
     @Test func keyRowInOrder() {
         let labels = ExtraKeyLayout.mainRow.map(\.label)
-        #expect(labels == ["tab", "esc", "ctrl", "←", "↑", "↓", "→", "⏎", "…"])
+        #expect(labels == ["esc", "tab", "ctrl", "←", "↑", "↓", "→", "⏎", "…"])
     }
 
     @Test func mainRowHasTheBasics() {

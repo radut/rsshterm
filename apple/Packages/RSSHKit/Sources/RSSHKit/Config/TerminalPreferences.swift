@@ -36,7 +36,7 @@ public struct TerminalPreferences: Codable, Hashable, Sendable {
     public private(set) var fontSize: Int
     public var keepDisplayOn: Bool
     public var bell: Bell
-    /// The tab / esc / ctrl / arrows row above the keyboard.
+    /// The esc / tab / ctrl / arrows row above the keyboard.
     public var showExtraKeyRow: Bool
     /// The scrollable Paste / Ctrl+C / … chips.
     public var showChipBar: Bool

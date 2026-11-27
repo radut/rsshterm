@@ -68,8 +68,8 @@ public struct ExtraKeyPage: Hashable, Sendable, Identifiable {
 /// The extra key row above the keyboard and the chip bar. Data only; the app draws it.
 public enum ExtraKeyLayout {
     public static let mainRow: [ExtraKey] = [
-        ExtraKey("tab", name: "Tab", .key(.tab)),
         ExtraKey("esc", name: "Escape", .key(.escape)),
+        ExtraKey("tab", name: "Tab", .key(.tab)),
         ExtraKey("ctrl", name: "Control", .latch(.ctrl)),
         ExtraKey("←", symbol: "arrow.left", name: "Left", .key(.left), longPress: .wordEdit(.wordLeft)),
         ExtraKey("↑", symbol: "arrow.up", name: "Up", .key(.up)),
@@ -97,7 +97,7 @@ public enum ExtraKeyLayout {
     /// The optional row above the extra key row (Settings › Keyboard › Function Key Row).
     public static let functionRow: [ExtraKey] = (1...12).map { ExtraKey("F\($0)", .key(.function($0))) }
 
-    /// The chips right above the keyboard: what the key row does not already have (tab, esc, ctrl are there).
+    /// The chips right above the keyboard: what the key row does not already have (esc, tab, ctrl are there).
     public static let chips: [ExtraKey] = [
         ExtraKey("Paste", symbol: "doc.on.clipboard", .paste),
         ExtraKey("#", name: "Hash", .text("#")),
