@@ -358,6 +358,11 @@ static BOOL apply_settings(rssh_rdp *rdp, rdpSettings *s) {
     ok &= freerdp_settings_set_bool(s, FreeRDP_SupportDisplayControl, FALSE);
     // ServerHostname is 127.0.0.1 (the tunnel), never the certificate's name: the vault pin decides instead.
     ok &= freerdp_settings_set_bool(s, FreeRDP_AutoAcceptCertificate, FALSE);
+    // TLS or NLA only: legacy RDP security has no certificate, so the pin above would never be asked and the
+    // password would travel under RC4. A server that offers only that is refused.
+    ok &= freerdp_settings_set_bool(s, FreeRDP_RdpSecurity, FALSE);
+    ok &= freerdp_settings_set_bool(s, FreeRDP_TlsSecurity, TRUE);
+    ok &= freerdp_settings_set_bool(s, FreeRDP_NlaSecurity, TRUE);
     ok &= freerdp_settings_set_bool(s, FreeRDP_RedirectClipboard, rdp->clipboard ? TRUE : FALSE);
     return ok;
 }
