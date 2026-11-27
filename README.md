@@ -9,7 +9,7 @@
 
 ![iOS: coming soon](https://img.shields.io/badge/iOS-coming%20soon-8e8e93)
 [![Linux: apt · AppImage](https://img.shields.io/badge/Linux-apt%20·%20AppImage-e95420)](#desktop-linux)
-[![macOS: in progress](https://img.shields.io/badge/macOS-in%20progress-8e8e93)](#desktop-linux-and-macos)
+[![macOS: notarized DMG](https://img.shields.io/badge/macOS-notarized%20DMG-000000)](#desktop-macos)
 [![rSshD: server daemon](https://img.shields.io/badge/rSshD-apt%20·%20install.sh-6e56cf)](#rsshd-on-your-servers)
 [![Swift 6](https://img.shields.io/badge/Swift-6-f05138)](https://radut.github.io/rsshterm)
 
@@ -58,7 +58,7 @@ Coming soon · iOS &amp; iPadOS 18+
 - VNC and Apple Screen Sharing over the same SSH connection; RDP on Linux
 - Touch ID on the Mac; signed self-update, apt or AppImage on Linux
 
-[Install on Linux](#desktop-linux) · macOS coming soon
+[Install on Linux](#desktop-linux) · [Download for Mac](https://github.com/radut/rsshterm/releases/download/desktop-v1.0.1/rsshterm_1.0.1_macos_universal.dmg)
 </td>
 </tr></table>
 
@@ -224,12 +224,22 @@ curl -fsSL https://rssh-ea902a.gitlab.io/desktop/install.sh | sh -s -- --appimag
 ```
 
 Or download directly (Linux x86_64):
-[AppImage](https://github.com/radut/rsshterm/releases/latest/download/rsshterm_linux_amd64.AppImage) ·
-[.deb](https://github.com/radut/rsshterm/releases/latest/download/rsshterm_amd64.deb) ·
-[tarball](https://github.com/radut/rsshterm/releases/latest/download/rsshterm_linux_amd64.tar.gz) ·
-checksums [`rsshterm_SHA256SUMS`](https://github.com/radut/rsshterm/releases/latest/download/rsshterm_SHA256SUMS) ([signature](https://github.com/radut/rsshterm/releases/latest/download/rsshterm_SHA256SUMS.asc)).
+[AppImage](https://github.com/radut/rsshterm/releases/download/desktop-v1.0.1/rsshterm_1.0.1_linux_amd64.AppImage) ·
+[.deb](https://github.com/radut/rsshterm/releases/download/desktop-v1.0.1/rsshterm_1.0.1_amd64.deb) ·
+[tarball](https://github.com/radut/rsshterm/releases/download/desktop-v1.0.1/rsshterm_1.0.1_linux_amd64.tar.gz) ·
+checksums [`SHA256SUMS`](https://github.com/radut/rsshterm/releases/download/desktop-v1.0.1/SHA256SUMS) ([signature](https://github.com/radut/rsshterm/releases/download/desktop-v1.0.1/SHA256SUMS.asc)).
 
-The macOS app is **coming soon**.
+### Desktop: macOS
+
+[**Download rSshTerm for Mac**](https://github.com/radut/rsshterm/releases/download/desktop-v1.0.1/rsshterm_1.0.1_macos_universal.dmg)
+(universal: Apple silicon and Intel, macOS 15+). Open the DMG and drag rSshTerm to Applications. It is signed with
+Developer ID and notarized by Apple, and updates itself. Or in Terminal:
+
+```bash
+curl -fsSL https://rssh-ea902a.gitlab.io/desktop/install.sh | sh
+```
+
+Checksum: in [`SHA256SUMS`](https://github.com/radut/rsshterm/releases/download/desktop-v1.0.1/SHA256SUMS) ([signature](https://github.com/radut/rsshterm/releases/download/desktop-v1.0.1/SHA256SUMS.asc)).
 
 ### rSshD on your servers
 
@@ -249,10 +259,10 @@ sudo apt install rsshd
 `sh install.sh --uninstall` removes it; running tmux sessions are left alone. The app can also install it for you
 from the Server daemon sheet.
 
-Or download directly: .deb [x86_64](https://github.com/radut/rsshterm/releases/latest/download/rsshd_amd64.deb) / [arm64](https://github.com/radut/rsshterm/releases/latest/download/rsshd_arm64.deb) ·
-Linux tarball [x86_64](https://github.com/radut/rsshterm/releases/latest/download/rsshd_linux_amd64.tar.gz) / [arm64](https://github.com/radut/rsshterm/releases/latest/download/rsshd_linux_arm64.tar.gz) ·
-macOS tarball [Intel](https://github.com/radut/rsshterm/releases/latest/download/rsshd_darwin_amd64.tar.gz) / [Apple silicon](https://github.com/radut/rsshterm/releases/latest/download/rsshd_darwin_arm64.tar.gz) ·
-checksums [`rsshd_SHA256SUMS`](https://github.com/radut/rsshterm/releases/latest/download/rsshd_SHA256SUMS) ([signature](https://github.com/radut/rsshterm/releases/latest/download/rsshd_SHA256SUMS.asc)).
+Or download directly: .deb [x86_64](https://github.com/radut/rsshterm/releases/download/rsshd-v1.0.0/rsshd_1.0.0_amd64.deb) / [arm64](https://github.com/radut/rsshterm/releases/download/rsshd-v1.0.0/rsshd_1.0.0_arm64.deb) ·
+Linux tarball [x86_64](https://github.com/radut/rsshterm/releases/download/rsshd-v1.0.0/rsshd_1.0.0_linux_amd64.tar.gz) / [arm64](https://github.com/radut/rsshterm/releases/download/rsshd-v1.0.0/rsshd_1.0.0_linux_arm64.tar.gz) ·
+macOS tarball [Intel](https://github.com/radut/rsshterm/releases/download/rsshd-v1.0.0/rsshd_1.0.0_darwin_amd64.tar.gz) / [Apple silicon](https://github.com/radut/rsshterm/releases/download/rsshd-v1.0.0/rsshd_1.0.0_darwin_arm64.tar.gz) ·
+checksums [`SHA256SUMS`](https://github.com/radut/rsshterm/releases/download/rsshd-v1.0.0/SHA256SUMS) ([signature](https://github.com/radut/rsshterm/releases/download/rsshd-v1.0.0/SHA256SUMS.asc)).
 
 [All releases on GitHub](https://github.com/radut/rsshterm/releases): versioned files, `SHA256SUMS` and signatures
 (key `3C2F847F5734F445076275DD5961ADF201732BAC`).
