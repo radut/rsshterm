@@ -39,6 +39,14 @@ import Testing
         #expect(labels == ["esc", "tab", "ctrl", "←", "↑", "↓", "→", "⏎", "…"])
     }
 
+    @Test func tabShowsTheArrowAndHoldsForShiftTab() throws {
+        let tab = try #require(ExtraKeyLayout.mainRow.first { $0.action == .key(.tab) })
+        #expect(tab.symbol == "arrow.right.to.line")
+        #expect(tab.longPress == .combo(.tab, .shift))
+        let (bytes, _) = try #require(tab.longPress).resolve(latch: ModifierLatch(), applicationCursor: false)
+        #expect(bytes == Array("\u{1B}[Z".utf8))
+    }
+
     @Test func mainRowHasTheBasics() {
         let row = ExtraKeyLayout.mainRow.map(\.action)
         #expect(row.contains(.key(.escape)))

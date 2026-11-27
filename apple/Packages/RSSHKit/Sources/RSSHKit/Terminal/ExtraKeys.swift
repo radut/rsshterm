@@ -69,7 +69,8 @@ public struct ExtraKeyPage: Hashable, Sendable, Identifiable {
 public enum ExtraKeyLayout {
     public static let mainRow: [ExtraKey] = [
         ExtraKey("esc", name: "Escape", .key(.escape)),
-        ExtraKey("tab", name: "Tab", .key(.tab)),
+        ExtraKey("tab", symbol: "arrow.right.to.line", name: "Tab, hold for Shift-Tab", .key(.tab),
+                 longPress: .combo(.tab, .shift)),
         ExtraKey("ctrl", name: "Control", .latch(.ctrl)),
         ExtraKey("←", symbol: "arrow.left", name: "Left", .key(.left), longPress: .wordEdit(.wordLeft)),
         ExtraKey("↑", symbol: "arrow.up", name: "Up", .key(.up)),
