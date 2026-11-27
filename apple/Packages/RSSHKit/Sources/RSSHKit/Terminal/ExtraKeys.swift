@@ -79,12 +79,8 @@ public enum ExtraKeyLayout {
         ExtraKey("…", symbol: "ellipsis", name: "More keys", .morePages),
     ]
 
-    /// In the order "…" shows them: function keys first (the reason most people tap "…"), then symbols, navigation,
-    /// and the rarely used F13–F16 last. Six keys per function page: with the back and "…" keys that is what fits a
-    /// phone's width, so none of F1–F12 hides behind a scroll.
+    /// What "…" cycles through: symbols, then navigation. F1–F12 are on the Fn row (the Fn chip), not here.
     public static let pages: [ExtraKeyPage] = [
-        functionPage(1...6),
-        functionPage(7...12),
         ExtraKeyPage(title: "Symbols", keys: ["/", "-", "|", "@", "~", ".", ":", ";", "_", "\\", "$", "*", "&"]
             .map { ExtraKey($0, .text($0)) }),
         ExtraKeyPage(title: "Navigation", keys: [
@@ -96,13 +92,7 @@ public enum ExtraKeyLayout {
             ExtraKey("Ins", name: "Insert", .key(.insert)),
             ExtraKey("META", name: "Meta (Alt)", .latch(.alt)),
         ]),
-        functionPage(13...16),
     ]
-
-    private static func functionPage(_ keys: ClosedRange<Int>) -> ExtraKeyPage {
-        ExtraKeyPage(title: "F\(keys.lowerBound)–F\(keys.upperBound)",
-                     keys: keys.map { ExtraKey("F\($0)", .key(.function($0))) })
-    }
 
     /// The optional row above the extra key row (Settings › Keyboard › Function Key Row).
     public static let functionRow: [ExtraKey] = (1...12).map { ExtraKey("F\($0)", .key(.function($0))) }

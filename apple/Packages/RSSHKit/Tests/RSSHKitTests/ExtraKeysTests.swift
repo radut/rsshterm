@@ -48,18 +48,17 @@ import Testing
         #expect(row.contains(.morePages))
     }
 
-    @Test func pagesCoverSymbolsNavigationFunctionKeysAndMeta() {
+    @Test func pagesCoverSymbolsNavigationAndMeta() {
         let all = ExtraKeyLayout.pages.flatMap(\.keys).map(\.action)
         for s in ["/", "-", "|", "@", "~", ".", ":", ";"] { #expect(all.contains(.text(s)), "missing \(s)") }
         for k in [TerminalKey.pageUp, .pageDown, .home, .end, .delete] { #expect(all.contains(.key(k))) }
-        for n in 1...16 { #expect(all.contains(.key(.function(n))), "missing F\(n)") }
+        // F keys live on the Fn row, not behind "…".
+        #expect(!all.contains { if case .key(.function) = $0 { true } else { false } })
         #expect(all.contains(.latch(.alt)))
     }
 
-    @Test func moreKeysShowsFunctionKeysFirst() {
-        #expect(ExtraKeyLayout.pages.map(\.title) == ["F1–F6", "F7–F12", "Symbols", "Navigation", "F13–F16"])
-        #expect(ExtraKeyLayout.pages[0].keys.map(\.action) == (1...6).map { .key(.function($0)) })
-        #expect(ExtraKeyLayout.pages[1].keys.map(\.action) == (7...12).map { .key(.function($0)) })
+    @Test func moreKeysCyclesSymbolsAndNavigationOnly() {
+        #expect(ExtraKeyLayout.pages.map(\.title) == ["Symbols", "Navigation"])
     }
 
     @Test func functionRowIsF1ToF12() {
