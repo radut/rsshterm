@@ -87,7 +87,7 @@ Coming soon · iOS &amp; iPadOS 18+
 </tr></table>
 
 - SwiftTerm terminal, several sessions at once; the sessions drawer lists them per server.
-- Key row: tab, esc, ctrl, arrows, and **⋯** pages for symbols, PgUp/PgDn/Home/End and META; F1–F12 on the Fn row.
+- Key row: esc, tab, ctrl, arrows, and **⋯** pages for symbols, PgUp/PgDn/Home/End and META; F1–F12 on the Fn row.
 - Chip bar: Paste, Esc, Tab, Shift, Ctrl, Alt, Ctrl+C/D/L, plus optional Ctrl+W/U/A/E.
 - Word editing presets (Natural text editing or Linux), Option as Meta per side, hardware keyboard map.
 - Bundled developer fonts with ligatures and Nerd Font symbols; light/dark theme pairs, per server.
