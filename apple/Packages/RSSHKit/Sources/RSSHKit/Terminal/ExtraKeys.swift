@@ -81,7 +81,7 @@ public enum ExtraKeyLayout {
     ]
 
     /// The key row on a remote screen (VNC, RDP), next to the ⊞/⌘ key: the modifiers a desktop needs latch like
-    /// ctrl (shift, ctrl, alt), arrows, and "…" for the other pages. Return is on the keyboard itself.
+    /// ctrl (shift, ctrl, alt), arrows, ⏎ where the terminal row has it, and "…" for the other pages.
     public static let remoteRow: [ExtraKey] = [
         mainRow[0],   // esc
         mainRow[1],   // tab, hold for shift-tab
@@ -89,6 +89,7 @@ public enum ExtraKeyLayout {
         ExtraKey("ctrl", name: "Control", .latch(.ctrl)),
         ExtraKey("alt", symbol: "option", name: "Alt", .latch(.alt)),
         mainRow[3], mainRow[4], mainRow[5], mainRow[6],   // arrows
+        mainRow[7],   // ⏎
         ExtraKey("…", symbol: "ellipsis", name: "More keys", .morePages),
     ]
 

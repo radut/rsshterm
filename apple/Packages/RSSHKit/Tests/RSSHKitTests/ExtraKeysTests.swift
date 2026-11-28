@@ -137,6 +137,12 @@ import Testing
         #expect(row.count <= 11)
     }
 
+    @Test func theRemoteRowHasEnterBeforeMoreLikeTheTerminalRow() {
+        #expect(ExtraKeyLayout.remoteRow.map(\.label)
+                == ["esc", "tab", "shift", "ctrl", "alt", "←", "↑", "↓", "→", "⏎", "…"])
+        #expect(ExtraKeyLayout.remoteRow.contains { $0.action == .key(.enter) && $0.accessibilityName == "Enter" })
+    }
+
     @Test func theTerminalRowIsUnchanged() {
         #expect(ExtraKeyLayout.mainRow.map(\.label) == ["esc", "tab", "ctrl", "←", "↑", "↓", "→", "⏎", "…"])
     }

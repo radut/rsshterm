@@ -11,6 +11,13 @@ import Testing
         #expect(latch == ModifierLatch())
     }
 
+    /// The remote row's ⏎: Return down and up (xrdp and FreeRDP map XK_Return to VK_RETURN).
+    @Test func theRemoteRowsEnterSendsReturnDownAndUp() throws {
+        let enter = try #require(ExtraKeyLayout.remoteRow.first { $0.accessibilityName == "Enter" })
+        let (strokes, _) = RemoteKeyStrokes.strokes(for: enter.action, latch: ModifierLatch())
+        #expect(strokes == [S(X11Keysym.returnKey, down: true), S(X11Keysym.returnKey, down: false)])
+    }
+
     @Test func aLatchedCtrlWrapsTheNextKeyThenReleases() {
         let ctrl = ModifierLatch().tapped(.ctrl)
         #expect(RemoteKeyStrokes.strokes(for: .latch(.ctrl), latch: ModifierLatch()).strokes.isEmpty)
