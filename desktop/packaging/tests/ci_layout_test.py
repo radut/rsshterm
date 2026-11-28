@@ -1,6 +1,7 @@
 """Cloud first, the Mac only for its own jobs: the rules of .gitlab-ci.yml (docs/desktop/release.md "Cloud and Mac").
 
-- Only the Mac jobs (desktop:macos-dmg, apple:testflight-mac) run on the Mac runner (tag $MAC_RUNNER_TAG = macos).
+- Only the Mac jobs (desktop:macos-dmg, apple:testflight-mac) run on the shared macos runner (tag $MAC_RUNNER_TAG),
+  one at a time (resource_group rssh-macos).
 - No cloud job needs a Mac job, directly or through another job: a release never waits for the Mac.
 - desktop:macos-dmg starts with the tag, needs nothing, may fail alone, and gets no release keys (no environment).
 - desktop:macos-dmg-attach (cloud) waits for the DMG and for the published release, then starts the attach pipeline on
@@ -78,6 +79,14 @@ class CloudFirst(unittest.TestCase):
         on_mac = {n for n, j in self.jobs.items()
                   if "$MAC_RUNNER_TAG" in (j.get("tags") or []) or "macos" in (j.get("tags") or [])}
         self.assertEqual(on_mac, MAC_JOBS)
+
+    def test_mac_jobs_run_one_at_a_time(self):
+        # The Mac runner is shared by every app (concurrent=2): rSSH's own Mac jobs serialise on one resource group,
+        # nothing relies on the runner's concurrency.
+        groups = {self.jobs[n].get("resource_group") for n in MAC_JOBS}
+        self.assertEqual(groups, {"rssh-macos"})
+        for n in MAC_JOBS:
+            self.assertEqual(self.jobs[n]["tags"], ["$MAC_RUNNER_TAG"], n)
 
     def test_no_cloud_job_waits_for_the_mac(self):
         def closure(name, seen):
