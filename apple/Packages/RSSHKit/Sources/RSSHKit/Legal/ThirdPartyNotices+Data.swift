@@ -14,12 +14,12 @@ extension ThirdPartyNotices {
             acknowledgement: #""#, changes: #""#,
             texts: [#"205bc88aea56"#]),
         ThirdPartyComponent(
-            id: #"swiftpm:app-check"#, name: #"App Check Core (via Google Sign-In)"#, version: #""#,
+            id: #"swiftpm:app-check"#, name: #"App Check Core (via Google Sign-In)"#, version: #"12.1.0"#,
             license: #"Apache-2.0"#, url: #"https://github.com/google/app-check"#, kind: .library, platforms: [.ios],
             acknowledgement: #""#, changes: #""#,
             texts: [#"c71d239df917"#]),
         ThirdPartyComponent(
-            id: #"swiftpm:appauth-ios"#, name: #"AppAuth for iOS (via Google Sign-In)"#, version: #""#,
+            id: #"swiftpm:appauth-ios"#, name: #"AppAuth for iOS (via Google Sign-In)"#, version: #"3.0.0"#,
             license: #"Apache-2.0"#, url: #"https://github.com/openid/AppAuth-iOS"#, kind: .library, platforms: [.ios],
             acknowledgement: #""#, changes: #""#,
             texts: [#"c71d239df917"#]),
@@ -99,17 +99,17 @@ extension ThirdPartyNotices {
             acknowledgement: #""#, changes: #""#,
             texts: [#"c71d239df917"#]),
         ThirdPartyComponent(
-            id: #"swiftpm:googleutilities"#, name: #"GoogleUtilities (via Google Sign-In)"#, version: #""#,
+            id: #"swiftpm:googleutilities"#, name: #"GoogleUtilities (via Google Sign-In)"#, version: #"8.1.5"#,
             license: #"Apache-2.0"#, url: #"https://github.com/google/GoogleUtilities"#, kind: .library, platforms: [.ios],
             acknowledgement: #""#, changes: #""#,
             texts: [#"1d7f06bc5aa9"#]),
         ThirdPartyComponent(
-            id: #"swiftpm:gtm-session-fetcher"#, name: #"GTM Session Fetcher (via Google Sign-In)"#, version: #""#,
+            id: #"swiftpm:gtm-session-fetcher"#, name: #"GTM Session Fetcher (via Google Sign-In)"#, version: #"5.3.1"#,
             license: #"Apache-2.0"#, url: #"https://github.com/google/gtm-session-fetcher"#, kind: .library, platforms: [.ios],
             acknowledgement: #""#, changes: #""#,
             texts: [#"c71d239df917"#]),
         ThirdPartyComponent(
-            id: #"swiftpm:gtmappauth"#, name: #"GTMAppAuth (via Google Sign-In)"#, version: #""#,
+            id: #"swiftpm:gtmappauth"#, name: #"GTMAppAuth (via Google Sign-In)"#, version: #"6.0.0"#,
             license: #"Apache-2.0"#, url: #"https://github.com/google/GTMAppAuth"#, kind: .library, platforms: [.ios],
             acknowledgement: #""#, changes: #""#,
             texts: [#"c71d239df917"#]),
@@ -138,6 +138,11 @@ extension ThirdPartyNotices {
             license: #"OFL-1.1"#, url: #"https://github.com/intel/intel-one-mono"#, kind: .font, platforms: [.ios, .macos],
             acknowledgement: #""#, changes: #""#,
             texts: [#"5ea10c3b82a9"#]),
+        ThirdPartyComponent(
+            id: #"swiftpm:interop-ios-for-google-sdks"#, name: #"Interop for Google SDKs (via Google Sign-In)"#, version: #"101.0.0"#,
+            license: #"Apache-2.0"#, url: #"https://github.com/google/interop-ios-for-google-sdks"#, kind: .library, platforms: [.ios],
+            acknowledgement: #""#, changes: #""#,
+            texts: [#"c71d239df917"#]),
         ThirdPartyComponent(
             id: #"font:IosevkaTerm"#, name: #"Iosevka Term"#, version: #""#,
             license: #"OFL-1.1"#, url: #"https://github.com/be5invis/Iosevka"#, kind: .font, platforms: [.ios, .macos],
@@ -208,6 +213,11 @@ extension ThirdPartyNotices {
             license: #"MIT OR Unlicense"#, url: #"https://github.com/troughton/Cstb"#, kind: .library, platforms: [.linux],
             acknowledgement: #""#, changes: #""#,
             texts: [#"bebfe904b143"#]),
+        ThirdPartyComponent(
+            id: #"swiftpm:swift-argument-parser"#, name: #"Swift Argument Parser (resolved through a dependency's manifest)"#, version: #"1.8.2"#,
+            license: #"Apache-2.0 WITH Swift-exception"#, url: #"https://github.com/apple/swift-argument-parser"#, kind: .library, platforms: [.ios, .macos],
+            acknowledgement: #""#, changes: #""#,
+            texts: [#"770af8291f70"#]),
         ThirdPartyComponent(
             id: #"swiftpm:swift-asn1"#, name: #"Swift ASN.1"#, version: #"1.7.5"#,
             license: #"Apache-2.0"#, url: #"https://github.com/apple/swift-asn1"#, kind: .library, platforms: [.ios, .macos, .linux],

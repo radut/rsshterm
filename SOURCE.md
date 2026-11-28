@@ -11,5 +11,5 @@ rSshTerm's open-source parts, licensed under the Apache License 2.0 (`LICENSE`, 
 Third-party code keeps its own licence: see `THIRD_PARTY_NOTICES` in each package and the in-app credits.
 The iPhone, iPad and Mac App Store apps are distributed under Apple's standard licence.
 
-This is a snapshot (source revision `f90afd6`), published with each change; issues and questions:
+This is a snapshot (source revision `fa8405b`), published with each change; issues and questions:
 https://github.com/radut/rsshterm/issues
