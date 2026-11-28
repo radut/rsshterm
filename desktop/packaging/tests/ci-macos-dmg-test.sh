@@ -53,7 +53,7 @@ name=${FAKE_NAME:-rsshterm_${VERSION}_macos_universal.dmg}
 printf 'dmg %s\n' "$VERSION" > "$OUT/$name"
 sum=${FAKE_SUM:-$(sha256sum "$OUT/$name" | awk '{print $1}')}
 printf 'DMG=%s\nSHA256=%s\nVERSION=%s\n' "$OUT/$name" "$sum" "$VERSION" > "$OUT/result.env"
-{ echo "VERSION=$VERSION"; echo "ASC_DIR=$ASC_DIR"; cat "$ASC_DIR/asc.env"; ls "$ASC_DIR/private_keys"
+{ echo "VERSION=$VERSION"; echo "BUILD_ON=$BUILD_ON"; echo "ASC_DIR=$ASC_DIR"; cat "$ASC_DIR/asc.env"; ls "$ASC_DIR/private_keys"
   stat -c %a "$ASC_DIR/private_keys"/*; } > "$FAKE_SEEN"
 SH
 chmod +x "$work/fake-build.sh"
@@ -71,6 +71,7 @@ mkdir -p "$work/proj"
 # 1. The good path.
 check "builds, uploads, writes the dotenv" 'run 1.2.3 "$work/dmg.env" > "$work/run1.log" 2>&1'
 check "the build got VERSION" 'grep -qx "VERSION=1.2.3" "$work/seen"'
+check "the build gets BUILD_ON=cloud (never the login keychain)" 'grep -qx "BUILD_ON=cloud" "$work/seen"'
 check "the key went to a job-local ASC_DIR" 'grep -qx "ASC_DIR=$work/proj/.asc" "$work/seen"'
 check "asc.env has the key id and issuer" 'grep -qx "ASC_KEY_ID=KEYID123" "$work/seen" && grep -qx "ASC_ISSUER_ID=issuer-1" "$work/seen"'
 check "AuthKey_<id>.p8, mode 600" 'grep -qx "AuthKey_KEYID123.p8" "$work/seen" && grep -qx 600 "$work/seen"'

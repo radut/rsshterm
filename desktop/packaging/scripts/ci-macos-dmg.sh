@@ -3,8 +3,8 @@
 #
 #   1. the App Store Connect key from the CI variables (ASC_KEY_ID, ASC_ISSUER_ID, ASC_KEY_P8 file) into a job-local
 #      ASC_DIR (0600), never ~/.appstoreconnect, which other projects share; removed on exit;
-#   2. the notarized DMG: `make -C apple mac-dmg VERSION=<v>` (apple/scripts/mac-dmg.sh: Developer ID from the login
-#      keychain, which the runner can use because it runs as a LaunchAgent in the logged-in user's GUI session);
+#   2. the notarized DMG: `make -C apple mac-dmg VERSION=<v> BUILD_ON=cloud` (apple/scripts/mac-dmg.sh: the Developer ID
+#      from DEVELOPER_ID_* in a keychain for this run only, apple/scripts/lib/devid-keychain.sh; never the login one);
 #   3. its checks: the versioned name rsshterm_<v>_macos_universal.dmg, the sha256 of the file = result.env's;
 #   4. the generic package registry desktop-macos/<v>/<name> (job token), read back and compared;
 #   5. <out-env> (dotenv): MACOS_DMG_VERSION, MACOS_DMG_NAME, MACOS_DMG_SHA256 for release:desktop-mac-dmg-start, which
@@ -36,7 +36,9 @@ out=${MAC_DMG_OUT:-$root/apple/build/mac-dmg/$ver}
 name=rsshterm_${ver}_macos_universal.dmg
 rm -f "$out/result.env"
 # shellcheck disable=SC2086 # MAC_DMG_BUILD is a command line
-VERSION=$ver OUT=$out ASC_DIR=$asc ${MAC_DMG_BUILD:-make -C "$root/apple" mac-dmg}
+# BUILD_ON=cloud: mac-dmg.sh signs only with the build keychain from DEVELOPER_ID_* (environment macos-dmg), never
+# with the login keychain.
+BUILD_ON=cloud VERSION=$ver OUT=$out ASC_DIR=$asc ${MAC_DMG_BUILD:-make -C "$root/apple" mac-dmg}
 
 # 3. What it made.
 [ -s "$out/result.env" ] || die "the build left no $out/result.env"

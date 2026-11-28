@@ -3,7 +3,8 @@
 - Only the Mac jobs (build:desktop-mac-dmg, deliver:testflight-mac) run on the shared macos runner (tag $MAC_RUNNER_TAG),
   one at a time (resource_group rssh-macos).
 - No cloud job needs a Mac job, directly or through another job: a release never waits for the Mac.
-- build:desktop-mac-dmg starts with the tag, needs nothing, may fail alone, and gets no release keys (no environment).
+- build:desktop-mac-dmg starts with the tag, needs nothing, may fail alone, and gets only the Developer ID
+  (environment macos-dmg, the only job in it), never the release keys.
 - release:desktop-mac-dmg-start (cloud) waits for the DMG and for the published release, then starts the attach pipeline on
   main with the DMG's name and sha256; that pipeline runs release:desktop-mac-dmg (keys in environment rsshd-release) and
   never release:pages-refresh.
@@ -166,13 +167,20 @@ class CloudFirst(unittest.TestCase):
         j = self.jobs["build:desktop-mac-dmg"]
         self.assertEqual(j.get("needs"), [])
         self.assertIs(j.get("allow_failure"), True)
-        self.assertNotIn("environment", j, "the Mac job must not get the release keys")
+        # The Developer ID (DEVELOPER_ID_*) is scoped to environment macos-dmg; never the release keys (rsshd-release).
+        self.assertEqual(j.get("environment"), {"name": "macos-dmg", "deployment_tier": "production"})
         self.assertIn("desktop/packaging/scripts/ci-macos-dmg.sh", " ".join(j["script"]))
         self.assertIn("dotenv", j["artifacts"]["reports"])
         rules = resolve(self.ci, j["rules"])
         self.assertEqual(rules[0], {"if": '$DESKTOP_DMG != "on"', "when": "never"})
         self.assertIn({"if": "$CI_COMMIT_TAG =~ /^desktop-v[0-9]+\\.[0-9]+\\.[0-9]+$/"}, rules)
         self.assertEqual(self.ci["variables"]["DESKTOP_DMG"], "on")
+
+    def test_only_the_dmg_job_gets_the_developer_id(self):
+        def env(j):
+            e = j.get("environment")
+            return e.get("name") if isinstance(e, dict) else e
+        self.assertEqual({n for n, j in self.jobs.items() if env(j) == "macos-dmg"}, {"build:desktop-mac-dmg"})
 
     def test_attach_trigger(self):
         j = self.jobs["release:desktop-mac-dmg-start"]
