@@ -15,7 +15,7 @@ case $ver in [0-9]*.[0-9]*.[0-9]*) ;; *) echo "bad version $ver" >&2; exit 1 ;; 
 [ -f "$dist/SHA256SUMS" ] || { echo "no $dist/SHA256SUMS" >&2; exit 1; }
 notes='""'
 [ ! -f "$dist/NOTES" ] || notes=$(jq -Rs . < "$dist/NOTES")
-# published: fixed per release (the dist's PUBLISHED file, written once by desktop:release), so a later rebuild of
+# published: fixed per release (the dist's PUBLISHED file, written once by release:desktop), so a later rebuild of
 # the site makes the same bytes and keeps the signature.
 published=
 if [ -f "$dist/PUBLISHED" ]; then

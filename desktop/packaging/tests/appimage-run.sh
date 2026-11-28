@@ -3,7 +3,7 @@
 # the bundle is complete: `--version`, then the GUI under Xvfb for a few seconds with a window on screen and no
 # missing library. Installed besides the X server and D-Bus: a GTK 3 desktop's base, i.e. what AppImage's excludelist
 # expects every desktop to have (fontconfig, freetype, harfbuzz, fribidi, Mesa's GL/EGL...), never GTK 4, libadwaita
-# or VTE, which the AppImage must bring. Runs as root in ubuntu:24.04 or fedora (CI: desktop:appimage-test). No FUSE: extract-and-run.
+# or VTE, which the AppImage must bring. Runs as root in ubuntu:24.04 or fedora (CI: build:desktop-linux-appimage-check). No FUSE: extract-and-run.
 # Usage: appimage-run.sh <rsshterm_*.AppImage>
 set -eu
 img=$(cd "$(dirname "$1")" && pwd)/$(basename "$1")

@@ -1,7 +1,7 @@
 #!/bin/sh
 # Hands a notarized DMG from the Mac to the pipeline (docs/desktop/mac-dmg.md): uploads it to the generic package
 # registry as desktop-macos/<v>/<name> and writes its sha256 into desktop/packaging/macos-dmg.sha256. Commit that pin
-# to main: desktop:macos-attach then adds the DMG to the published release (or a desktop-v<v> tag takes it), signing
+# to main: release:desktop-mac-dmg then adds the DMG to the published release (or a desktop-v<v> tag takes it), signing
 # the checksum lists and latest.json in CI. Nothing is signed here; a pipeline takes only the bytes git pins.
 #
 # Usage: upload-macos-dmg.sh <rsshterm_X.Y.Z_macos_universal.dmg>   Needs glab (logged in), curl, sha256sum.

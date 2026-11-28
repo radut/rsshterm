@@ -193,7 +193,7 @@ if sh "$root/desktop/install.sh" --tarball > "$t/tamper.log" 2>&1; then echo "FA
 grep -q 'checksum mismatch' "$t/tamper.log" && [ ! -e "$HOME/.local/opt/rsshterm" ]
 echo "install.sh tamper: refused OK"
 
-# 4. The notarized DMG added to the release Pages serves (desktop:macos-attach, no new tag): only the DMG, the lists,
+# 4. The notarized DMG added to the release Pages serves (release:desktop-mac-dmg, no new tag): only the DMG, the lists,
 #    their signatures and latest.json(.sig) change; latest.json takes the DMG over the zip; a DMG git does not pin is
 #    refused, and so is a pin for another version.
 mkdir -p "$t/dmg-src/rSshTerm.app/Contents"; echo '<plist/>' > "$t/dmg-src/rSshTerm.app/Contents/Info.plist"

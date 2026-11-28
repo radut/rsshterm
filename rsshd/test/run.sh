@@ -1,5 +1,5 @@
 #!/bin/sh
-# What make rsshd-test and the GitLab job rsshd:test run inside the golang image (with tmux and screen installed).
+# What make rsshd-test and the GitLab job test:rsshd run inside the golang image (with tmux and screen installed).
 # Fails when tmux or screen is missing instead of skipping (RSSHD_REQUIRE_TMUX=1, RSSHD_REQUIRE_SCREEN=1).
 set -eu
 cd "$(dirname "$0")/.."

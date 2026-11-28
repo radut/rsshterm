@@ -1,7 +1,7 @@
 #!/bin/sh
 # Wraps the staged build of build-linux.sh (<build-dir>/<arch>/rsshterm, Swift runtime static) into an AppImage with
 # GTK 4, libadwaita, VTE and their data (gsettings schemas, icons, pixbuf loaders) bundled, so it runs on distros
-# without them: <out-dir>/rsshterm_<v>_linux_<arch>.AppImage. CI: desktop:linux-appimage (swift:6.4-noble with the
+# without them: <out-dir>/rsshterm_<v>_linux_<arch>.AppImage. CI: build:desktop-linux-appimage (swift:6.4-noble with the
 # GTK -dev packages, the libraries that get bundled). glibc is NOT bundled: the baseline is the build image's
 # (Ubuntu 24.04: glibc 2.39), so the AppImage runs on distros with glibc >= 2.39.
 #

@@ -2,7 +2,7 @@
 # Packs every staged build of build-linux.sh (<build-dir>/<arch>/) into
 #   rsshterm_<v>_<arch>.deb (nfpm, desktop/packaging/nfpm.yaml) and rsshterm_<v>_linux_<arch>.tar.gz
 #   (one top dir rsshterm-<v>-linux-<arch>/bin/rsshterm: what the app's updater unpacks; licences in share/doc/rsshterm/),
-# plus SHA256SUMS over everything, in <dist-dir>. CI: desktop:linux-package (image goreleaser/nfpm + GNU tar). Repo root.
+# plus SHA256SUMS over everything, in <dist-dir>. CI: build:desktop-linux-deb (image goreleaser/nfpm + GNU tar). Repo root.
 # A build that was skipped (<build-dir>/SKIPPED) is skipped here too, unless REQUIRE_PRODUCT=1.
 #
 # Usage: package-linux.sh <build-dir> <dist-dir> <version>
@@ -40,7 +40,7 @@ for stage in "$build"/amd64/ "$build"/arm64/; do
   nfpm package --config "$dist/.nfpm.yaml" --packager deb --target "$dist/rsshterm_${ver}_${arch}.deb"
   rm -f "$dist/.nfpm.yaml"
 done
-# AppImages from build-appimage.sh (desktop:linux-appimage), when built.
+# AppImages from build-appimage.sh (build:desktop-linux-appimage), when built.
 for a in "$build"/appimage/*.AppImage; do [ ! -f "$a" ] || cp "$a" "$dist/"; done
 [ -n "${RSSHTERM_NOTES:-}" ] && printf '%s\n' "$RSSHTERM_NOTES" > "$dist/NOTES"
 (cd "$dist" && sha256sum -- * | grep -v ' SHA256SUMS' > SHA256SUMS.new && mv SHA256SUMS.new SHA256SUMS)

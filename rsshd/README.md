@@ -91,7 +91,7 @@ Gaps compared with tmux:
 ## Tests
 
 ```
-make rsshd-test     # in docker: gofmt, go vet, unit + tmux + screen tests, e2e (the GitLab job rsshd:test runs the same script)
+make rsshd-test     # in docker: gofmt, go vet, unit + tmux + screen tests, e2e (the GitLab job test:rsshd runs the same script)
 make rsshd-build    # static binary in rsshd/dist/ (RSSHD_GOOS / RSSHD_GOARCH)
 ```
 

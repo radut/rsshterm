@@ -1,7 +1,7 @@
 #!/bin/sh
 # Builds the desktop executable `rsshterm` for this machine's architecture, release mode, Swift runtime linked in
 # statically, and stages it (with any SwiftPM resource bundles) in <out>/<deb-arch>/ for package-linux.sh.
-# CI: desktop:linux-build (image swift:6.4-noble). Run from the repo root.
+# CI: build:desktop-linux (image swift:6.4-noble). Run from the repo root.
 #
 # The package that declares the product is found by name (a Package.swift under desktop/ mentioning "rsshterm"),
 # or given with DESKTOP_PACKAGE_DIR. Until the app exists (wave 2) there is none: then this writes <out>/SKIPPED and

@@ -1,6 +1,6 @@
 #!/bin/sh
 # shellcheck disable=SC2016,SC2034 # check() evals its single-quoted condition later, so its variables look unused
-# Tests desktop/packaging/scripts/ci-macos-dmg.sh (job desktop:macos-dmg on the Mac runner) on Linux: a fake
+# Tests desktop/packaging/scripts/ci-macos-dmg.sh (job build:desktop-mac-dmg on the Mac runner) on Linux: a fake
 # `make mac-dmg` (MAC_DMG_BUILD) and an in-memory generic package registry. Checks: the App Store Connect key from the
 # CI variables lands in a job-local ASC_DIR (0600, never ~/.appstoreconnect), the build gets VERSION/OUT/ASC_DIR, the
 # DMG goes to desktop-macos/<v>/<name> with the job token and is read back, the dotenv names it for the attach

@@ -1,5 +1,5 @@
 #!/bin/sh
-# Lintian on the built .debs; any error or warning fails. Runs in debian:12 (CI job rsshd:package-test, or
+# Lintian on the built .debs; any error or warning fails. Runs in debian:12 (CI job test:rsshd-lintian, or
 # packaging/tests/run-docker.sh). Usage: lintian.sh <dir-with-debs>
 set -eu
 dir=${1:-dist}

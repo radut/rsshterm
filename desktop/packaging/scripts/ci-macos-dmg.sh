@@ -1,5 +1,5 @@
 #!/bin/sh
-# Job desktop:macos-dmg ("build dmg"), on the GitLab runner on the Mac (tag macos; docs/desktop/mac-dmg.md):
+# Job build:desktop-mac-dmg ("build dmg"), on the GitLab runner on the Mac (tag macos; docs/desktop/mac-dmg.md):
 #
 #   1. the App Store Connect key from the CI variables (ASC_KEY_ID, ASC_ISSUER_ID, ASC_KEY_P8 file) into a job-local
 #      ASC_DIR (0600), never ~/.appstoreconnect, which other projects share; removed on exit;
@@ -7,8 +7,8 @@
 #      keychain, which the runner can use because it runs as a LaunchAgent in the logged-in user's GUI session);
 #   3. its checks: the versioned name rsshterm_<v>_macos_universal.dmg, the sha256 of the file = result.env's;
 #   4. the generic package registry desktop-macos/<v>/<name> (job token), read back and compared;
-#   5. <out-env> (dotenv): MACOS_DMG_VERSION, MACOS_DMG_NAME, MACOS_DMG_SHA256 for desktop:macos-dmg-attach, which
-#      starts the attach pipeline on main (desktop:macos-attach: re-signed SHA256SUMS + latest.json, Pages, releases).
+#   5. <out-env> (dotenv): MACOS_DMG_VERSION, MACOS_DMG_NAME, MACOS_DMG_SHA256 for release:desktop-mac-dmg-start, which
+#      starts the attach pipeline on main (release:desktop-mac-dmg: re-signed SHA256SUMS + latest.json, Pages, releases).
 #
 # Usage: ci-macos-dmg.sh <X.Y.Z> <out-env>
 # Env:   CI_API_V4_URL, CI_PROJECT_ID, CI_JOB_TOKEN, CI_PROJECT_DIR (GitLab), the three ASC_* variables;
