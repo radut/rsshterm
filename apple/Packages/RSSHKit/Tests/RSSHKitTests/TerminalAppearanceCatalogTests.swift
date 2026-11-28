@@ -148,7 +148,7 @@ import Testing
 
     @Test func bundledFamiliesHaveARegularABoldAndALicence() {
         let bundled = TerminalFontCatalog.families.filter(\.isBundled)
-        #expect(bundled.count == 26)
+        #expect(bundled.count == 25)
         for f in bundled {
             #expect(f.regular != nil && f.bold != nil, "\(f.name)")
             #expect(f.license?.isEmpty == false, "\(f.name)")
@@ -157,7 +157,7 @@ import Testing
 
     @Test func requestedFamiliesAreThere() {
         let names = Set(TerminalFontCatalog.families.map(\.name))
-        for n in ["JetBrains Mono", "Fira Code", "Cascadia Code", "Cascadia Mono", "Source Code Pro", "IBM Plex Mono",
+        for n in ["JetBrains Mono", "Fira Code", "Cascadia Code", "Source Code Pro", "IBM Plex Mono",
                   "Hack", "Ubuntu Mono", "Inconsolata", "DejaVu Sans Mono", "Meslo LG M", "Roboto Mono",
                   "Victor Mono", "Iosevka Term", "Menlo", "Courier New", "Courier", "Maple Mono", "Monaspace Neon",
                   "Geist Mono", "Commit Mono", "Fira Mono", "0xProto", "Go Mono", "Intel One Mono", "Martian Mono",
@@ -203,6 +203,17 @@ import Testing
         #expect(search.map(\.title) == ["All"])
         #expect(search[0].items.map(\.id) == ["darcula"])
         #expect(TerminalColorSchemes.gallery(query: "darcula", filter: .light).isEmpty)
+    }
+
+    @Test func droppedCascadiaMonoBecomesCascadiaCode() throws {
+        #expect(!TerminalFontCatalog.families.contains { $0.name == "Cascadia Mono" })
+        #expect(TerminalFontCatalog.family(named: "Cascadia Mono").name == "Cascadia Code")
+        let saved = try JSONDecoder().decode(TerminalPreferences.self, from: Data(#"{"fontFamily":"Cascadia Mono"}"#.utf8))
+        #expect(saved.fontFamily == "Cascadia Code")
+        var server = Server(name: "a", host: "h", username: "u")
+        server.fontFamily = "Cascadia Mono"
+        #expect(TerminalPreferences().forServer(server).fontFamily == "Cascadia Code")
+        #expect(TerminalFontCatalog.migratedName("Hack") == "Hack")
     }
 
     @Test func unknownFamilyFallsBackToSystem() {

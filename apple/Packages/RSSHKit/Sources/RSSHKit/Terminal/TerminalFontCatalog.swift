@@ -81,8 +81,6 @@ public enum TerminalFontCatalog {
                            italic: "VictorMono-Italic", boldItalic: "VictorMono-BoldItalic",
                            license: "Victor Mono 1.5.6: \(ofl)"),
 
-        TerminalFontFamily("Cascadia Mono", .classic, regular: "CascadiaMono-Regular", bold: "CascadiaMono-Bold",
-                           license: "Cascadia Mono 2407.24: \(ofl)"),
         TerminalFontFamily("Anonymous Pro", .classic, regular: "AnonymousPro-Regular", bold: "AnonymousPro-Bold",
                            license: "Anonymous Pro 1.003: \(ofl)"),
         TerminalFontFamily("Commit Mono", .classic, regular: "CommitMono-Regular", bold: "CommitMono-Bold",
@@ -139,8 +137,16 @@ public enum TerminalFontCatalog {
 
     /// The family saved under `name`; System when it is unknown (renamed or removed in a later build).
     public static func family(named name: String) -> TerminalFontFamily {
-        families.first { $0.name == name } ?? system
+        let name = migratedName(name)
+        return families.first { $0.name == name } ?? system
     }
+
+    /// Families dropped from the bundle, mapped to the one that replaces them (Cascadia Mono was Cascadia Code
+    /// without ligatures; removed to save 1.2 MB).
+    public static let replacedFamilies = ["Cascadia Mono": "Cascadia Code"]
+
+    /// A saved family name as it is today: a dropped family becomes its replacement, anything else is unchanged.
+    public static func migratedName(_ name: String) -> String { replacedFamilies[name] ?? name }
 
     public static func families(in group: TerminalFontFamily.Group) -> [TerminalFontFamily] {
         families.filter { $0.group == group }

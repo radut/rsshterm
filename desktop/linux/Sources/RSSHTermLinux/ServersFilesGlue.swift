@@ -107,7 +107,7 @@ public enum TerminalAppearance {
         let parts = defaultFont.split(separator: " ")
         let defaultSize = parts.last.flatMap { Int($0) }
         let defaultFamily = defaultSize == nil ? defaultFont : parts.dropLast().joined(separator: " ")
-        let family = server?.fontFamily ?? defaultFamily
+        let family = server?.fontFamily.map(TerminalFontCatalog.migratedName) ?? defaultFamily
         let size = server?.fontSize ?? defaultSize
         let font = size.map { "\(family) \($0)" } ?? family
         return Resolved(font: font, scheme: server?.themeID.flatMap(TerminalColorSchemes.scheme(id:)))

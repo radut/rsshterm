@@ -39,11 +39,6 @@ extension ThirdPartyNotices {
             acknowledgement: #""#, changes: #""#,
             texts: [#"82c05d6c53df"#]),
         ThirdPartyComponent(
-            id: #"font:CascadiaMono"#, name: #"Cascadia Mono"#, version: #""#,
-            license: #"OFL-1.1"#, url: #"https://github.com/microsoft/cascadia-code"#, kind: .font, platforms: [.ios, .macos],
-            acknowledgement: #""#, changes: #""#,
-            texts: [#"82c05d6c53df"#]),
-        ThirdPartyComponent(
             id: #"vendored:Citadel"#, name: #"Citadel"#, version: #"0.12.1"#,
             license: #"MIT"#, url: #"https://github.com/orlandos-nl/Citadel"#, kind: .library, platforms: [.ios, .macos, .linux],
             acknowledgement: #""#, changes: #"Modified by the rSshTerm authors (agent forwarding and fixes); the changes are listed in PATCHES.md of the vendored copy."#,

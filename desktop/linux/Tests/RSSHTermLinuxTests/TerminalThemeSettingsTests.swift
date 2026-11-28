@@ -41,3 +41,11 @@ import Testing
         #expect(ThemeSwatchMarkup.escape("SynthWave '84 <&>") == "SynthWave '84 &lt;&amp;&gt;")
     }
 }
+
+@Suite struct DroppedFontTests {
+    @Test func aServerSavedWithCascadiaMonoOpensInCascadiaCode() {
+        var server = Server(name: "a", host: "h", username: "u")
+        server.fontFamily = "Cascadia Mono"
+        #expect(TerminalAppearance.resolve(defaultFont: "Monospace 11", server: server).font == "Cascadia Code 11")
+    }
+}

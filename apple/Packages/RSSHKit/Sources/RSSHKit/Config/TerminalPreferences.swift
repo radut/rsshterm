@@ -76,7 +76,7 @@ public struct TerminalPreferences: Codable, Hashable, Sendable {
         self.appAppearance = appAppearance
         self.lightThemeID = lightThemeID
         self.darkThemeID = darkThemeID
-        self.fontFamily = family.isEmpty ? Self.systemFontFamily : family
+        self.fontFamily = family.isEmpty ? Self.systemFontFamily : TerminalFontCatalog.migratedName(family)
         self.fontSize = Self.clamp(fontSize)
         self.keepDisplayOn = keepDisplayOn
         self.bell = bell
@@ -99,7 +99,7 @@ public struct TerminalPreferences: Codable, Hashable, Sendable {
     public func forServer(_ server: Server?) -> TerminalPreferences {
         guard let server else { return self }
         var copy = self
-        if let family = server.fontFamily, !family.isEmpty { copy.fontFamily = family }
+        if let family = server.fontFamily, !family.isEmpty { copy.fontFamily = TerminalFontCatalog.migratedName(family) }
         if let size = server.fontSize { copy = copy.withFontSize(size) }
         return copy
     }
