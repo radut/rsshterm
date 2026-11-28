@@ -154,8 +154,9 @@ private func map(_ key: TerminalKey, _ mods: HardwareModifiers = [], _ settings:
     @Test func optionalChipsDefaultToBackspaceOnly() {
         let base = ExtraKeyLayout.chips.count
         #expect(ExtraKeyLayout.chips(enabled: ExtraKeyLayout.defaultOptionalChipIDs).count == base + 1)
-        let all = ExtraKeyLayout.chips(enabled: ["ctrlE", "ctrlW", "ctrlU", "ctrlA", "backspace"]).map(\.label)
-        #expect(Array(all.suffix(5)) == ["⌫", "Ctrl+W", "Ctrl+U", "Ctrl+A", "Ctrl+E"])
+        let all = ExtraKeyLayout.chips(enabled: ["ctrlE", "ctrlW", "ctrlU", "ctrlA", "backspace", "ctrlL", "ctrlC",
+                                                 "ctrlD"]).map(\.label)
+        #expect(Array(all.suffix(8)) == ["⌫", "Ctrl+C", "Ctrl+D", "Ctrl+L", "Ctrl+W", "Ctrl+U", "Ctrl+A", "Ctrl+E"])
     }
 }
 

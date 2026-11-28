@@ -74,14 +74,27 @@ import Testing
         #expect(ExtraKeyLayout.functionRow.map(\.action) == (1...12).map { .key(.function($0)) })
     }
 
+    /// The fixed chips: no Ctrl combos (they made the row scroll), so the rest share the width and are bigger.
     @Test func chipsInOrder() {
-        #expect(ExtraKeyLayout.chips.map(\.label) == ["Paste", "#", "$", "`", "~", "|", "Ctrl+C", "Ctrl+D", "Ctrl+L"])
-        #expect(ExtraKeyLayout.chips[6].action == .combo(.character("c"), .ctrl))
+        #expect(ExtraKeyLayout.chips.map(\.label) == ["Paste", "#", "$", "`", "~", "|"])
         #expect(ExtraKeyLayout.chips[0].action == .paste)
+        #expect(!ExtraKeyLayout.chips.contains { if case .combo = $0.action { true } else { false } })
+    }
+
+    /// Ctrl+C, Ctrl+D and Ctrl+L stay selectable in Settings › Keyboard › Extra Chips, off by default.
+    @Test func theCtrlCombosAreOptionalChipsOffByDefault() {
+        let optional = Dictionary(uniqueKeysWithValues: ExtraKeyLayout.optionalChips.map { ($0.id, $0.key) })
+        #expect(optional["ctrlC"]?.action == .combo(.character("c"), .ctrl))
+        #expect(optional["ctrlD"]?.action == .combo(.character("d"), .ctrl))
+        #expect(optional["ctrlL"]?.action == .combo(.character("l"), .ctrl))
+        #expect(ExtraKeyLayout.defaultOptionalChipIDs == ["backspace"])
+        let shipped = ExtraKeyLayout.chips(enabled: ExtraKeyLayout.defaultOptionalChipIDs).map(\.label)
+        #expect(shipped == ["Paste", "#", "$", "`", "~", "|", "⌫"])
     }
 
     @Test func everyKeyHasALabelAndAnAccessibilityName() {
         let keys = ExtraKeyLayout.mainRow + ExtraKeyLayout.pages.flatMap(\.keys) + ExtraKeyLayout.chips
+            + ExtraKeyLayout.optionalChips.map(\.key)
         for k in keys {
             #expect(!k.label.isEmpty)
             #expect(!k.accessibilityName.isEmpty)

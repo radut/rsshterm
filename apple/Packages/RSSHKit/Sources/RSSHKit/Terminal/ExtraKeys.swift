@@ -111,7 +111,8 @@ public enum ExtraKeyLayout {
     /// The optional row above the extra key row (Settings › Keyboard › Function Key Row).
     public static let functionRow: [ExtraKey] = (1...12).map { ExtraKey("F\($0)", .key(.function($0))) }
 
-    /// The chips right above the keyboard: what the key row does not already have (esc, tab, ctrl are there).
+    /// The chips right above the keyboard: what the key row does not already have (esc, tab, ctrl are there). Few
+    /// enough to share the width on an iPhone in portrait; the Ctrl combos are optional chips (ctrl is on the row).
     public static let chips: [ExtraKey] = [
         ExtraKey("Paste", symbol: "doc.on.clipboard", .paste),
         ExtraKey("#", name: "Hash", .text("#")),
@@ -119,15 +120,15 @@ public enum ExtraKeyLayout {
         ExtraKey("`", name: "Backtick", .text("`")),
         ExtraKey("~", name: "Tilde", .text("~")),
         ExtraKey("|", name: "Pipe", .text("|")),
-        ExtraKey("Ctrl+C", name: "Control C, interrupt", .combo(.character("c"), .ctrl)),
-        ExtraKey("Ctrl+D", name: "Control D, end of input", .combo(.character("d"), .ctrl)),
-        ExtraKey("Ctrl+L", name: "Control L, clear screen", .combo(.character("l"), .ctrl)),
     ]
 
     /// Chips Settings › Keyboard can add after the fixed ones, keyed by a stable id, in this order.
     public static let optionalChips: [(id: String, key: ExtraKey)] = [
         ("backspace", ExtraKey("⌫", symbol: "delete.left", name: "Backspace, hold to delete a word",
                                .key(.backspace), longPress: .wordEdit(.deleteWordBack))),
+        ("ctrlC", ExtraKey("Ctrl+C", name: "Control C, interrupt", .combo(.character("c"), .ctrl))),
+        ("ctrlD", ExtraKey("Ctrl+D", name: "Control D, end of input", .combo(.character("d"), .ctrl))),
+        ("ctrlL", ExtraKey("Ctrl+L", name: "Control L, clear screen", .combo(.character("l"), .ctrl))),
         ("ctrlW", ExtraKey("Ctrl+W", name: "Control W, delete word", .combo(.character("w"), .ctrl))),
         ("ctrlU", ExtraKey("Ctrl+U", name: "Control U, delete to start of line", .combo(.character("u"), .ctrl))),
         ("ctrlA", ExtraKey("Ctrl+A", name: "Control A, start of line", .combo(.character("a"), .ctrl))),
