@@ -36,8 +36,8 @@ private final class Box<T> {
     init(_ value: T) { self.value = value }
 }
 
-private func retained<T>(_ value: T) -> gpointer { Unmanaged.passRetained(Box(value)).toOpaque() }
-private func unbox<T>(_ data: gpointer?) -> T { Unmanaged<Box<T>>.fromOpaque(data!).takeUnretainedValue().value }
+func retained<T>(_ value: T) -> gpointer { Unmanaged.passRetained(Box(value)).toOpaque() }
+func unbox<T>(_ data: gpointer?) -> T { Unmanaged<Box<T>>.fromOpaque(data!).takeUnretainedValue().value }
 
 private let releaseBox: GClosureNotify = { data, _ in
     guard let data else { return }
@@ -45,7 +45,7 @@ private let releaseBox: GClosureNotify = { data, _ in
 }
 
 @discardableResult
-private func connect(_ instance: (any GPtr)?, _ signal: String, _ callback: GCallback, _ data: gpointer,
+func connect(_ instance: (any GPtr)?, _ signal: String, _ callback: GCallback, _ data: gpointer,
                      after: Bool = false) -> gulong {
     g_signal_connect_data(instance?.gptr, signal, callback, data, releaseBox, after ? G_CONNECT_AFTER : GConnectFlags(0))
 }

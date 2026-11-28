@@ -436,5 +436,7 @@ keys Right
 keys Escape
 wait_for "Escape ends it" '"picking":false'
 kill "$APP"; wait "$APP" 2>/dev/null || true
+# Run 6: drag and drop with the mouse.
+. scripts/drag-smoke.sh
 kill "$XVFB" 2>/dev/null || true
-echo "PASS: rsshterm opens as a terminal (local shell, no prompt, Servers… on demand, -e / --working-directory), tabs, split, local and SSH terminals, host search, jump, rename, broadcast, keys, preferences, unlock, session restore, moving panes and tabs between tabs and windows"
+echo "PASS: rsshterm opens as a terminal (local shell, no prompt, Servers… on demand, -e / --working-directory), tabs, split, local and SSH terminals, host search, jump, rename, broadcast, keys, preferences, unlock, session restore, moving panes and tabs between tabs and windows, drag and drop with the mouse"

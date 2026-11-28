@@ -18,6 +18,14 @@ final class AppController {
     var windows: [MainWindow] = []
     /// The pane being dragged or picked (Move Pane…), so a window never offers a drop onto the pane itself.
     var draggedPane: PaneID?
+    /// What is being dragged (or picked), for the drop zones offered (a tab never swaps).
+    var dragged: DragDrop.Item?
+    /// The pane or tab faded while it is dragged.
+    var dimmed: Widget?
+    /// The window a drag is over (DragFeel.trackDragHover).
+    weak var dragHover: MainWindow?
+    /// A drop waiting for the drag to end (AppController+Moves.drop).
+    var pendingDrop: (DragDrop.Item, DragDrop.Spot)?
     /// Set while the move-pane mode waits for a target.
     var pickingPane: PaneID?
     var settings: AppSettings
@@ -232,6 +240,7 @@ final class AppController {
         let provider = gtk_css_provider_new()
         gtk_css_provider_load_from_string(provider, """
             .broadcast-badge { color: #ff6b6b; min-width: 0; min-height: 0; padding: 3px 6px; border-radius: 7px; }
+            .tab-strip-bar { background-color: @headerbar_bg_color; box-shadow: inset 0 -1px alpha(@headerbar_shade_color, 0.6); }
             .tab-strip .tab-item { padding: 2px 8px; border-radius: 8px; }
             .tab-strip .tab-item.selected-tab { background-color: alpha(currentColor, 0.12); }
             .file-pane { border: 2px solid transparent; border-radius: 6px; }
@@ -239,6 +248,7 @@ final class AppController {
             .file-list row.marked { background-color: alpha(@warning_bg_color, 0.35); }
             .file-list row.marked label { font-weight: bold; }
             \(MainWindow.moveCSS)
+            \(MainWindow.dragCSS)
             """)
         gtk_style_context_add_provider_for_display(gdk_display_get_default(), cast(provider), 600)
     }

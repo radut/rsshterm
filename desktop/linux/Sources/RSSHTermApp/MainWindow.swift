@@ -13,7 +13,7 @@ final class MainWindow {
     let tabView: OpaquePointer
     private let banner: Widget
     private let toasts: Widget
-    private let tabStrip: Widget
+    let tabStrip: Widget
     /// The labels last shown, for the test state and the window title.
     private(set) var tabLabels: [TabTitleLabel] = []
     /// Sidebar | tabs.
@@ -31,6 +31,14 @@ final class MainWindow {
     let preview: Widget
     /// The move-pane mode (pick a target): the pane being moved, and the target under the arrow keys.
     var picking: (pane: PaneID, target: PaneID?)?
+    /// The drop highlight: where it is drawn now and where it is sliding to (DragFeel).
+    var highlightRect: UnitRect?
+    var highlightTarget: UnitRect?
+    let highlightTween = Tween()
+    /// The tab strip's gap where a dragged tab will go, its slot, and gaps still closing.
+    var gap: StripGap?
+    var gapSlot: Int?
+    var closingGaps: [StripGap] = []
     private var closingPages: Set<UnsafeMutableRawPointer> = []
     private var syncing = false
 
@@ -57,7 +65,6 @@ final class MainWindow {
         let toolbar = adw_toolbar_view_new()!
         adw_toolbar_view_add_top_bar(cast(toolbar), header)
         adw_toolbar_view_add_top_bar(cast(toolbar), banner)
-        adw_toolbar_view_add_top_bar(cast(toolbar), stripScroll)
         split = gtk_paned_new(GTK_ORIENTATION_HORIZONTAL)
         let paneArea = gtk_overlay_new()!
         gtk_overlay_set_child(cast(paneArea), cast(tabView))
@@ -72,7 +79,14 @@ final class MainWindow {
         gtk_paned_set_end_child(cast(split), paneArea)
         gtk_paned_set_shrink_start_child(cast(split), 0)
         gtk_paned_set_resize_start_child(cast(split), 0)
-        adw_toolbar_view_set_content(cast(toolbar), split)
+        // The strip sits in the content, not in a top bar: a top bar is a window handle, and dragging a tab there
+        // would move the window as well.
+        let content = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0)!
+        gtk_widget_add_css_class(stripScroll, "tab-strip-bar")
+        gtk_box_append(cast(content), stripScroll)
+        gtk_widget_set_vexpand(split, 1)
+        gtk_box_append(cast(content), split)
+        adw_toolbar_view_set_content(cast(toolbar), content)
         toasts = adw_toast_overlay_new()
         adw_toast_overlay_set_child(cast(toasts), toolbar)
         adw_application_window_set_content(cast(window), toasts)
@@ -449,8 +463,7 @@ final class MainWindow {
                 ("Rename Tab…", { [weak self] in self?.perform(.renameTab) }),
             ])
         }
-        t.onGrab = { [weak self] in self?.app.dragStarted(pane: id) }
-        t.onGrabEnded = { [weak self] in self?.app.dragEnded() }
+        t.window = self
     }
 
     /// The vault opened: start the SSH panes that were waiting for it.
@@ -561,6 +574,7 @@ final class MainWindow {
 
     private func rebuildTabStrip() {
         guard let model else { return }
+        removeTabGaps()
         while let child = gtk_widget_get_first_child(tabStrip) { gtk_box_remove(cast(tabStrip), child) }
         let single = app.settings.tabTitles.singleLine
         for (index, tab) in model.tabs.enumerated() {
@@ -598,31 +612,11 @@ final class MainWindow {
                     ("Close Tab", { [unowned self] in closeTab(tabID) }),
                 ])
             }
-            // Drag a tab onto another to put it there.
-            // Drag a tab onto another (any window) to put it there, onto a pane's edge to make it a split, or out
-            // of every window for a window of its own. A pane dropped on a tab joins it on the right.
-            let drag = gtk_drag_source_new()!
-            gtk_drag_source_set_actions(drag, GDK_ACTION_MOVE)
-            onDragPrepare(drag) { [unowned self] _, _ in
-                app.dragStarted(tab: tabID)
-                return textContent(DragPayload.tab(tabID).text)
-            }
-            onDragCancel(drag) { [unowned self] reason in
-                app.dragEnded()
-                // Dropped where nothing takes it: outside every window.
-                guard reason == GDK_DRAG_CANCEL_NO_TARGET else { return false }
-                onMain { [weak self] in self?.app.move(tab: tabID, to: .newWindow()) }
-                return true
-            }
-            onDragEnd(drag) { [unowned self] in app.dragEnded() }
-            gtk_widget_add_controller(item, cast(drag))
-            let drop = gtk_drop_target_new(gTypeString, GDK_ACTION_MOVE)!
-            onDrop(drop) { [unowned self] value, _, _ in
-                guard let payload = DragPayload(value) else { return false }
-                dropped(payload, onTab: tabID)
-                return true
-            }
-            gtk_widget_add_controller(item, cast(drop))
+            // Drag a tab along the strip (the neighbours slide), onto another window's strip, onto a pane's edge
+            // (a split) or out of every window (a window of its own). The picture is the tab itself (a picture of
+            // a lone pane's terminal in its page makes VTE draw that page blank until the next output).
+            installDrag(on: item, DragSourceSpec(item: { .tab(tabID) }, picture: { item }, app: { [weak self] in self?.app },
+                                                 capture: true))
             gtk_box_append(cast(tabStrip), item)
         }
     }
@@ -741,6 +735,8 @@ final class MainWindow {
             "title": model.title ?? "",
             "tabColors": model.tabs.map { $0.color?.rawValue ?? "" },
             "picking": picking != nil,
+            "dragPoints": dragPoints(),
+            "dragging": app.dragged != nil,
         ]
     }
 }

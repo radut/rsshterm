@@ -47,6 +47,7 @@ extension MainWindow {
         .pane-grip { opacity: 0.35; padding: 2px; border-radius: 4px; background-color: alpha(black, 0.25); color: white; }
         .pane-grip:hover { opacity: 1; }
         .move-source { outline: 3px solid #2ec27e; outline-offset: -3px; }
+        .move-source > vte-terminal { opacity: 0.7; }
         """ + TabColor.allCases.map {
             ".tab-strip .tab-item.tab-color-\($0.rawValue) { box-shadow: inset 0 -3px 0 \($0.hex); "
                 + "background-color: alpha(\($0.hex), 0.18); }"
@@ -86,25 +87,25 @@ extension MainWindow {
 
     // MARK: Drop targets
 
-    /// The catcher over the pane area (pane edges) and the tab strip's empty space (a tab of its own).
+    /// The catcher over the pane area (pane zones) and the tab strip (an insertion slot).
     func installDropTargets(strip: Widget) {
-        let drop = gtk_drop_target_new(gTypeString, GDK_ACTION_MOVE)!
+        let drop = gtk_drop_target_new(gTypeString, paneDragActions)!
         onDropMotion(drop) { [unowned self] x, y in showDropPreview(x: x, y: y) }
-        on(drop, "leave") { [unowned self] in gtk_widget_set_visible(preview, 0) }
+        on(drop, "leave") { [unowned self] in showHighlight(nil) }
         onDrop(drop) { [unowned self] value, x, y in
-            gtk_widget_set_visible(preview, 0)
-            guard let payload = DragPayload(value), let target = dropTarget(x: x, y: y) else { return false }
-            onMain { [weak self] in self?.dropped(payload, on: target) }
+            showHighlight(nil)
+            guard let payload = DragPayload(value), let target = dropTarget(x: x, y: y, for: payload.item) else { return false }
+            app.drop(payload.item, on: .pane(target))
             return true
         }
         gtk_widget_add_controller(catcher, cast(drop))
         // Clicks while picking a target (Move Pane…): the click drops it.
         let click = gtk_gesture_click_new()!
         onPressed(click) { [unowned self] _, x, y in
-            guard let moving = app.pickingPane, let target = dropTarget(x: x, y: y) else { return }
+            guard let moving = app.pickingPane, let target = dropTarget(x: x, y: y, for: .pane(moving)) else { return }
             onMain { [weak self] in
                 self?.app.endPicking()
-                self?.dropped(.pane(moving), on: target)
+                self?.app.drop(.pane(moving), on: .pane(target))
             }
         }
         gtk_widget_add_controller(catcher, cast(click))
@@ -112,72 +113,53 @@ extension MainWindow {
         onMotion(motion) { [unowned self] x, y in if app.pickingPane != nil { showDropPreview(x: x, y: y) } }
         gtk_widget_add_controller(catcher, cast(motion))
 
-        let stripDrop = gtk_drop_target_new(gTypeString, GDK_ACTION_MOVE)!
-        onDrop(stripDrop) { [unowned self] value, _, _ in
+        // The strip: a gap opens where the tab (or the pane, as a new tab) will go.
+        let stripDrop = gtk_drop_target_new(gTypeString, paneDragActions)!
+        onDropMotion(stripDrop) { [unowned self] x, _ in showTabGap(at: tabSlot(stripX: x, strip: strip), for: app.dragged) }
+        on(stripDrop, "leave") { [unowned self] in showTabGap(at: nil, for: nil) }
+        onDrop(stripDrop) { [unowned self] value, x, _ in
             guard let payload = DragPayload(value), let model else { return false }
-            onMain { [weak self] in
-                guard let self else { return }
-                switch payload {
-                case .pane(let id): app.move(pane: id, to: .newTab(window: model.id, index: model.tabs.count))
-                case .tab(let id): app.move(tab: id, to: .window(model.id, index: model.tabs.count))
-                }
-            }
+            let slot = tabSlot(stripX: x, strip: strip)
+            showTabGap(at: nil, for: nil)
+            app.drop(payload.item, on: .tabBar(window: model.id, slot: slot))
             return true
         }
         gtk_widget_add_controller(strip, cast(stripDrop))
+        trackDragHover()
     }
 
     /// While something is dragged (or picked) anywhere in the app, the catcher takes the pointer.
     func setCatching(_ on: Bool) {
         gtk_widget_set_can_target(catcher, on ? 1 : 0)
-        if !on { gtk_widget_set_visible(preview, 0) }
+        if !on { showHighlight(nil) }
     }
 
-    private func dropTarget(x: Double, y: Double) -> DropZones.Target? {
+    /// The pane zone at (x, y) of the catcher; a tab is never offered a pane's centre (a swap is for panes).
+    func dropTarget(x: Double, y: Double, for item: DragDrop.Item?) -> DropZones.Target? {
         guard let model else { return nil }
         let w = Double(gtk_widget_get_width(catcher)), h = Double(gtk_widget_get_height(catcher))
         guard w > 0, h > 0 else { return nil }
-        return DropZones.target(x: x / w, y: y / h, frames: model.selectedTab.visibleFrames)
+        let isTab: Bool = if case .tab? = item { true } else { false }
+        return DropZones.target(x: x / w, y: y / h, frames: model.selectedTab.visibleFrames, center: !isTab)
     }
 
     private func showDropPreview(x: Double, y: Double) {
-        guard let target = dropTarget(x: x, y: y), target.pane != app.draggedPane else {
-            gtk_widget_set_visible(preview, 0)
+        let item = app.dragged
+        guard let target = dropTarget(x: x, y: y, for: item), target.pane != app.draggedPane,
+              !(item.map { isOwnTab($0, of: target.pane) } ?? false) else {
+            showHighlight(nil)
             return
         }
-        place(preview: target.preview)
+        showHighlight(target.preview)
     }
 
-    private func place(preview rect: UnitRect) {
-        let w = Double(gtk_widget_get_width(catcher)), h = Double(gtk_widget_get_height(catcher))
-        gtk_fixed_move(cast(catcher), preview, rect.x * w, rect.y * h)
-        gtk_widget_set_size_request(preview, Int32(rect.width * w), Int32(rect.height * h))
-        gtk_widget_set_visible(preview, 1)
+    /// A tab dragged over one of its own panes: nothing to drop there.
+    private func isOwnTab(_ item: DragDrop.Item, of pane: PaneID) -> Bool {
+        guard case .tab(let id) = item else { return false }
+        return model?.tabs.first { $0.id == id }?.root.contains(pane) ?? false
     }
 
-    private func dropped(_ payload: DragPayload, on target: DropZones.Target) {
-        switch payload {
-        case .pane(let id):
-            app.move(pane: id, to: .beside(pane: target.pane, edge: target.edge))
-        case .tab(let id):
-            guard let model, model.selectedTab.id != id else { return }
-            app.move(tab: id, to: .split(tab: model.selectedTab.id, beside: target.pane, edge: target.edge))
-        }
-    }
-
-    /// Something dropped on tab `tabID` of the strip: a pane joins that tab on the right; a tab goes there.
-    func dropped(_ payload: DragPayload, onTab tabID: UUID) {
-        guard let model else { return }
-        switch payload {
-        case .pane(let id):
-            onMain { [weak self] in self?.app.move(pane: id, to: .tabEdge(tab: tabID, edge: .right)) }
-        case .tab(let id) where model.tabIndex(of: id) != nil:
-            moveTab(id, onto: tabID)
-        case .tab(let id):
-            let index = model.tabIndex(of: tabID)
-            onMain { [weak self] in self?.app.move(tab: id, to: .window(model.id, index: index)) }
-        }
-    }
+    private func place(preview rect: UnitRect) { showHighlight(rect) }
 
     // MARK: Menus
 
@@ -273,7 +255,7 @@ extension MainWindow {
             }
         }
         picking = id.map { ($0, nil) }
-        if id == nil { gtk_widget_set_visible(preview, 0) }
+        if id == nil { showHighlight(nil) }
     }
 
     func pickKey(keyval: UInt32, state: UInt32) -> Bool {

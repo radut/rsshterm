@@ -42,8 +42,8 @@ final class TerminalPane {
     /// Clicking the badge takes this pane out of the broadcast (on the pane typed in: stops broadcasting).
     var onBadgeClicked: (() -> Void)?
     /// A drag of the pane's grab handle started (the window shows the drop zones) or ended.
-    var onGrab: (() -> Void)?
-    var onGrabEnded: (() -> Void)?
+    /// The window holding the pane now (drags ask its app).
+    weak var window: MainWindow?
     /// While true, `commit` does not broadcast (input this pane got from a broadcast or a broadcast paste).
     var suppressBroadcast = false
 
@@ -92,19 +92,14 @@ final class TerminalPane {
         gtk_widget_set_tooltip_text(grip, "Drag to move this pane: onto another pane's edge, a tab, or the tab strip")
         gtk_widget_add_css_class(grip, "pane-grip")
         gtk_widget_set_cursor_from_name(grip, "grab")
-        let drag = gtk_drag_source_new()!
-        gtk_drag_source_set_actions(drag, GDK_ACTION_MOVE)
         let paneID = id
-        onDragPrepare(drag) { [weak self] _, _ in
-            self?.onGrab?()
-            return textContent(DragPayload.pane(paneID).text)
-        }
-        onDragEnd(drag) { [weak self] in self?.onGrabEnded?() }
-        onDragCancel(drag) { [weak self] _ in
-            self?.onGrabEnded?()
-            return false
-        }
-        gtk_widget_add_controller(grip, cast(drag))
+        let spec = DragSourceSpec(item: { .pane(paneID) }, picture: { [weak self] in self?.container },
+                                  app: { [weak self] in self?.window?.app })
+        installDrag(on: grip, spec)
+        // iTerm2's move-pane modifier: Ctrl+Shift+Alt and drag from anywhere in the pane.
+        var anywhere = spec
+        anywhere.modifiers = GDK_CONTROL_MASK.rawValue | GDK_SHIFT_MASK.rawValue | GDK_ALT_MASK.rawValue
+        installDrag(on: container, anywhere)
         gtk_overlay_add_overlay(cast(container), grip)
         vte_terminal_set_mouse_autohide(terminal, 1)
         vte_terminal_set_bold_is_bright(terminal, 1)

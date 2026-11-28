@@ -73,28 +73,63 @@ extension AppController {
 
     // MARK: Drags
 
-    func dragStarted(pane: PaneID) {
-        draggedPane = pane
+    /// A pane or tab drag began: every window takes drops; the source (`dimming`) fades while it is away.
+    func dragStarted(_ item: DragDrop.Item, dimming widget: Widget?) {
+        dragged = item
+        draggedPane = if case .pane(let id) = item { id } else { nil }
+        if let widget {
+            gtk_widget_add_css_class(widget, "drag-source")
+            dimmed = widget
+        }
         windows.forEach { $0.setCatching(true) }
     }
 
-    func dragStarted(tab: UUID) {
-        draggedPane = nil
-        windows.forEach { $0.setCatching(true) }
+    /// Dropped where nothing took it. Escape (or over a window) changes nothing; outside every window the pane or
+    /// tab becomes a window of its own. True skips GTK's snap-back animation.
+    func dragCancelled(_ item: DragDrop.Item, reason: GdkDragCancelReason, drag: OpaquePointer?) -> Bool {
+        let spot = DragDrop.endedSpot(escaped: reason != GDK_DRAG_CANCEL_NO_TARGET, overAWindow: pointerOverAWindow(drag),
+                                      newWindow: UUID())
+        let models = windows.compactMap(\.model)
+        guard let move = DragDrop.move(item, to: spot, in: models) else { return false }
+        onMain { [weak self] in self?.apply(move) }
+        return true
     }
 
     func dragEnded() {
+        if let (item, spot) = pendingDrop {
+            pendingDrop = nil
+            onMain { [weak self] in self?.drop(item, on: spot) }
+        }
+        dragged = nil
         draggedPane = nil
+        dragHover = nil
+        if let dimmed { gtk_widget_remove_css_class(dimmed, "drag-source") }
+        dimmed = nil
+        windows.forEach { $0.dragFinished() }
         guard pickingPane == nil else { return }
         // After the drop handlers ran.
         onMain { [weak self] in self?.windows.forEach { $0.setCatching(false) } }
     }
+
+    /// Something let go on a spot that took it: the core says what changes, once GTK has finished the drag (its
+    /// hover state still points at widgets a move rebuilds, such as the tab buttons).
+    func drop(_ item: DragDrop.Item, on spot: DragDrop.Spot) {
+        guard dragged != nil, pickingPane == nil else {
+            apply(DragDrop.move(item, to: spot, in: windows.compactMap(\.model)))
+            return
+        }
+        pendingDrop = (item, spot)
+    }
+
+    /// Whether the pointer is over one of the app's windows: one saw the drag come in and not leave.
+    private func pointerOverAWindow(_ drag: OpaquePointer?) -> Bool { dragHover != nil }
 
     // MARK: Pick a target
 
     func startPicking(_ pane: PaneID, in window: MainWindow?) {
         pickingPane = pane
         draggedPane = pane
+        dragged = .pane(pane)
         for w in windows { w.setCatching(true) }
         window?.showPicking(pane)
         window?.toast("Move pane: click a pane edge, or arrows + Enter (Shift+Enter below), T new tab, N new window, Esc cancels")
@@ -103,6 +138,7 @@ extension AppController {
     func endPicking() {
         pickingPane = nil
         draggedPane = nil
+        dragged = nil
         for w in windows {
             w.showPicking(nil)
             w.setCatching(false)
